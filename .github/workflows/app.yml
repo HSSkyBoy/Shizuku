@@ -23,11 +23,24 @@ jobs:
       - name: Write key
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
         run: |
-          echo KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} > signing.properties
-          echo KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} >> signing.properties
-          echo KEYSTORE_ALIAS_PASSWORD='${{ secrets.KEYSTORE_ALIAS_PASSWORD }}' >> signing.properties
-          echo KEYSTORE_FILE=../key.jks >> signing.properties
-          echo '${{ secrets.KEYSTORE }}' | base64 --decode > key.jks
+          # Prefer NP-style secrets, then fall back to legacy KEYSTORE_* secrets.
+          STORE_B64='${{ secrets.KEY_STORE }}'
+          STORE_PASS='${{ secrets.KEY_STORE_PASSWORD }}'
+          ALIAS='${{ secrets.ALIAS }}'
+          KEY_PASS='${{ secrets.KEY_PASSWORD }}'
+
+          if [ -z "$STORE_B64" ]; then STORE_B64='${{ secrets.KEYSTORE }}'; fi
+          if [ -z "$STORE_PASS" ]; then STORE_PASS='${{ secrets.KEYSTORE_PASSWORD }}'; fi
+          if [ -z "$ALIAS" ]; then ALIAS='${{ secrets.KEYSTORE_ALIAS }}'; fi
+          if [ -z "$KEY_PASS" ]; then KEY_PASS='${{ secrets.KEYSTORE_ALIAS_PASSWORD }}'; fi
+
+          echo "KEYSTORE_PASSWORD=$STORE_PASS" > signing.properties
+          echo "KEYSTORE_ALIAS=$ALIAS" >> signing.properties
+          echo "KEYSTORE_ALIAS_PASSWORD=$KEY_PASS" >> signing.properties
+          echo "KEYSTORE_FILE=../key.jks" >> signing.properties
+
+          # Use printf to avoid newline/encoding issues when decoding keystore bytes.
+          printf '%s' "$STORE_B64" | base64 --decode > key.jks
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
