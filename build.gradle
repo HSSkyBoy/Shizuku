@@ -9,12 +9,12 @@ idea.module {
 subprojects {
     plugins.withId("com.android.base") {
         android {
-            compileSdk = 36
-            buildToolsVersion = "36.0.0"
-            ndkVersion = "29.0.13113456"
+            compileSdk = 37
+            buildToolsVersion = "37.0.0"
+            ndkVersion = "29.0.13599879"
             defaultConfig {
                 minSdk = 24
-                targetSdk = 36
+                targetSdk = 37
             }
             compileOptions {
                 sourceCompatibility = JavaVersion.VERSION_21
@@ -27,7 +27,7 @@ subprojects {
 apply from: 'api/manifest.gradle'
 def gitCommitId = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
 def gitCommitCount = Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())
-def baseVersionName = "${api_version_major}.6.0-R4"
+def baseVersionName = "${api_version_major}.6.1-RC1"
 ext {
     versionCode = gitCommitCount
     versionName = "${baseVersionName}.r${gitCommitCount}.${gitCommitId}"
