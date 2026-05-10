@@ -5,6 +5,7 @@ import android.app.ForegroundServiceStartNotAllowedException
 import android.app.NotificationManager
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -21,6 +22,12 @@ import rikka.compatibility.DeviceCompatibility
 @RequiresApi(Build.VERSION_CODES.R)
 class AdbPairingTutorialActivity : AppBarActivity() {
 
+    companion object {
+        private const val ANDROID_17_API = 37
+        private const val ACCESS_LOCAL_NETWORK = "android.permission.ACCESS_LOCAL_NETWORK"
+        private const val REQUEST_LOCAL_NETWORK_PERMISSION = 1001
+    }
+
     private lateinit var binding: AdbPairingTutorialActivityBinding
 
     private var notificationEnabled: Boolean = false
@@ -36,7 +43,7 @@ class AdbPairingTutorialActivity : AppBarActivity() {
         notificationEnabled = isNotificationEnabled()
 
         if (notificationEnabled) {
-            startPairingService()
+            ensureLocalNetworkPermissionOrStartPairing()
         }
 
         binding.apply {
@@ -96,8 +103,37 @@ class AdbPairingTutorialActivity : AppBarActivity() {
             syncNotificationEnabled()
 
             if (newNotificationEnabled) {
-                startPairingService()
+                ensureLocalNetworkPermissionOrStartPairing()
             }
+        }
+    }
+
+    private fun hasLocalNetworkPermission(): Boolean {
+        if (Build.VERSION.SDK_INT < ANDROID_17_API) {
+            return true
+        }
+        return checkSelfPermission(ACCESS_LOCAL_NETWORK) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun ensureLocalNetworkPermissionOrStartPairing() {
+        if (hasLocalNetworkPermission()) {
+            startPairingService()
+            return
+        }
+        requestPermissions(arrayOf(ACCESS_LOCAL_NETWORK), REQUEST_LOCAL_NETWORK_PERMISSION)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode != REQUEST_LOCAL_NETWORK_PERMISSION) {
+            return
+        }
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            startPairingService()
         }
     }
 
