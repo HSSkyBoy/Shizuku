@@ -14,6 +14,12 @@ object EnvironmentUtils {
                 == Configuration.UI_MODE_TYPE_WATCH)
     }
 
+    @JvmStatic
+    fun isTelevision(context: Context): Boolean {
+        return (context.getSystemService(UiModeManager::class.java).currentModeType
+                == Configuration.UI_MODE_TYPE_TELEVISION)
+    }
+
     fun isRooted(): Boolean {
         return System.getenv("PATH")?.split(File.pathSeparatorChar)?.find { File("$it/su").exists() } != null
     }

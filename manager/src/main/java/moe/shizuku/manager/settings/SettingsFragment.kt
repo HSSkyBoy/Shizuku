@@ -42,6 +42,7 @@ import moe.shizuku.manager.ktx.setComponentEnabled
 import moe.shizuku.manager.ktx.toHtml
 import moe.shizuku.manager.receiver.BootCompleteReceiver
 import moe.shizuku.manager.utils.CustomTabsHelper
+import moe.shizuku.manager.utils.EnvironmentUtils
 import moe.shizuku.manager.utils.ShizukuSystemApis
 import rikka.core.util.ClipboardUtils
 import rikka.core.util.ResourceUtils
@@ -88,112 +89,122 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val componentName =
             ComponentName(context.packageName, BootCompleteReceiver::class.java.name)
+        val supportsStartOnBoot =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ||
+                EnvironmentUtils.isTelevision(context) ||
+                EnvironmentUtils.isRooted()
+
+        startOnBootPreference.isVisible = supportsStartOnBoot
+        startOnBootWirelessPreference.isVisible = supportsStartOnBoot
+
         // Initialize toggles based on saved preferences
         updatePreferenceStates(componentName)
 
-        startOnBootPreference.onPreferenceChangeListener =
-            Preference.OnPreferenceChangeListener { _, newValue ->
-                if (newValue is Boolean) {
-                    if (newValue) {
-                        // These two options are mutually exclusive. So, disable the wireless option
-                        startOnBootWirelessPreference.isChecked = false
-                        savePreference(KEEP_START_ON_BOOT_WIRELESS, false)
-                    }
-                    toggleBootComponent(
-                        componentName,
-                        KEEP_START_ON_BOOT,
-                        newValue || startOnBootWirelessPreference.isChecked
-                    )
-                } else false
-            }
+        if (supportsStartOnBoot) {
+            startOnBootPreference.onPreferenceChangeListener =
+                Preference.OnPreferenceChangeListener { _, newValue ->
+                    if (newValue is Boolean) {
+                        if (newValue) {
+                            // These two options are mutually exclusive. So, disable the wireless option
+                            startOnBootWirelessPreference.isChecked = false
+                            savePreference(KEEP_START_ON_BOOT_WIRELESS, false)
+                        }
+                        toggleBootComponent(
+                            componentName,
+                            KEEP_START_ON_BOOT,
+                            newValue || startOnBootWirelessPreference.isChecked
+                        )
+                    } else false
+                }
 
-        startOnBootWirelessPreference.onPreferenceChangeListener =
-            Preference.OnPreferenceChangeListener { _, newValue ->
-                val hasSecurePermission = ContextCompat.checkSelfPermission(
-                    requireContext(), Manifest.permission.WRITE_SECURE_SETTINGS
-                ) == PackageManager.PERMISSION_GRANTED
-                if (newValue is Boolean) {
-                    if (newValue) {
-                        // Check for permission
-                        if (!hasSecurePermission) {
+            startOnBootWirelessPreference.onPreferenceChangeListener =
+                Preference.OnPreferenceChangeListener { _, newValue ->
+                    val hasSecurePermission = ContextCompat.checkSelfPermission(
+                        requireContext(), Manifest.permission.WRITE_SECURE_SETTINGS
+                    ) == PackageManager.PERMISSION_GRANTED
+                    if (newValue is Boolean) {
+                        if (newValue) {
+                            // Check for permission
+                            if (!hasSecurePermission) {
 
-                            val dialog = MaterialAlertDialogBuilder(context)
-                                .setMessage(
-                                    getString(R.string.settings_grant_note).toHtml()
-                                )
+                                val dialog = MaterialAlertDialogBuilder(context)
+                                    .setMessage(
+                                        getString(R.string.settings_grant_note).toHtml()
+                                    )
 
-                            val click: DialogInterface.OnClickListener =
-                                DialogInterface.OnClickListener { dialog, which ->
-                                    val command =
-                                        "adb shell pm grant " + BuildConfig.APPLICATION_ID + " android.permission.WRITE_SECURE_SETTINGS"
-                                    MaterialAlertDialogBuilder(context)
-                                        .setTitle(R.string.home_adb_button_view_command)
-                                        .setMessage(
-                                            HtmlCompat.fromHtml(
-                                                context.getString(
-                                                    R.string.home_adb_dialog_view_command_message,
-                                                    command
+                                val click: DialogInterface.OnClickListener =
+                                    DialogInterface.OnClickListener { dialog, which ->
+                                        val command =
+                                            "adb shell pm grant " + BuildConfig.APPLICATION_ID + " android.permission.WRITE_SECURE_SETTINGS"
+                                        MaterialAlertDialogBuilder(context)
+                                            .setTitle(R.string.home_adb_button_view_command)
+                                            .setMessage(
+                                                HtmlCompat.fromHtml(
+                                                    context.getString(
+                                                        R.string.home_adb_dialog_view_command_message,
+                                                        command
+                                                    )
                                                 )
                                             )
-                                        )
-                                        .setPositiveButton(R.string.home_adb_dialog_view_command_copy_button) { _, _ ->
-                                            if (ClipboardUtils.put(context, command)) {
-                                                Toast.makeText(
-                                                    context,
-                                                    context.getString(
-                                                        R.string.toast_copied_to_clipboard,
-                                                        command
-                                                    ),
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
+                                            .setPositiveButton(R.string.home_adb_dialog_view_command_copy_button) { _, _ ->
+                                                if (ClipboardUtils.put(context, command)) {
+                                                    Toast.makeText(
+                                                        context,
+                                                        context.getString(
+                                                            R.string.toast_copied_to_clipboard,
+                                                            command
+                                                        ),
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
                                             }
-                                        }
-                                        .setNegativeButton(android.R.string.cancel, null)
-                                        .setNeutralButton(R.string.home_adb_dialog_view_command_button_send) { _, _ ->
-                                            var intent = Intent(Intent.ACTION_SEND)
-                                            intent.type = "text/plain"
-                                            intent.putExtra(Intent.EXTRA_TEXT, command)
-                                            intent = Intent.createChooser(
-                                                intent,
-                                                context.getString(R.string.home_adb_dialog_view_command_button_send)
-                                            )
-                                            context.startActivity(intent)
-                                        }
-                                        .show()
-                                }
-                            if (Shizuku.pingBinder()) {
-                                dialog.setNeutralButton(R.string.cancel) { dialog, which -> }
-                                    .setNegativeButton(R.string.manual, click)
-                                    .setPositiveButton(R.string.auto) { dialog, which ->
-                                        Log.i(
-                                            ShizukuSettings.NAME,
-                                            "Grant manager WRITE_SECURE_SETTINGS permission"
-                                        )
-                                        ShizukuSystemApis.grantRuntimePermission(
-                                            BuildConfig.APPLICATION_ID,
-                                            Manifest.permission.WRITE_SECURE_SETTINGS,
-                                            0
-                                        )
+                                            .setNegativeButton(android.R.string.cancel, null)
+                                            .setNeutralButton(R.string.home_adb_dialog_view_command_button_send) { _, _ ->
+                                                var intent = Intent(Intent.ACTION_SEND)
+                                                intent.type = "text/plain"
+                                                intent.putExtra(Intent.EXTRA_TEXT, command)
+                                                intent = Intent.createChooser(
+                                                    intent,
+                                                    context.getString(R.string.home_adb_dialog_view_command_button_send)
+                                                )
+                                                context.startActivity(intent)
+                                            }
+                                            .show()
                                     }
-                            } else {
-                                dialog.setNegativeButton(R.string.cancel) { dialog, which -> }
-                                    .setPositiveButton(R.string.manual, click)
+                                if (Shizuku.pingBinder()) {
+                                    dialog.setNeutralButton(R.string.cancel) { dialog, which -> }
+                                        .setNegativeButton(R.string.manual, click)
+                                        .setPositiveButton(R.string.auto) { dialog, which ->
+                                            Log.i(
+                                                ShizukuSettings.NAME,
+                                                "Grant manager WRITE_SECURE_SETTINGS permission"
+                                            )
+                                            ShizukuSystemApis.grantRuntimePermission(
+                                                BuildConfig.APPLICATION_ID,
+                                                Manifest.permission.WRITE_SECURE_SETTINGS,
+                                                0
+                                            )
+                                        }
+                                } else {
+                                    dialog.setNegativeButton(R.string.cancel) { dialog, which -> }
+                                        .setPositiveButton(R.string.manual, click)
+                                }
+                                dialog.show()
+                                return@OnPreferenceChangeListener false
                             }
-                            dialog.show()
-                            return@OnPreferenceChangeListener false
-                        }
 
-                        // Disable the root option because, mutual exclusivity
-                        startOnBootPreference.isChecked = false
-                        savePreference(KEEP_START_ON_BOOT, false)
-                    }
-                    toggleBootComponent(
-                        componentName,
-                        KEEP_START_ON_BOOT_WIRELESS,
-                        newValue || startOnBootPreference.isChecked
-                    )
-                } else false
-            }
+                            // Disable the root option because, mutual exclusivity
+                            startOnBootPreference.isChecked = false
+                            savePreference(KEEP_START_ON_BOOT, false)
+                        }
+                        toggleBootComponent(
+                            componentName,
+                            KEEP_START_ON_BOOT_WIRELESS,
+                            newValue || startOnBootPreference.isChecked
+                        )
+                    } else false
+                }
+        }
 
         languagePreference.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _: Preference?, newValue: Any ->
