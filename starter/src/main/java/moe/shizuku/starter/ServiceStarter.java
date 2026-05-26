@@ -173,7 +173,7 @@ public class ServiceStarter {
             reply.setClassLoader(BinderContainer.class.getClassLoader());
 
             Log.i(TAG, String.format("send binder to %s in user %d", packageName, userId));
-            BinderContainer container = reply.getParcelable(EXTRA_BINDER);
+            BinderContainer container = getBinderContainer(reply);
 
             if (container != null && container.binder != null && container.binder.pingBinder()) {
                 shizukuBinder = container.binder;
@@ -196,5 +196,13 @@ public class ServiceStarter {
         handler.removeCallbacks(retryRunnable);
         System.exit(1);
 
+    }
+
+    @SuppressWarnings("deprecation")
+    private static BinderContainer getBinderContainer(Bundle bundle) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return bundle.getParcelable(EXTRA_BINDER, BinderContainer.class);
+        }
+        return bundle.getParcelable(EXTRA_BINDER);
     }
 }
