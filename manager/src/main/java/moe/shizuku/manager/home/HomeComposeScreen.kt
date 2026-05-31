@@ -37,6 +37,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -56,12 +57,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import moe.shizuku.manager.R
 import moe.shizuku.manager.model.ServiceStatus
 import moe.shizuku.manager.ui.theme.ShizukuComposeTheme
 import moe.shizuku.manager.utils.EnvironmentUtils
 import moe.shizuku.manager.utils.UserHandleCompat
+import moe.shizuku.manager.starter.Starter
 import rikka.html.text.HtmlCompat
 
 @Composable
@@ -69,13 +72,11 @@ fun HomeComposeScreen(
     status: ServiceStatus?,
     grantedCount: Int?,
     onOpenSettings: () -> Unit,
-    onOpenAbout: () -> Unit,
     onStopService: () -> Unit,
     onManageApps: () -> Unit,
     onOpenTerminal: () -> Unit,
     onStartRoot: () -> Unit,
     onRestartRoot: () -> Unit,
-    onShowAdbCommand: () -> Unit,
     onOpenWirelessGuide: () -> Unit,
     onPairWireless: () -> Unit,
     onStartWirelessAdb: () -> Unit,
@@ -87,13 +88,11 @@ fun HomeComposeScreen(
             status = status,
             grantedCount = grantedCount,
             onOpenSettings = onOpenSettings,
-            onOpenAbout = onOpenAbout,
             onStopService = onStopService,
             onManageApps = onManageApps,
             onOpenTerminal = onOpenTerminal,
             onStartRoot = onStartRoot,
             onRestartRoot = onRestartRoot,
-            onShowAdbCommand = onShowAdbCommand,
             onOpenWirelessGuide = onOpenWirelessGuide,
             onPairWireless = onPairWireless,
             onStartWirelessAdb = onStartWirelessAdb,
@@ -109,13 +108,11 @@ private fun HomeScreenContent(
     status: ServiceStatus?,
     grantedCount: Int?,
     onOpenSettings: () -> Unit,
-    onOpenAbout: () -> Unit,
     onStopService: () -> Unit,
     onManageApps: () -> Unit,
     onOpenTerminal: () -> Unit,
     onStartRoot: () -> Unit,
     onRestartRoot: () -> Unit,
-    onShowAdbCommand: () -> Unit,
     onOpenWirelessGuide: () -> Unit,
     onPairWireless: () -> Unit,
     onStartWirelessAdb: () -> Unit,
@@ -124,6 +121,12 @@ private fun HomeScreenContent(
 ) {
     val context = LocalContext.current
     var menuExpanded by remember { mutableStateOf(false) }
+    var dialog by remember { mutableStateOf<HomeDialog?>(null) }
+    val versionName = remember {
+        runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }
+            .getOrNull()
+            .orEmpty()
+    }
     val items = buildHomeItems(
         context = context,
         status = status,
@@ -132,7 +135,7 @@ private fun HomeScreenContent(
         onOpenTerminal = onOpenTerminal,
         onStartRoot = onStartRoot,
         onRestartRoot = onRestartRoot,
-        onShowAdbCommand = onShowAdbCommand,
+        onShowAdbCommand = { dialog = HomeDialog.AdbCommand },
         onOpenWirelessGuide = onOpenWirelessGuide,
         onPairWireless = onPairWireless,
         onStartWirelessAdb = onStartWirelessAdb,
@@ -159,7 +162,7 @@ private fun HomeScreenContent(
                             text = { Text(stringResource(R.string.action_about)) },
                             onClick = {
                                 menuExpanded = false
-                                onOpenAbout()
+                                dialog = HomeDialog.About
                             }
                         )
                         if (status?.isRunning == true) {
@@ -167,7 +170,7 @@ private fun HomeScreenContent(
                                 text = { Text(stringResource(R.string.action_stop)) },
                                 onClick = {
                                     menuExpanded = false
-                                    onStopService()
+                                    dialog = HomeDialog.Stop
                                 }
                             )
                         }
@@ -196,6 +199,149 @@ private fun HomeScreenContent(
             }
         }
     }
+
+    when (val state = dialog) {
+        HomeDialog.About -> {
+            AlertDialog(
+                onDismissRequest = { dialog = null },
+                confirmButton = {
+                    TextButton(onClick = { dialog = null }) {
+                        Text(stringResource(android.R.string.ok))
+                    }
+                },
+                title = { Text(stringResource(R.string.action_about)) },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text(text = stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge)
+                        Text(text = versionName)
+                        LinkRow(
+                            label = plainText(context.getString(R.string.about_view_source_code, "GitHub")),
+                            url = "https://github.com/HSSkyBoy/Shizuku"
+                        )
+                        LinkRow(
+                            label = plainText(context.getString(R.string.about_follow_channel)),
+                            url = "https://t.me/np_nbcn"
+                        )
+                    }
+                },
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                shape = MaterialTheme.shapes.extraLarge
+            )
+        }
+
+        HomeDialog.Stop -> {
+            AlertDialog(
+                onDismissRequest = { dialog = null },
+                confirmButton = {
+                    TextButton(onClick = {
+                        dialog = null
+                        onStopService()
+                    }) {
+                        Text(stringResource(android.R.string.ok))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { dialog = null }) {
+                        Text(stringResource(android.R.string.cancel))
+                    }
+                },
+                title = { Text(stringResource(R.string.action_stop)) },
+                text = { Text(stringResource(R.string.dialog_stop_message)) },
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                shape = MaterialTheme.shapes.extraLarge
+            )
+        }
+
+        HomeDialog.AdbCommand -> {
+            AlertDialog(
+                onDismissRequest = { dialog = null },
+                confirmButton = {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        TextButton(onClick = {
+                            rikka.core.util.ClipboardUtils.put(context, Starter.adbCommand)
+                            dialog = null
+                        }) {
+                            Text(stringResource(R.string.home_adb_dialog_view_command_copy_button))
+                        }
+                        TextButton(onClick = {
+                            val sendIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(android.content.Intent.EXTRA_TEXT, Starter.adbCommand)
+                            }
+                            context.startActivity(
+                                android.content.Intent.createChooser(
+                                    sendIntent,
+                                    context.getString(R.string.home_adb_dialog_view_command_button_send)
+                                )
+                            )
+                            dialog = null
+                        }) {
+                            Text(stringResource(R.string.home_adb_dialog_view_command_button_send))
+                        }
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { dialog = null }) {
+                        Text(stringResource(android.R.string.cancel))
+                    }
+                },
+                title = { Text(stringResource(R.string.home_adb_button_view_command)) },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = Starter.adbCommand,
+                            fontFamily = FontFamily.Monospace,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            text = plainText(context.getString(R.string.home_adb_dialog_view_command_message, Starter.adbCommand))
+                                .removePrefix(Starter.adbCommand)
+                                .trim(),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                },
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                shape = MaterialTheme.shapes.extraLarge
+            )
+        }
+
+        null -> Unit
+    }
+}
+
+@Composable
+private fun LinkRow(label: String, url: String) {
+    val context = LocalContext.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { moe.shizuku.manager.utils.CustomTabsHelper.launchUrlOrCopy(context, url) }
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(Icons.Outlined.Link, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Spacer(modifier = Modifier.size(12.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Icon(
+            Icons.AutoMirrored.Outlined.OpenInNew,
+            contentDescription = stringResource(R.string.action_open),
+            tint = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Immutable
+private sealed interface HomeDialog {
+    data object About : HomeDialog
+    data object Stop : HomeDialog
+    data object AdbCommand : HomeDialog
 }
 
 private fun buildHomeItems(

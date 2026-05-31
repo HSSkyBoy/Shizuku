@@ -1,28 +1,19 @@
 package moe.shizuku.manager.home
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.os.Process
-import android.text.method.LinkMovementMethod
-import android.view.LayoutInflater
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import moe.shizuku.manager.Helps
 import moe.shizuku.manager.R
 import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.app.AppActivity
-import moe.shizuku.manager.databinding.AboutDialogBinding
-import moe.shizuku.manager.ktx.toHtml
 import moe.shizuku.manager.management.ApplicationManagementActivity
 import moe.shizuku.manager.management.appsViewModel
 import moe.shizuku.manager.shell.ShellTutorialActivity
 import moe.shizuku.manager.settings.SettingsActivity
-import moe.shizuku.manager.starter.Starter
 import moe.shizuku.manager.starter.StarterActivity
-import moe.shizuku.manager.utils.AppIconCache
 import moe.shizuku.manager.utils.CustomTabsHelper
 import rikka.lifecycle.Status
 import rikka.lifecycle.viewModels
@@ -62,8 +53,7 @@ abstract class HomeActivity : AppActivity() {
                 onOpenSettings = {
                     startActivity(Intent(this, SettingsActivity::class.java))
                 },
-                onOpenAbout = { showAboutDialog() },
-                onStopService = { showStopDialog() },
+                onStopService = { stopService() },
                 onManageApps = {
                     startActivity(Intent(this, ApplicationManagementActivity::class.java))
                 },
@@ -72,7 +62,6 @@ abstract class HomeActivity : AppActivity() {
                 },
                 onStartRoot = { startRootService() },
                 onRestartRoot = { startRootService() },
-                onShowAdbCommand = { showAdbCommandDialog() },
                 onOpenWirelessGuide = {
                     CustomTabsHelper.launchUrlOrCopy(this, Helps.ADB_ANDROID11.get())
                 },
@@ -120,67 +109,18 @@ abstract class HomeActivity : AppActivity() {
         Shizuku.removeBinderDeadListener(binderDeadListener)
     }
 
-    private fun showAboutDialog() {
-        val binding = AboutDialogBinding.inflate(LayoutInflater.from(this), null, false)
-        binding.sourceCode.movementMethod = LinkMovementMethod.getInstance()
-        binding.sourceCode.text = getString(
-            R.string.about_view_source_code,
-            "<b><a href=\"https://github.com/HSSkyBoy/Shizuku\">GitHub</a></b>"
-        ).toHtml()
-        binding.followChannel.movementMethod = LinkMovementMethod.getInstance()
-        binding.followChannel.text = getString(
-            R.string.about_follow_channel
-        ).toHtml()
-        binding.icon.setImageBitmap(
-            AppIconCache.getOrLoadBitmap(
-                this,
-                applicationInfo,
-                Process.myUid() / 100000,
-                resources.getDimensionPixelOffset(R.dimen.default_app_icon_size)
-            )
-        )
-        binding.versionName.text = packageManager.getPackageInfo(packageName, 0).versionName
-        MaterialAlertDialogBuilder(this)
-            .setView(binding.root)
-            .show()
-    }
-
-    private fun showStopDialog() {
+    private fun stopService() {
         if (!Shizuku.pingBinder()) return
-        MaterialAlertDialogBuilder(this)
-            .setMessage(R.string.dialog_stop_message)
-            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
-                try {
-                    Shizuku.exit()
-                } catch (_: Throwable) {
-                }
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+        try {
+            Shizuku.exit()
+        } catch (_: Throwable) {
+        }
     }
 
     private fun startRootService() {
         startActivity(Intent(this, StarterActivity::class.java).apply {
             putExtra(StarterActivity.EXTRA_IS_ROOT, true)
         })
-    }
-
-    private fun showAdbCommandDialog() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.home_adb_button_view_command)
-            .setMessage(getString(R.string.home_adb_dialog_view_command_message, Starter.adbCommand).toHtml())
-            .setPositiveButton(R.string.home_adb_dialog_view_command_copy_button) { _, _ ->
-                rikka.core.util.ClipboardUtils.put(this, Starter.adbCommand)
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .setNeutralButton(R.string.home_adb_dialog_view_command_button_send) { _, _ ->
-                var intent = Intent(Intent.ACTION_SEND)
-                intent.type = "text/plain"
-                intent.putExtra(Intent.EXTRA_TEXT, Starter.adbCommand)
-                intent = Intent.createChooser(intent, getString(R.string.home_adb_dialog_view_command_button_send))
-                startActivity(intent)
-            }
-            .show()
     }
 
 }
