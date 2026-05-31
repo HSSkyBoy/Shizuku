@@ -127,8 +127,9 @@
 
     <style name="TerminalTutorialText">
         <item name="android:textAppearance">?textAppearanceBodyMedium</item>
-        <item name="android:minHeight">32dp</item>
+        <item name="android:minHeight">36dp</item>
         <item name="android:gravity">center_vertical</item>
+        <item name="android:lineSpacingExtra">2dp</item>
     </style>
 
     <style name="FilledCard" parent="@style/Widget.Material3.CardView.Filled">
@@ -141,14 +142,104 @@
         <item name="android:focusable">true</item>
         <item name="android:clipChildren">false</item>
         <item name="android:clipToPadding">false</item>
-        <item name="cardCornerRadius">28dp</item>
+        <item name="cardCornerRadius">32dp</item>
         <item name="contentPaddingStart">24dp</item>
         <item name="contentPaddingEnd">24dp</item>
         <item name="contentPaddingLeft">24dp</item>
         <item name="contentPaddingRight">24dp</item>
         <item name="contentPaddingTop">20dp</item>
         <item name="contentPaddingBottom">20dp</item>
-        <item name="cardBackgroundColor">?colorSecondaryContainer</item>
+        <item name="cardBackgroundColor">?colorSurfaceContainerHigh</item>
+        <item name="strokeColor">?colorOutlineVariant</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="AppListItemCard" parent="@style/Widget.Material3.CardView.Filled">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="cardCornerRadius">28dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardBackgroundColor">?colorSurfaceContainerLow</item>
+        <item name="strokeColor">?colorOutlineVariant</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="AppListTitle" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">?colorOnSurface</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppListSummary" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">?colorOnSurfaceVariant</item>
+        <item name="android:lineSpacingExtra">1dp</item>
+    </style>
+
+    <style name="TerminalStepCard" parent="@style/Widget.Material3.CardView.Filled">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">14dp</item>
+        <item name="android:layout_marginBottom">2dp</item>
+        <item name="cardCornerRadius">32dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardBackgroundColor">?colorSurfaceContainerLow</item>
+        <item name="strokeColor">?colorOutlineVariant</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="contentPaddingStart">18dp</item>
+        <item name="contentPaddingEnd">18dp</item>
+        <item name="contentPaddingTop">16dp</item>
+        <item name="contentPaddingBottom">16dp</item>
+    </style>
+
+    <style name="TutorialCalloutCard" parent="@style/Widget.Material3.CardView.Filled">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="cardCornerRadius">32dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardBackgroundColor">?colorSurfaceContainerHigh</item>
+        <item name="strokeColor">?colorOutlineVariant</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="contentPaddingStart">24dp</item>
+        <item name="contentPaddingEnd">24dp</item>
+        <item name="contentPaddingTop">20dp</item>
+        <item name="contentPaddingBottom">20dp</item>
+    </style>
+
+    <style name="TutorialErrorCard" parent="@style/TutorialCalloutCard">
+        <item name="cardBackgroundColor">?colorErrorContainer</item>
+        <item name="strokeColor">?colorError</item>
+    </style>
+
+    <style name="MonoOutputCard" parent="@style/Widget.Material3.CardView.Filled">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cardCornerRadius">32dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardBackgroundColor">?colorSurfaceContainerLow</item>
+        <item name="strokeColor">?colorOutlineVariant</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="contentPaddingStart">20dp</item>
+        <item name="contentPaddingEnd">20dp</item>
+        <item name="contentPaddingTop">18dp</item>
+        <item name="contentPaddingBottom">18dp</item>
+    </style>
+
+    <style name="DialogScrollCard" parent="@style/Widget.Material3.CardView.Filled">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cardCornerRadius">28dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardBackgroundColor">?colorSurfaceContainerHigh</item>
+        <item name="strokeColor">?colorOutlineVariant</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="contentPaddingStart">20dp</item>
+        <item name="contentPaddingEnd">20dp</item>
+        <item name="contentPaddingTop">18dp</item>
+        <item name="contentPaddingBottom">18dp</item>
     </style>
 
     <style name="GrantPermissionsButtons">

@@ -133,7 +133,7 @@ With %1$s, in any terminal app, you can connect to and interact with the shell r
     <!-- About -->
     <string name="action_about">About</string>
     <string name="about_view_source_code"><![CDATA[View source code at %s]]></string>
-    <string name="about_follow_channel"><![CDATA[Follow NPCN at <a href="https://t.me/np_nbcn">t.me/np_nbcn</a>]]></string>
+    <string name="about_follow_channel"><![CDATA[Follow NPCN at Telegram]]></string>
 
     <!-- Stop -->
     <string name="action_stop">Stop Shizuku</string>

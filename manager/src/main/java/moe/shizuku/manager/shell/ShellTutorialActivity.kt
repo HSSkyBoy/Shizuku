@@ -3,17 +3,11 @@ package moe.shizuku.manager.shell
 import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
-import android.view.View
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import moe.shizuku.manager.Helps
-import moe.shizuku.manager.R
 import moe.shizuku.manager.app.AppBarActivity
-import moe.shizuku.manager.databinding.TerminalTutorialActivityBinding
-import moe.shizuku.manager.ktx.toHtml
 import moe.shizuku.manager.utils.CustomTabsHelper
-import rikka.html.text.HtmlCompat
-import rikka.insets.*
-import kotlin.math.roundToInt
 
 class ShellTutorialActivity : AppBarActivity() {
 
@@ -61,49 +55,14 @@ class ShellTutorialActivity : AppBarActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = TerminalTutorialActivityBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        binding.content.apply {
-            setInitialPadding(
-                initialPaddingLeft,
-                initialPaddingTop + (resources.displayMetrics.density * 8).roundToInt(),
-                initialPaddingRight,
-                initialPaddingBottom
+        setContent {
+            ShellTutorialComposeScreen(
+                shName = SH_NAME,
+                dexName = DEX_NAME,
+                onNavigateUp = { finish() },
+                onExportFiles = { openDocumentsTree.launch(null) },
+                onOpenGuide = { CustomTabsHelper.launchUrlOrCopy(this, Helps.RISH.get()) }
             )
-        }
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        binding.apply {
-            val shName = "<font face=\"monospace\">$SH_NAME</font>"
-            val dexName = "<font face=\"monospace\">$DEX_NAME</font>"
-
-            summary.text =
-                getString(R.string.rish_description, shName).toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
-
-            text1.text = getString(R.string.terminal_tutorial_1, shName, dexName).toHtml()
-
-            text2.text = getString(R.string.terminal_tutorial_2, shName).toHtml()
-            summary2.text = getString(
-                R.string.terminal_tutorial_2_description,
-                "Termux",
-                "<font face=\"monospace\">PKG</font>",
-                "<font face=\"monospace\">com.termux</font>",
-                "<font face=\"monospace\">com.termux</font>",
-            ).toHtml()
-
-            text3.text = getString(
-                R.string.terminal_tutorial_3,
-                "<font face=\"monospace\">sh $SH_NAME</font>",
-            ).toHtml()
-            summary3.text = getString(
-                R.string.terminal_tutorial_3_description,
-                shName, "<font face=\"monospace\">PATH</font>"
-            ).toHtml()
-
-            button1.setOnClickListener { openDocumentsTree.launch(null) }
-            button2.setOnClickListener { v: View -> CustomTabsHelper.launchUrlOrCopy(v.context, Helps.RISH.get()) }
         }
     }
 }

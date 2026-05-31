@@ -18,18 +18,22 @@
         app:borderTopVisibility="whenTop"
         app:fitsSystemWindowsInsets="top|bottom">
 
-        <TextView
-            android:id="@android:id/text1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="monospace"
-            android:paddingStart="@dimen/list_item_padding"
-            android:paddingTop="16dp"
-            android:paddingEnd="@dimen/list_item_padding"
-            android:paddingBottom="16dp"
-            android:textColor="?android:textColorPrimary"
-            android:textIsSelectable="true"
-            android:textSize="12sp" />
+        <com.google.android.material.card.MaterialCardView
+            style="@style/MonoOutputCard"
+            android:layout_marginStart="@dimen/rd_activity_horizontal_margin"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="@dimen/rd_activity_horizontal_margin"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@android:id/text1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textColor="?colorOnSurface"
+                android:textIsSelectable="true"
+                android:textSize="12sp" />
+        </com.google.android.material.card.MaterialCardView>
 
     </rikka.widget.borderview.BorderNestedScrollView>
 

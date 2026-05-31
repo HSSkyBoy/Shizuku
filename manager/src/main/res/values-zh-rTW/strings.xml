@@ -29,7 +29,7 @@
     <string name="dialog_requesting_legacy_button_open_shizuku">開啟 Shizuku</string>
     <string name="action_about">關於</string>
     <string name="about_view_source_code"><![CDATA[在 %s 檢視原始碼]]></string>
-    <string name="about_follow_channel"><![CDATA[關注 NPCN 頻道 <a href="https://t.me/np_nbcn">t.me/np_nbcn</a>]]></string>
+    <string name="about_follow_channel"><![CDATA[關注 NPCN 頻道 ]]></string>
     <string name="settings_title">設定</string>
     <string name="start_with_root_failed">未授予 Root 權限或是該裝置沒有 Root，因此無法啟動服務。</string>
     <string name="notification_channel_service_status">服務啟動狀態</string>

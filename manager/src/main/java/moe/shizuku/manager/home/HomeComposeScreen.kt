@@ -219,7 +219,7 @@ private fun HomeScreenContent(
                             url = "https://github.com/HSSkyBoy/Shizuku"
                         )
                         LinkRow(
-                            label = plainText(context.getString(R.string.about_follow_channel)),
+                            label = plainText(context.getString(R.string.about_follow_channel, "t.me/np_nbcn")),
                             url = "https://t.me/np_nbcn"
                         )
                     }

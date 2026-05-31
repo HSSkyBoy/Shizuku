@@ -10,27 +10,33 @@
     android:paddingStart="?android:dialogPreferredPadding"
     android:paddingEnd="?android:dialogPreferredPadding">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <com.google.android.material.card.MaterialCardView
+        style="@style/DialogScrollCard"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
-        android:orientation="vertical">
+        android:layout_marginBottom="8dp">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?textAppearanceBodyMedium"
-            android:text="@string/dialog_adb_discovery_message" />
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?textAppearanceBodyMedium"
-            android:layout_marginTop="16sp"
-            android:textStyle="bold"
-            android:text="@string/dialog_adb_discovery_message_toggle_wireless_debugging" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_adb_discovery_message"
+                android:textAppearance="?textAppearanceBodyMedium"
+                android:textColor="?colorOnSurface" />
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/dialog_adb_discovery_message_toggle_wireless_debugging"
+                android:textAppearance="?textAppearanceBodyMedium"
+                android:textColor="?colorOnSurfaceVariant"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </ScrollView>

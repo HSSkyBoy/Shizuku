@@ -24,7 +24,7 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/notification"
-            style="@style/FilledCard"
+            style="@style/TutorialCalloutCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp">
@@ -32,18 +32,17 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="-8dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="2dp"
                 android:importantForAccessibility="no"
                 android:src="@drawable/ic_outline_notifications_active_24"
-                android:tint="?colorOnSecondaryContainer"
+                android:tint="?colorOnSurfaceVariant"
                 android:tintMode="src_in" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="36dp"
+                android:layout_marginStart="18dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -52,7 +51,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/adb_pairing_tutorial_content_notification"
                     android:textAppearance="?textAppearanceBodyMedium"
-                    android:textColor="?colorOnSecondaryContainer" />
+                    android:textColor="?colorOnSurface" />
 
             </LinearLayout>
 
@@ -60,17 +59,15 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/notification_disabled"
-            style="@style/FilledCard"
+            style="@style/TutorialErrorCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:cardBackgroundColor="?colorErrorContainer">
+            android:layout_marginTop="8dp">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="-8dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="2dp"
                 android:importantForAccessibility="no"
                 android:src="@drawable/ic_outline_info_24"
                 android:tint="?colorOnErrorContainer"
@@ -80,7 +77,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="36dp"
+                android:layout_marginStart="18dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -96,7 +93,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:layout_marginBottom="-8dp"
                     android:text="@string/notification_settings"
                     android:textColor="?colorOnError"
                     app:backgroundTint="?colorError"
@@ -111,35 +107,27 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/network"
-            style="@style/FilledCard"
+            style="@style/TutorialCalloutCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:background="?outlineButtonBackground"
             android:clipChildren="false"
-            android:clipToPadding="false"
-            android:foreground="?outlineButtonForeground"
-            android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp">
+            android:clipToPadding="false">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="-8dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="2dp"
                 android:importantForAccessibility="no"
                 android:src="@drawable/ic_help_outline_24dp"
-                android:tint="?colorOnSecondaryContainer"
+                android:tint="?colorOnSurfaceVariant"
                 android:tintMode="src_in" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="36dp"
+                android:layout_marginStart="18dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -149,7 +137,7 @@
                     android:duplicateParentState="true"
                     android:text="@string/adb_pairing_tutorial_content_network"
                     android:textAppearance="?textAppearanceBodyMedium"
-                    android:textColor="?colorOnSecondaryContainer" />
+                    android:textColor="?colorOnSurface" />
 
                 <TextView
                     style="@style/TerminalTutorialText"
@@ -160,7 +148,7 @@
                     android:fontFamily="sans-serif-medium"
                     android:text="@string/adb_pairing_tutorial_content_network_limation_not_foreground"
                     android:textAppearance="?textAppearanceBodyMedium"
-                    android:textColor="?colorOnSecondaryContainer" />
+                    android:textColor="?colorOnSurfaceVariant" />
 
             </LinearLayout>
 
@@ -168,17 +156,15 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/miui"
-            style="@style/FilledCard"
+            style="@style/TutorialErrorCard"
             android:layout_marginTop="8dp"
             android:visibility="gone"
-            app:cardBackgroundColor="?colorErrorContainer"
             tools:visibility="visible">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="-8dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="2dp"
                 android:importantForAccessibility="no"
                 android:src="@drawable/ic_warning_24"
                 android:tint="?colorOnErrorContainer"
@@ -188,7 +174,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="36dp"
+                android:layout_marginStart="18dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -219,55 +205,68 @@
             android:id="@+id/step1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:orientation="horizontal">
 
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="8dp"
-                android:importantForAccessibility="no"
-                android:padding="4dp"
-                android:src="@drawable/ic_numeric_1_circle_outline_24"
-                android:tint="?android:textColorSecondary"
-                android:tintMode="src_in" />
+            <com.google.android.material.card.MaterialCardView
+                style="@style/TerminalStepCard">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_weight="1"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/TerminalTutorialText"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/adb_pairing_tutorial_content_steps" />
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:gravity="top"
+                    android:orientation="horizontal">
 
-                <TextView
-                    style="@style/TerminalTutorialText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8sp"
-                    android:text="@string/adb_pairing_tutorial_content_left_is_clickable"
-                    android:textColor="?colorError" />
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:importantForAccessibility="no"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_numeric_1_circle_outline_24"
+                        android:tint="?colorOnSurfaceVariant"
+                        android:tintMode="src_in" />
 
-                <Button
-                    android:id="@+id/developer_options"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="-8dp"
-                    android:text="@string/development_settings"
-                    app:icon="@drawable/ic_outline_open_in_new_24"
-                    app:iconPadding="16dp" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_weight="1"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
+                        android:orientation="vertical">
 
-            </LinearLayout>
+                        <TextView
+                            style="@style/TerminalTutorialText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/adb_pairing_tutorial_content_steps"
+                            android:textAppearance="?textAppearanceTitleMedium"
+                            android:textColor="?colorOnSurface" />
+
+                        <TextView
+                            style="@style/TerminalTutorialText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/adb_pairing_tutorial_content_left_is_clickable"
+                            android:textColor="?colorError" />
+
+                        <Button
+                            android:id="@+id/developer_options"
+                            style="@style/CardButton.Primary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/development_settings"
+                            app:icon="@drawable/ic_outline_open_in_new_24"
+                            app:iconPadding="16dp" />
+
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 
@@ -275,33 +274,44 @@
             android:id="@+id/step2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
             android:orientation="horizontal">
 
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="8dp"
-                android:importantForAccessibility="no"
-                android:padding="4dp"
-                android:src="@drawable/ic_numeric_2_circle_outline_24"
-                android:tint="?android:textColorSecondary"
-                android:tintMode="src_in" />
+            <com.google.android.material.card.MaterialCardView
+                style="@style/TerminalStepCard">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/TerminalTutorialText"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/adb_pairing_tutorial_content_enter_pairing_code" />
+                    android:gravity="top"
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:importantForAccessibility="no"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_numeric_2_circle_outline_24"
+                        android:tint="?colorOnSurfaceVariant"
+                        android:tintMode="src_in" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/TerminalTutorialText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/adb_pairing_tutorial_content_enter_pairing_code"
+                            android:textAppearance="?textAppearanceTitleMedium"
+                            android:textColor="?colorOnSurface" />
+
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 
@@ -309,33 +319,44 @@
             android:id="@+id/step3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
             android:orientation="horizontal">
 
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="8dp"
-                android:importantForAccessibility="no"
-                android:padding="4dp"
-                android:src="@drawable/ic_numeric_3_circle_outline_24"
-                android:tint="?android:textColorSecondary"
-                android:tintMode="src_in" />
+            <com.google.android.material.card.MaterialCardView
+                style="@style/TerminalStepCard">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/TerminalTutorialText"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/adb_pairing_tutorial_content_finish" />
+                    android:gravity="top"
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:importantForAccessibility="no"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_numeric_3_circle_outline_24"
+                        android:tint="?colorOnSurfaceVariant"
+                        android:tintMode="src_in" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/TerminalTutorialText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/adb_pairing_tutorial_content_finish"
+                            android:textAppearance="?textAppearanceTitleMedium"
+                            android:textColor="?colorOnSurface" />
+
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 
