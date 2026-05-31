@@ -8,6 +8,7 @@ pluginManagement {
         id("com.android.application") version "8.10.1"
         id("com.android.library") version "8.10.1"
         id("org.jetbrains.kotlin.android") version "2.1.21"
+        id("org.jetbrains.kotlin.plugin.compose") version "2.1.21"
         id("dev.rikka.tools.autoresconfig") version "1.2.2"
         id("dev.rikka.tools.materialthemebuilder") version "1.5.1"
         id("dev.rikka.tools.refine") version "4.4.0"
@@ -36,6 +37,18 @@ dependencyResolutionManagement {
             library('refine-runtime', 'dev.rikka.tools.refine', 'runtime').versionRef('refine')
             library('refine-annotation', 'dev.rikka.tools.refine', 'annotation').versionRef('refine')
             library('refine-annotation-processor', 'dev.rikka.tools.refine', 'annotation-processor').versionRef('refine')
+
+            version('androidx-annotation', '1.8.2')
+            library('androidx-annotation', 'androidx.annotation', 'annotation').versionRef('androidx-annotation')
+
+            version('androidx-core', '1.13.1')
+            library('androidx-core', 'androidx.core', 'core').versionRef('androidx-core')
+
+            version('parcelablelist', '2.0.1')
+            library('parcelablelist', 'dev.rikka.rikkax.parcelablelist', 'parcelablelist').versionRef('parcelablelist')
+
+            version('libcxx', '27.0.12077973')
+            library('libcxx', 'org.lsposed.libcxx', 'libcxx').versionRef('libcxx')
         }
     }
 }

@@ -7,46 +7,112 @@
         <item name="android:duplicateParentState">true</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">16dp</item>
-        <item name="android:paddingEnd">16dp</item>
-        <item name="android:paddingTop">20dp</item>
-        <item name="android:paddingBottom">20dp</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+        <item name="android:paddingTop">22dp</item>
+        <item name="android:paddingBottom">22dp</item>
     </style>
 
     <style name="Card.Light" />
 
-    <style name="CardButton" parent="Widget.Material3.Button">
+    <style name="CardButton" parent="Widget.Material3.Button.TonalButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="iconPadding">12dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="iconPadding">10dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="cornerRadius">20dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+    </style>
+
+    <style name="CardButton.Primary" parent="CardButton">
+        <item name="android:textColor">?colorOnPrimary</item>
+        <item name="backgroundTint">?colorPrimary</item>
+        <item name="iconTint">?colorOnPrimary</item>
+    </style>
+
+    <style name="CardButton.Secondary" parent="CardButton">
+        <item name="android:textColor">?colorOnSecondaryContainer</item>
+        <item name="backgroundTint">?colorSecondaryContainer</item>
+        <item name="iconTint">?colorOnSecondaryContainer</item>
+    </style>
+
+    <style name="CardButton.Tertiary" parent="CardButton">
+        <item name="android:textColor">?colorOnTertiaryContainer</item>
+        <item name="backgroundTint">?colorTertiaryContainer</item>
+        <item name="iconTint">?colorOnTertiaryContainer</item>
     </style>
 
     <style name="CardTitle">
-        <item name="android:textAppearance">?textAppearanceBodyLarge</item>
-        <item name="android:textColor">?android:textColorPrimary</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:lineSpacingExtra">1sp</item>
+        <item name="android:textAppearance">?textAppearanceTitleMedium</item>
+        <item name="android:textColor">?colorOnSurface</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:lineSpacingExtra">2dp</item>
     </style>
 
     <style name="CardSummary">
         <item name="android:textAppearance">?textAppearanceBodyMedium</item>
-        <item name="android:textColor">?android:textColorSecondary</item>
-        <item name="android:layout_marginTop">4sp</item>
+        <item name="android:textColor">?colorOnSurfaceVariant</item>
+        <item name="android:layout_marginTop">8dp</item>
     </style>
 
     <style name="CardContent">
-        <item name="android:textAppearance">?textAppearanceBodyMedium</item>
-        <item name="android:textColor">?android:textColorSecondary</item>
+        <item name="android:textAppearance">?textAppearanceBodyLarge</item>
+        <item name="android:textColor">?colorOnSurfaceVariant</item>
+        <item name="android:lineSpacingExtra">2dp</item>
     </style>
 
     <style name="CardIcon">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@drawable/shape_circle_icon_background</item>
-        <item name="android:tint">?colorOnPrimaryContainer</item>
+        <item name="android:tint">?colorOnTertiaryContainer</item>
         <item name="android:tintMode">src_in</item>
-        <item name="android:backgroundTint">?colorPrimaryContainer</item>
+        <item name="android:backgroundTint">?colorTertiaryContainer</item>
         <item name="android:backgroundTintMode">src_in</item>
+    </style>
+
+    <style name="Widget.Shizuku.HomeCard" parent="@style/Widget.Material3.CardView.Filled">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">-2dp</item>
+        <item name="android:layout_marginEnd">-2dp</item>
+        <item name="android:checkable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clipChildren">false</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="cardCornerRadius">32dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardBackgroundColor">@color/home_card_background_color</item>
+        <item name="strokeColor">?colorOutlineVariant</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="Widget.Shizuku.HomeToolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="titleTextColor">?colorOnSurface</item>
+        <item name="subtitleTextColor">?colorOnSurfaceVariant</item>
+        <item name="navigationIconTint">?colorOnSurface</item>
+    </style>
+
+    <style name="TextAppearance.Shizuku.ToolbarTitle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
+    <style name="TextAppearance.Shizuku.PreferenceTitle" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">?colorOnSurface</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="TextAppearance.Shizuku.PreferenceSummary" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">?colorOnSurfaceVariant</item>
+        <item name="android:lineSpacingExtra">1dp</item>
     </style>
 
     <style name="GrantPermissions" parent="@style/AppTheme">

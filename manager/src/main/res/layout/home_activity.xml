@@ -10,6 +10,7 @@
     android:paddingStart="@dimen/home_padding"
     android:paddingTop="?actionBarSize"
     android:paddingEnd="@dimen/home_padding"
+    android:paddingBottom="12dp"
     android:scrollbarStyle="insideOverlay"
     android:scrollbars="vertical"
     app:borderBottomVisibility="never"

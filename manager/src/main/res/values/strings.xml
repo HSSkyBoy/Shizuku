@@ -9,6 +9,8 @@
     <string name="home_status_service_not_running">%1$s is not running</string>
     <string name="home_status_service_version">Version %2$s, %1$s</string>
     <string name="home_status_service_version_update"><![CDATA[Version %2$s, %1$s<br>Start again to update to version %3$s]]></string>
+    <string name="service_user_root" translatable="false">root</string>
+    <string name="service_user_adb" translatable="false">adb</string>
 
     <!-- Home - Adb -->
     <string name="home_adb_title"><![CDATA[Start by connecting to a computer]]></string>
@@ -130,6 +132,7 @@ With %1$s, in any terminal app, you can connect to and interact with the shell r
     <!-- About -->
     <string name="action_about">About</string>
     <string name="about_view_source_code"><![CDATA[View source code at %s]]></string>
+    <string name="about_follow_channel"><![CDATA[Follow NPCN at <a href="https://t.me/np_nbcn">t.me/np_nbcn</a>]]></string>
 
     <!-- Stop -->
     <string name="action_stop">Stop Shizuku</string>
@@ -177,6 +180,13 @@ With %1$s, in any terminal app, you can connect to and interact with the shell r
     <string name="dialog_cannot_open_browser_title">Can\'t start browser</string>
     <string name="toast_copied_to_clipboard">%s\nhas been copied to clipboard.</string>
     <string name="toast_copied_to_clipboard_with_text"><![CDATA[<b>%s</b> has been copied to clipboard.]]></string>
+    <string name="action_open">Open</string>
+    <string name="action_back">Back</string>
+    <string name="more_options">More options</string>
+    <string name="home_status_compose_not_running_summary">Connect again to restore privileged access.</string>
+    <string name="settings_translation_contributors_fallback">Community maintained</string>
+    <string name="settings_use_system_color_summary">Follow Material You dynamic color when available.</string>
+    <string name="settings_tcpip_port_disabled">Disabled</string>
 
     <!-- Messages for legacy -->
     <string name="dialog_legacy_not_support_title">%1$s does not support modern Shizuku</string>

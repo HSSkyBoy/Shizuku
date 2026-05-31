@@ -2,6 +2,6 @@
 <resources>
     <dimen name="list_padding">24dp</dimen>
 
-    <dimen name="home_padding">8dp</dimen>
+    <dimen name="home_padding">12dp</dimen>
 
 </resources>

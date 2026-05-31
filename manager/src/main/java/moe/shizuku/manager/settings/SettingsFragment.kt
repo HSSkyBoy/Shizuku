@@ -285,7 +285,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val recyclerView =
             super.onCreateRecyclerView(inflater, parent, savedInstanceState) as BorderRecyclerView
         recyclerView.fixEdgeEffect()
-        recyclerView.addEdgeSpacing(bottom = 8f, unit = TypedValue.COMPLEX_UNIT_DIP)
+        recyclerView.addEdgeSpacing(top = 16f, bottom = 16f, unit = TypedValue.COMPLEX_UNIT_DIP)
 
         val lp = recyclerView.layoutParams
         if (lp is FrameLayout.LayoutParams) {

@@ -2,10 +2,16 @@
 <resources>
 
     <style name="Base.AppTheme.Light" parent="Theme.Material3.Light.Shizuku">
-        <item name="android:statusBarColor">?android:colorBackground</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
 
         <item name="appColorPrimary">@color/app_color_light</item>
         <item name="homeCardStyle">@style/Card.Light</item>
+        <item name="materialCardViewFilledStyle">@style/Widget.Shizuku.HomeCard</item>
+        <item name="toolbarStyle">@style/Widget.Shizuku.HomeToolbar</item>
+        <item name="preferenceTheme">@style/ThemeOverlay.Shizuku.Preference</item>
 
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
@@ -16,8 +22,16 @@
     <style name="Theme.Light" parent="Base.AppTheme.Light" />
 
     <style name="Base.AppTheme" parent="Theme.Material3.Dark.Shizuku">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
         <item name="appColorPrimary">@color/app_color_dark</item>
         <item name="homeCardStyle">@style/Card</item>
+        <item name="materialCardViewFilledStyle">@style/Widget.Shizuku.HomeCard</item>
+        <item name="toolbarStyle">@style/Widget.Shizuku.HomeToolbar</item>
+        <item name="preferenceTheme">@style/ThemeOverlay.Shizuku.Preference</item>
 
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>

@@ -7,16 +7,16 @@
 
     <dimen name="list_padding">16dp</dimen>
 
-    <dimen name="toolbar_content_padding_start">16dp</dimen>
+    <dimen name="toolbar_content_padding_start">24dp</dimen>
     <dimen name="toolbar_content_padding_start_with_navigation">72dp</dimen>
-    <dimen name="toolbar_padding_end">0dp</dimen>
+    <dimen name="toolbar_padding_end">8dp</dimen>
 
-    <dimen name="home_padding">0dp</dimen>
+    <dimen name="home_padding">4dp</dimen>
 
-    <dimen name="home_margin">4dp</dimen>
+    <dimen name="home_margin">8dp</dimen>
 
     <dimen name="default_app_icon_size">40dp</dimen>
 
-    <dimen name="home_icon_padding">16dp</dimen>
+    <dimen name="home_icon_padding">18dp</dimen>
 
 </resources>

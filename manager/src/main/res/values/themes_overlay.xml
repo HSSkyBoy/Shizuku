@@ -13,4 +13,30 @@
 
     <style name="ThemeOverlay.DynamicColors.Dark" parent="ThemeOverlay.Material3.DynamicColors.Dark.Rikka"/>
 
+    <style name="ThemeOverlay.Shizuku" />
+
+    <style name="ThemeOverlay.Shizuku.Preference">
+        <item name="preferenceFragmentCompatStyle">@style/Widget.Shizuku.PreferenceFragment</item>
+        <item name="preferenceStyle">@style/Widget.Shizuku.Preference</item>
+        <item name="switchPreferenceCompatStyle">@style/Widget.Shizuku.Preference.Switch</item>
+    </style>
+
+    <style name="Widget.Shizuku.PreferenceFragment" parent="@style/PreferenceFragment.Material">
+        <item name="android:layout">@layout/preference_recyclerview</item>
+    </style>
+
+    <style name="Widget.Shizuku.Preference" parent="@style/Preference.Material">
+        <item name="android:singleLineTitle">false</item>
+        <item name="android:minHeight">62dp</item>
+        <item name="android:iconSpaceReserved">false</item>
+        <item name="titleTextAppearance">@style/TextAppearance.Shizuku.PreferenceTitle</item>
+    </style>
+
+    <style name="Widget.Shizuku.Preference.Switch" parent="@style/Preference.SwitchPreference.Material">
+        <item name="android:singleLineTitle">false</item>
+        <item name="android:minHeight">62dp</item>
+        <item name="android:iconSpaceReserved">false</item>
+        <item name="titleTextAppearance">@style/TextAppearance.Shizuku.PreferenceTitle</item>
+    </style>
+
 </resources>

@@ -53,11 +53,11 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@android:id/button1"
-        style="@style/CardButton"
+        style="@style/CardButton.Primary"
         android:text="@string/home_adb_button_view_help"
+        app:icon="@drawable/ic_outline_open_in_new_24"
         android:textColor="?colorOnError"
         app:backgroundTint="?colorError"
-        app:icon="@drawable/ic_outline_open_in_new_24"
         app:iconTint="?colorOnError" />
 
 

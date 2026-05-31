@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:duplicateParentState="true"
-            android:lineSpacingExtra="2dp"
+            android:lineSpacingExtra="3dp"
             tools:text="Running (version 10)" />
 
         <TextView

@@ -7,21 +7,29 @@
 
         <rikka.material.preference.MaterialSwitchPreference
             android:key="start_on_boot"
+            android:icon="@drawable/ic_root_24dp"
+            android:iconSpaceReserved="false"
             android:summary="@string/settings_start_on_boot_summary"
             android:title="@string/settings_start_on_boot" />
 
         <rikka.material.preference.MaterialSwitchPreference
             android:key="start_on_boot_wireless"
+            android:icon="@drawable/ic_wadb_24"
+            android:iconSpaceReserved="false"
             android:summary="@string/settings_start_on_boot_wireless_summary"
             android:title="@string/settings_start_on_boot_wireless" />
 
         <rikka.material.preference.MaterialSwitchPreference
             android:key="adb_root"
+            android:icon="@drawable/ic_adb_24dp"
+            android:iconSpaceReserved="false"
             android:summary="@string/settings_adb_root_summary"
             android:title="@string/settings_adb_root" />
 
         <EditTextPreference
             android:key="tcpip_port"
+            android:icon="@drawable/ic_code_24dp"
+            android:iconSpaceReserved="false"
             android:summary="@string/settings_tcpip_port_summary"
             android:title="@string/settings_tcpip_port" />
 
@@ -32,16 +40,22 @@
         <rikka.preference.SimpleMenuPreference
             android:defaultValue="SYSTEM"
             android:key="language"
+            android:icon="@drawable/ic_outline_translate_24"
+            android:iconSpaceReserved="false"
             android:summary="%s"
             android:title="@string/settings_language" />
 
         <Preference
             style="?preferenceInformationStyle"
             android:key="translation_contributors"
+            android:icon="@drawable/ic_outline_info_24"
+            android:iconSpaceReserved="false"
             android:title="@string/settings_translation_contributors" />
 
         <Preference
             android:key="translation"
+            android:icon="@drawable/ic_outline_open_in_new_24"
+            android:iconSpaceReserved="false"
             android:title="@string/settings_translation" />
 
     </PreferenceCategory>
@@ -54,16 +68,22 @@
             android:entries="@array/night_mode"
             android:entryValues="@array/night_mode_value"
             android:key="night_mode"
+            android:icon="@drawable/ic_outline_dark_mode_24"
+            android:iconSpaceReserved="false"
             android:summary="%s"
             android:title="@string/dark_theme" />
 
         <rikka.material.preference.MaterialSwitchPreference
             android:key="black_night_theme"
+            android:icon="@drawable/ic_outline_dark_mode_24"
+            android:iconSpaceReserved="false"
             android:summary="@string/settings_black_night_theme_summary"
             android:title="@string/settings_black_night_theme" />
 
         <rikka.material.preference.MaterialSwitchPreference
             android:key="use_system_color"
+            android:icon="@drawable/ic_system_icon"
+            android:iconSpaceReserved="false"
             android:title="@string/settings_use_system_color" />
 
     </PreferenceCategory>

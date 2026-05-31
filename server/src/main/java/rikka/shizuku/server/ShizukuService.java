@@ -587,4 +587,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     public boolean isHidden(int uid) throws RemoteException {
         return false;
     }
+
+    @Override
+    public int[] getHiddenUids() throws RemoteException {
+        return new int[0];
+    }
 }

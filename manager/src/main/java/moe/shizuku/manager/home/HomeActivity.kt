@@ -5,29 +5,30 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Process
 import android.text.method.LinkMovementMethod
-import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import moe.shizuku.manager.Helps
 import moe.shizuku.manager.R
 import moe.shizuku.manager.ShizukuSettings
-import moe.shizuku.manager.app.AppBarActivity
+import moe.shizuku.manager.app.AppActivity
 import moe.shizuku.manager.databinding.AboutDialogBinding
-import moe.shizuku.manager.databinding.HomeActivityBinding
 import moe.shizuku.manager.ktx.toHtml
+import moe.shizuku.manager.management.ApplicationManagementActivity
 import moe.shizuku.manager.management.appsViewModel
+import moe.shizuku.manager.shell.ShellTutorialActivity
 import moe.shizuku.manager.settings.SettingsActivity
+import moe.shizuku.manager.starter.Starter
+import moe.shizuku.manager.starter.StarterActivity
 import moe.shizuku.manager.utils.AppIconCache
-import rikka.core.ktx.unsafeLazy
+import moe.shizuku.manager.utils.CustomTabsHelper
 import rikka.lifecycle.Status
 import rikka.lifecycle.viewModels
-import rikka.recyclerview.addEdgeSpacing
-import rikka.recyclerview.addItemSpacing
-import rikka.recyclerview.fixEdgeEffect
 import rikka.shizuku.Shizuku
 
-abstract class HomeActivity : AppBarActivity() {
+abstract class HomeActivity : AppActivity() {
 
     private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
         checkServerStatus()
@@ -40,32 +41,65 @@ abstract class HomeActivity : AppBarActivity() {
 
     private val homeModel by viewModels { HomeViewModel() }
     private val appsModel by appsViewModel()
-    private val adapter by unsafeLazy { HomeAdapter(homeModel, appsModel) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = HomeActivityBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
         homeModel.serviceStatus.observe(this) {
             if (it.status == Status.SUCCESS) {
-                val status = homeModel.serviceStatus.value?.data ?: return@observe
-                adapter.updateData()
+                val status = it.data ?: return@observe
                 ShizukuSettings.setLastLaunchMode(if (status.uid == 0) ShizukuSettings.LaunchMethod.ROOT else ShizukuSettings.LaunchMethod.ADB)
             }
         }
-        appsModel.grantedCount.observe(this) {
-            if (it.status == Status.SUCCESS) {
-                adapter.updateData()
-            }
-        }
+        appsModel.grantedCount.observe(this) { }
 
-        val recyclerView = binding.list
-        recyclerView.adapter = adapter
-        recyclerView.fixEdgeEffect()
-        recyclerView.addItemSpacing(top = 4f, bottom = 4f, unit = TypedValue.COMPLEX_UNIT_DIP)
-        recyclerView.addEdgeSpacing(top = 4f, bottom = 4f, left = 16f, right = 16f, unit = TypedValue.COMPLEX_UNIT_DIP)
+        setContent {
+            val serviceStatus by homeModel.serviceStatus.observeAsState()
+            val grantedCount by appsModel.grantedCount.observeAsState()
+            HomeComposeScreen(
+                status = serviceStatus?.data,
+                grantedCount = grantedCount?.data,
+                onOpenSettings = {
+                    startActivity(Intent(this, SettingsActivity::class.java))
+                },
+                onOpenAbout = { showAboutDialog() },
+                onStopService = { showStopDialog() },
+                onManageApps = {
+                    startActivity(Intent(this, ApplicationManagementActivity::class.java))
+                },
+                onOpenTerminal = {
+                    startActivity(Intent(this, ShellTutorialActivity::class.java))
+                },
+                onStartRoot = { startRootService() },
+                onRestartRoot = { startRootService() },
+                onShowAdbCommand = { showAdbCommandDialog() },
+                onOpenWirelessGuide = {
+                    CustomTabsHelper.launchUrlOrCopy(this, Helps.ADB_ANDROID11.get())
+                },
+                onPairWireless = {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                        if (display?.displayId ?: 0 > 0) {
+                            AdbPairDialogFragment().show(supportFragmentManager)
+                        } else {
+                            startActivity(Intent(this, moe.shizuku.manager.adb.AdbPairingTutorialActivity::class.java))
+                        }
+                    }
+                },
+                onStartWirelessAdb = {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                        AdbDialogFragment().show(supportFragmentManager)
+                    } else {
+                        WadbNotEnabledDialogFragment().show(supportFragmentManager)
+                    }
+                },
+                onOpenAdbPermissionHelp = {
+                    CustomTabsHelper.launchUrlOrCopy(this, Helps.ADB_PERMISSION.get())
+                },
+                onOpenLearnMore = {
+                    CustomTabsHelper.launchUrlOrCopy(this, Helps.HOME.get())
+                }
+            )
+        }
 
         Shizuku.addBinderReceivedListenerSticky(binderReceivedListener)
         Shizuku.addBinderDeadListener(binderDeadListener)
@@ -86,56 +120,67 @@ abstract class HomeActivity : AppBarActivity() {
         Shizuku.removeBinderDeadListener(binderDeadListener)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-        return true
+    private fun showAboutDialog() {
+        val binding = AboutDialogBinding.inflate(LayoutInflater.from(this), null, false)
+        binding.sourceCode.movementMethod = LinkMovementMethod.getInstance()
+        binding.sourceCode.text = getString(
+            R.string.about_view_source_code,
+            "<b><a href=\"https://github.com/HSSkyBoy/Shizuku\">GitHub</a></b>"
+        ).toHtml()
+        binding.followChannel.movementMethod = LinkMovementMethod.getInstance()
+        binding.followChannel.text = getString(
+            R.string.about_follow_channel
+        ).toHtml()
+        binding.icon.setImageBitmap(
+            AppIconCache.getOrLoadBitmap(
+                this,
+                applicationInfo,
+                Process.myUid() / 100000,
+                resources.getDimensionPixelOffset(R.dimen.default_app_icon_size)
+            )
+        )
+        binding.versionName.text = packageManager.getPackageInfo(packageName, 0).versionName
+        MaterialAlertDialogBuilder(this)
+            .setView(binding.root)
+            .show()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_about -> {
-                val binding = AboutDialogBinding.inflate(LayoutInflater.from(this), null, false)
-                binding.sourceCode.movementMethod = LinkMovementMethod.getInstance()
-                binding.sourceCode.text = getString(
-                    R.string.about_view_source_code,
-                    "<b><a href=\"https://github.com/HSSkyBoy/Shizuku\">GitHub</a></b>"
-                ).toHtml()
-                binding.icon.setImageBitmap(
-                    AppIconCache.getOrLoadBitmap(
-                        this,
-                        applicationInfo,
-                        Process.myUid() / 100000,
-                        resources.getDimensionPixelOffset(R.dimen.default_app_icon_size)
-                    )
-                )
-                binding.versionName.text = packageManager.getPackageInfo(packageName, 0).versionName
-                MaterialAlertDialogBuilder(this)
-                    .setView(binding.root)
-                    .show()
-                true
-            }
-            R.id.action_stop -> {
-                if (!Shizuku.pingBinder()) {
-                    return true
+    private fun showStopDialog() {
+        if (!Shizuku.pingBinder()) return
+        MaterialAlertDialogBuilder(this)
+            .setMessage(R.string.dialog_stop_message)
+            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
+                try {
+                    Shizuku.exit()
+                } catch (_: Throwable) {
                 }
-                MaterialAlertDialogBuilder(this)
-                    .setMessage(R.string.dialog_stop_message)
-                    .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
-                        try {
-                            Shizuku.exit()
-                        } catch (e: Throwable) {
-                        }
-                    }
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .show()
-                true
             }
-            R.id.action_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
-                true
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun startRootService() {
+        startActivity(Intent(this, StarterActivity::class.java).apply {
+            putExtra(StarterActivity.EXTRA_IS_ROOT, true)
+        })
+    }
+
+    private fun showAdbCommandDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.home_adb_button_view_command)
+            .setMessage(getString(R.string.home_adb_dialog_view_command_message, Starter.adbCommand).toHtml())
+            .setPositiveButton(R.string.home_adb_dialog_view_command_copy_button) { _, _ ->
+                rikka.core.util.ClipboardUtils.put(this, Starter.adbCommand)
             }
-            else -> super.onOptionsItemSelected(item)
-        }
+            .setNegativeButton(android.R.string.cancel, null)
+            .setNeutralButton(R.string.home_adb_dialog_view_command_button_send) { _, _ ->
+                var intent = Intent(Intent.ACTION_SEND)
+                intent.type = "text/plain"
+                intent.putExtra(Intent.EXTRA_TEXT, Starter.adbCommand)
+                intent = Intent.createChooser(intent, getString(R.string.home_adb_dialog_view_command_button_send))
+                startActivity(intent)
+            }
+            .show()
     }
 
 }

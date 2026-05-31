@@ -5,6 +5,7 @@ import java.nio.file.Paths
 plugins {
     id('com.android.application')
     id('org.jetbrains.kotlin.android')
+    id('org.jetbrains.kotlin.plugin.compose')
     id('dev.rikka.tools.refine')
     id('dev.rikka.tools.autoresconfig')
     id('dev.rikka.tools.materialthemebuilder')
@@ -24,6 +25,7 @@ android {
     }
     buildFeatures {
         buildConfig true
+        compose true
         viewBinding true
         prefab true
     }
@@ -158,6 +160,14 @@ dependencies {
     compileOnly libs.hidden.stub
 
     implementation 'androidx.browser:browser:1.8.0'
+    implementation platform('androidx.compose:compose-bom:2024.09.03')
+    implementation 'androidx.activity:activity-compose:1.10.1'
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.material:material-icons-extended'
+    implementation 'androidx.compose.runtime:runtime-livedata'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
     implementation 'androidx.core:core-ktx:1.16.0'
     implementation 'androidx.fragment:fragment-ktx:1.8.7'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
