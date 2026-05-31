@@ -75,7 +75,7 @@
     <string name="dialog_adb_pairing_title">Parear com o dispositivo</string>
     <string name="adb_pairing">Pareamento</string>
     <string name="dialog_adb_port">Porta</string>
-    <string name="dialog_adb_invalid_port">A porta é um número inteiro que varia de 1 a 65535.</string>
+    <string name="dialog_adb_invalid_port">A porta é um número inteiro que varia de 10 a 65535.</string>
     <string name="dialog_adb_discovery_message">Por favor, ative \"Depuração via Wireless\" ou \"Depuração via Wi-Fi\" nas \"Opções do Desenvolvedor\". A Depuração via Wireless é, automaticamente, desativada ao trocar de rede.
 \n
 \nObserve, não desative \"Opções do Desenvolvedor\" ou \"Depuração via USB\", ou o Shizuku será interrompido.</string>

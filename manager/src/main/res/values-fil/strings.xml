@@ -63,7 +63,7 @@
     <string name="dialog_adb_pairing_discovery">Hinahanap ang serbisyo ng pagpapares</string>
     <string name="dialog_adb_pairing_title">Makipagpares sa device</string>
     <string name="adb_pairing">Pagpapares</string>
-    <string name="dialog_adb_invalid_port">Ang port ay isang integer mula 1 hanggang 65535.</string>
+    <string name="dialog_adb_invalid_port">Ang port ay isang integer mula 10 hanggang 65535.</string>
     <string name="dialog_adb_port">Port</string>
     <string name="dialog_adb_discovery_message_toggle_wireless_debugging">Mangyaring patayin at buksan ulit ang \"Wireless na pag-debug\" kung sige lang ito sa paghahanap.</string>
     <string name="dialog_adb_discovery_message">Buksan ang \"Wireless na pag-debug\" sa \"Mga opsyon ng developer\". Awtomatikong namamatay ang \"Wireless na pag-debug\" kapag may nagbago sa network.

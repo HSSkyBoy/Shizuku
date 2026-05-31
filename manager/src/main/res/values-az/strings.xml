@@ -106,7 +106,7 @@
     <string name="dialog_adb_pairing_discovery">Cütləşdirmə servisi axtarılır</string>
     <string name="dialog_adb_pairing_title">Cihaz ilə cütləşdir</string>
     <string name="adb_pairing">Cütləşmə</string>
-    <string name="dialog_adb_invalid_port">Port 1 ilə 65535 arasında dəyişən tam ədəddir.</string>
+    <string name="dialog_adb_invalid_port">Port 10 ilə 65535 arasında dəyişən tam ədəddir.</string>
     <string name="dialog_adb_port">Port</string>
     <string name="dialog_adb_discovery_message">Lütfən, \"Tərtibatçı seçimləri\"ndə \"Simsiz Debaq\" funksiyasını aktivləşdirin. Şəbəkə dəyişdikdə \"Simsiz Debaq\" avtomatik olaraq söndürülür.
 \n

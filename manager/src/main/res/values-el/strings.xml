@@ -6,7 +6,7 @@
     <string name="dialog_adb_pairing_discovery">Αναζήτηση για υπηρεσία σύζευξης</string>
     <string name="dialog_adb_pairing_title">Σύζευξη με συσκευή</string>
     <string name="adb_pairing">Σύζευξη</string>
-    <string name="dialog_adb_invalid_port">Η θύρα είναι ένας ακέραιος αριθμός μεταξύ 1 και 65535.</string>
+    <string name="dialog_adb_invalid_port">Η θύρα είναι ένας ακέραιος αριθμός μεταξύ 10 και 65535.</string>
     <string name="dialog_adb_discovery">Αναζήτηση για υπηρεσία ασύρματου εντοπισμού σφαλμάτων</string>
     <string name="home_wireless_adb_view_guide_button">Αναλυτικός οδηγός</string>
     <string name="home_wireless_adb_description_pre_11">Πριν από το Android 11, είναι απαραίτητη η σύνδεση με έναν υπολογιστή για την ενεργοποίηση του ασύρματου εντοπισμού σφαλμάτων.</string>

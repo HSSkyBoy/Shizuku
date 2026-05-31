@@ -59,7 +59,7 @@
     <string name="dialog_adb_pairing_title">與裝置配對</string>
     <string name="dialog_adb_pairing_paring_code">配對碼</string>
     <string name="starter">啟動程式</string>
-    <string name="dialog_adb_invalid_port">通訊埠號碼是一個 1 至 65535 的整數。</string>
+    <string name="dialog_adb_invalid_port">通訊埠號碼是一個 10 至 65535 的整數。</string>
     <string name="home_wireless_adb_title"><![CDATA[透過無線偵錯啟動]]></string>
     <string name="home_wireless_adb_description"><![CDATA[在 Android 11 或更高版本上，您可以直接從您的裝置啟用無線偵錯並啟動 Shizuku，無需連接到電腦。<p>請先查看分步驟指南。]]></string>
     <string name="action_stop">停止 Shizuku</string>

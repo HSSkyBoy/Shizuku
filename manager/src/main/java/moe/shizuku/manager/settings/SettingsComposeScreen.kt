@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -43,6 +44,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -58,6 +60,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.compose.ui.text.input.KeyboardType
 import moe.shizuku.manager.BuildConfig
 import moe.shizuku.manager.R
 import moe.shizuku.manager.ShizukuSettings
@@ -264,16 +267,59 @@ private fun SettingsScreenContent(
         }
 
         SettingsDialogState.TcpIpPort -> {
-            val port = ShizukuSettings.getPreferences().getString(TCPIP_PORT, "") ?: ""
+            var port by remember { mutableStateOf(ShizukuSettings.getPreferences().getString(TCPIP_PORT, "") ?: "") }
+            var errorText by remember { mutableStateOf<String?>(null) }
             AlertDialog(
                 onDismissRequest = { dialogState = null },
                 confirmButton = {
+                    TextButton(onClick = {
+                        val trimmed = port.trim()
+                        if (trimmed.isEmpty()) {
+                            ShizukuSettings.getPreferences().edit { putString(TCPIP_PORT, "") }
+                            dialogState = null
+                            onRecreateRequested()
+                            return@TextButton
+                        }
+                        val value = trimmed.toIntOrNull()
+                        if (value == null || value !in 10..65535) {
+                            errorText = context.getString(R.string.dialog_adb_invalid_port)
+                            return@TextButton
+                        }
+                        ShizukuSettings.getPreferences().edit { putString(TCPIP_PORT, trimmed) }
+                        dialogState = null
+                        onRecreateRequested()
+                    }) {
+                        Text(stringResource(android.R.string.ok))
+                    }
+                },
+                dismissButton = {
                     TextButton(onClick = { dialogState = null }) {
-                        Text(androidx.compose.ui.res.stringResource(android.R.string.ok))
+                        Text(stringResource(android.R.string.cancel))
                     }
                 },
                 title = { Text(context.getString(R.string.settings_tcpip_port)) },
-                text = { Text(if (port.isBlank()) context.getString(R.string.settings_tcpip_port_disabled) else port) }
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text(context.getString(R.string.settings_tcpip_port_summary))
+                        OutlinedTextField(
+                            value = port,
+                            onValueChange = {
+                                port = it.filter(Char::isDigit)
+                                errorText = null
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            placeholder = { Text(context.getString(R.string.settings_tcpip_port_disabled)) },
+                            isError = errorText != null,
+                            supportingText = {
+                                if (errorText != null) {
+                                    Text(errorText!!)
+                                }
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
+                    }
+                }
             )
         }
 

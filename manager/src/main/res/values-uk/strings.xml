@@ -57,7 +57,7 @@
 \n
 \nЗверніть увагу, не вимикайте \"Параметри розробника\" чи \"Налагодження USB\", інакше Shizuku буде зупинено.</string>
     <string name="dialog_adb_port">Порт</string>
-    <string name="dialog_adb_invalid_port">Порт – це ціле число від 1 до 65535.</string>
+    <string name="dialog_adb_invalid_port">Порт – це ціле число від 10 до 65535.</string>
     <string name="adb_pairing">Парування</string>
     <string name="dialog_adb_pairing_title">Спарувати з пристроєм</string>
     <string name="dialog_adb_pairing_discovery">Пошук сервісу парування</string>

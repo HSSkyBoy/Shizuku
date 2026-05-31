@@ -97,7 +97,7 @@
     <string name="dialog_wireless_adb_not_enabled">Le débogage sans fil n\'est pas activé.\nNote, avant Android 11, pour activer le débogage sans fil, la connexion à un ordinateur est requise.</string>
     <string name="cannot_connect_port">Impossible de se connecter au service de débogage sans fil.</string>
     <string name="dialog_adb_pairing_paring_code">Code d\'association</string>
-    <string name="dialog_adb_invalid_port">Le port est un entier compris entre 1 et 65535.</string>
+    <string name="dialog_adb_invalid_port">Le port est un entier compris entre 10 et 65535.</string>
     <string name="dialog_adb_port">Port</string>
     <string name="dialog_adb_discovery_message">Merci d\'activer \"Débogage sans fil\" dans les \"Options pour les développeurs\". Le paramètre \"Débogage sans fil\" est automatiquement désactivé quand la connexion réseau change.\n\nNote, ne pas désactiver les \"Options pour les développeurs\" ou le \"Débogage USB\", ou Shizuku sera arrêté.</string>
     <string name="dialog_adb_discovery">Recherche du service de débogage sans fil</string>

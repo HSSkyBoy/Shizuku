@@ -104,7 +104,7 @@
     <string name="dialog_adb_pairing_discovery">กำลังค้นหาบริการจับคู่</string>
     <string name="dialog_adb_pairing_title">จับคู่กับอุปกรณ์</string>
     <string name="adb_pairing">จับคู่</string>
-    <string name="dialog_adb_invalid_port">พอร์ตคือเลขจำนวนเต็ม ค่าตั้งแต่ 1 ถึง 65535</string>
+    <string name="dialog_adb_invalid_port">พอร์ตคือเลขจำนวนเต็ม ค่าตั้งแต่ 10 ถึง 65535</string>
     <string name="dialog_adb_port">พอร์ต</string>
     <string name="dialog_adb_discovery_message">โปรดเปิดใช้งาน \"การแก้ไขข้อบกพร่องผ่าน Wi-Fi\" ใน \"ตัวเลือกสำหรับนักพัฒนาแอป\" \"การแก้ไขข้อบกพร่องผ่าน Wi-Fi\" จะถูกปิดโดยอัตโนมัติเมื่อเปลี่ยนเครือข่าย
 \n

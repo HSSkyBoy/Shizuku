@@ -59,7 +59,7 @@
     <string name="dialog_adb_pairing_title">与设备配对</string>
     <string name="dialog_adb_pairing_paring_code">配对码</string>
     <string name="starter">启动程序</string>
-    <string name="dialog_adb_invalid_port">端口号是一个 1 至 65535 的整数。</string>
+    <string name="dialog_adb_invalid_port">端口号是一个 10 至 65535 的整数。</string>
     <string name="home_wireless_adb_title"><![CDATA[通过无线调试启动]]></string>
     <string name="home_wireless_adb_description"><![CDATA[在 Android 11 或更高版本上，您可以直接从您的设备启用无线调试并启动 Shizuku，无需连接到计算机。<p>请先查看分步骤指南。]]></string>
     <string name="action_stop">停止 Shizuku</string>

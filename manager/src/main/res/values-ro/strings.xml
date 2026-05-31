@@ -14,7 +14,7 @@
     <string name="home_wireless_adb_view_guide_button">Ghidul pas cu pas</string>
     <string name="dialog_adb_discovery">Se caută serviciul de depanare fără fir</string>
     <string name="dialog_adb_port">Port</string>
-    <string name="dialog_adb_invalid_port">Portul este un număr întreg cuprins între 1 și 65535.</string>
+    <string name="dialog_adb_invalid_port">Portul este un număr întreg cuprins între 10 și 65535.</string>
     <string name="dialog_adb_pairing_title">Asociază cu dispozitivul</string>
     <string name="dialog_adb_pairing_discovery">Se caută serviciul de asociere</string>
     <string name="paring_code_is_wrong">Codul de asociere este greșit.</string>

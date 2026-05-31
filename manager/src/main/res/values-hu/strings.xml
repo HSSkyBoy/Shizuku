@@ -25,7 +25,7 @@
     <string name="dialog_adb_discovery">Vezeték nélküli hibakereső szolgáltatás keresése</string>
     <string name="dialog_adb_discovery_message">Engedélyezze a \"Vezeték nélküli hibakeresés\"t a \"Fejlesztői lehetőségek\"nél. A \"Vezeték nélküli hibakeresés\" hálózatváltáskor auto. le van tiltva.\n\nMegj.: ne tiltsa le a \"Fejlesztői lehetőségek\"et vagy az \"USB hibakeresés\"t, ekkor a Shizuku le fog állni.</string>
     <string name="dialog_adb_port">Port</string>
-    <string name="dialog_adb_invalid_port">A port egy 1 és 65535 közötti egész szám.</string>
+    <string name="dialog_adb_invalid_port">A port egy 10 és 65535 közötti egész szám.</string>
     <string name="adb_pairing">Párosítás</string>
     <string name="dialog_adb_pairing_title">Párosítás a készülékkel</string>
     <string name="dialog_adb_pairing_discovery">Párosítási szolgáltatás keresése</string>

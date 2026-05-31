@@ -31,7 +31,7 @@
     <string name="dialog_adb_pairing_discovery">Iskanje storitve za seznanjanje</string>
     <string name="dialog_adb_pairing_title">Seznani z napravo</string>
     <string name="adb_pairing">Seznanjanje</string>
-    <string name="dialog_adb_invalid_port">Vrata so število v obsegu od 1 do 65535.</string>
+    <string name="dialog_adb_invalid_port">Vrata so število v obsegu od 10 do 65535.</string>
     <string name="home_adb_description">Za naprave brez root-a, potrebujete adb, da zaženete Shizuku (potrebna je računalniška povezava). Ta proces je potrebno ponoviti vsakič, ko se naprava ponovno zažene. Prosimo <b><a href="%1$s">preberite pomoč</a></b>.</string>
     <string name="dialog_adb_port">Vrata</string>
     <string name="dialog_adb_discovery_message">Prosimo omogočite \"Brezžično razhroščevanje\" v \"Nastavitvah za razvijalce\". \"Brezžično razhroščevanje\" je avtomatsko onemogočeno, ko se spremeni omrežje.

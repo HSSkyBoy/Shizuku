@@ -64,7 +64,7 @@
     <string name="dialog_adb_pairing_discovery">Поиск службы соединения</string>
     <string name="dialog_adb_pairing_title">Сопряжение с устройством</string>
     <string name="adb_pairing">Сопряжение</string>
-    <string name="dialog_adb_invalid_port">Порт – это целое число в диапазоне от 1 до 65535.</string>
+    <string name="dialog_adb_invalid_port">Порт – это целое число в диапазоне от 10 до 65535.</string>
     <string name="dialog_adb_port">Порт</string>
     <string name="dialog_adb_discovery_message">Пожалуйста, включите пункт «Отладка по Wi-Fi» в меню «Для разработчиков». «Отладка по Wi-Fi» автоматически отключается при изменении сети.
 \n

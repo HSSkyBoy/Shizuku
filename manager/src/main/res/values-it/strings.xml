@@ -40,7 +40,7 @@
     <string name="home_root_title">Avvia (per dispositivi rootati)</string>
     <string name="home_adb_button_view_command">Visualizza comando</string>
     <string name="dialog_adb_discovery">Ricerca del servizio di Debug Wireless</string>
-    <string name="dialog_adb_invalid_port">La porta è un numero intero compreso tra 1 e 65535.</string>
+    <string name="dialog_adb_invalid_port">La porta è un numero intero compreso tra 10 e 65535.</string>
     <string name="dialog_wireless_adb_not_enabled">Il debug wireless non è abilitato.
 \nNota, per versioni precedenti ad Android 11, per abilitare il debug wireless, è necessaria la connessione al computer.</string>
     <string name="dialog_adb_pairing_message">Inizia l\'accoppiamento con i seguenti passaggi: \"Opzioni sviluppatore\" - \"Debug wireless\" - \"Accoppiamento del dispositivo tramite codice di associazione\".

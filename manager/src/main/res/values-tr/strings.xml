@@ -8,7 +8,7 @@
     <string name="dialog_adb_pairing_discovery">Eşleştirme servisi aranıyor</string>
     <string name="dialog_adb_pairing_title">Cihazla eşleş</string>
     <string name="adb_pairing">Eşleştiriliyor</string>
-    <string name="dialog_adb_invalid_port">Port 1 ile 65535 arasında değişen bir tamsayıdır.</string>
+    <string name="dialog_adb_invalid_port">Port 10 ile 65535 arasında değişen bir tamsayıdır.</string>
     <string name="dialog_adb_port">Port</string>
     <string name="dialog_adb_discovery_message">Lütfen \"Geliştirici seçenekleri\"nde \"Kablosuz hata ayıklama\"yı etkinleştirin. Ağ değiştiğinde \"kablosuz hata ayıklama\" otomatik olarak devre dışı bırakılır.
 \n

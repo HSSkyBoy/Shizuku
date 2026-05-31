@@ -55,7 +55,7 @@
     <string name="grant_dialog_button_allow_always">Zawsze zezwalaj</string>
     <string name="grant_dialog_button_deny">Odmów</string>
     <string name="permission_warning_template">Zezwolić aplikacji <b>%1$s</b> na %2$s\?</string>
-    <string name="dialog_adb_invalid_port">Port to liczba całkowita z zakresu od 1 do 65535.</string>
+    <string name="dialog_adb_invalid_port">Port to liczba całkowita z zakresu od 10 do 65535.</string>
     <string name="home_adb_dialog_view_command_message">&lt;font face=monospace&gt;%1$s&lt;/font&gt;&lt;br&gt;&lt;br&gt;*Jest jeszcze kilka innych kwestii. Potwierdź, że najpierw przeczytałeś pomoc.</string>
     <string name="adb_pairing_requires_multi_window_reason">System wymaga ciągle otwartego okna parowania, używanie trybu podzielonego ekranu jest jedyną opcją aby korzystać z aplikacji i okna parowania w jednej chwili.</string>
     <string name="terminal_export_files">Eksportuj pliki</string>

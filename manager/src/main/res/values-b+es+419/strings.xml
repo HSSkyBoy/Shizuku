@@ -13,7 +13,7 @@
     <string name="development_settings">Opciones de desarrollador</string>
     <string name="adb_pairing_requires_multi_window_reason">El sistema requiere que el cuadro de diálogo de emparejamiento esté siempre visible, el uso del modo de pantalla dividida es la única forma de permitir que esta aplicación y el cuadro de diálogo del sistema estén visibles al mismo tiempo.</string>
     <string name="adb_pairing_requires_multi_window">Ingrese primero al modo de pantalla dividida (ventanas múltiples).</string>
-    <string name="dialog_adb_invalid_port">El puerto es un número entero comprendido entre 1 y 65535.</string>
+    <string name="dialog_adb_invalid_port">El puerto es un número entero comprendido entre 10 y 65535.</string>
     <string name="dialog_adb_port">Puerto</string>
     <string name="dialog_adb_discovery">Buscando servicio de depuración inalámbrica</string>
     <string name="home_wireless_adb_title">Iniciar desde depuración inalámbrica</string>

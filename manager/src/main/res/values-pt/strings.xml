@@ -105,7 +105,7 @@
     <string name="dialog_adb_pairing_discovery">Procurando serviço de pareamento</string>
     <string name="dialog_adb_pairing_title">Emparelhar com dispositivo</string>
     <string name="adb_pairing">Emparelhamento</string>
-    <string name="dialog_adb_invalid_port">Porta é um número inteiro que varia de 1 a 65535.</string>
+    <string name="dialog_adb_invalid_port">Porta é um número inteiro que varia de 10 a 65535.</string>
     <string name="dialog_adb_port">Porta</string>
     <string name="dialog_adb_discovery_message">Ative \"Depuração sem fio\" em \"Opções do desenvolvedor\". A \"depuração sem fio\" é desabilitada automaticamente quando a rede muda.
 \n

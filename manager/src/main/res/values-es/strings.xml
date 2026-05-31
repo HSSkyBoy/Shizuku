@@ -132,6 +132,6 @@
         <item quantity="many">Autorizadas %d aplicaciones</item>
         <item quantity="other">Autorizadas %d aplicaciones</item>
     </plurals>
-    <string name="dialog_adb_invalid_port">Puerto es un número del 1 al 65535.</string>
+    <string name="dialog_adb_invalid_port">Puerto es un número del 10 al 65535.</string>
     <string name="dialog_adb_port">Puerto</string>
 </resources>

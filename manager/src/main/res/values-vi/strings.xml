@@ -14,7 +14,7 @@
 \n
 \nLưu ý, không vô hiệu hóa \"Tùy chọn nhà phát triển\" hoặc \"Gỡ lỗi USB\", nếu không Shizuku sẽ bị dừng.</string>
     <string name="dialog_adb_port">Cổng</string>
-    <string name="dialog_adb_invalid_port">Cổng là một số nguyên nằm trong khoảng từ 1 đến 65535.</string>
+    <string name="dialog_adb_invalid_port">Cổng là một số nguyên nằm trong khoảng từ 10 đến 65535.</string>
     <string name="dialog_adb_pairing_title">Ghép nối với thiết bị</string>
     <string name="dialog_adb_pairing_discovery">Đang tìm kiếm dịch vụ ghép nối</string>
     <string name="dialog_adb_pairing_paring_code">Mã ghép nối</string>

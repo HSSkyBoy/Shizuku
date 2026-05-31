@@ -19,7 +19,7 @@
     <string name="home_wireless_adb_title">البدء باستخدام التصحيح اللاسلكي</string>
     <string name="home_wireless_adb_description">على أندرويد 11 وما فوق ، يمكنك تفعيل التصحيح اللاسلكي وبدء Shizuku مباشرة من جهازك ، دون الاحتياج إتصال بالكمبيوتر.&lt;p&gt;يرجى الإطلاع أولاً على التعليمات المفصلة خطوة بخطوة.</string>
     <string name="dialog_adb_discovery">البحث عن خدمة التصحيح اللاسلكي</string>
-    <string name="dialog_adb_invalid_port">المنفذ هو عدد صحيح يتراوح من 1 إلى 65535.</string>
+    <string name="dialog_adb_invalid_port">المنفذ هو عدد صحيح يتراوح من 10 إلى 65535.</string>
     <string name="home_wireless_adb_view_guide_button">‌دليل خطوة بخطوة</string>
     <string name="dialog_adb_pairing_title">إقران مع الجهاز</string>
     <string name="home_wireless_adb_description_pre_11">على الأجهزة الأقدم من إصدار الأندرويد 11 ، يلزم الاتصال بجهاز كمبيوتر لتمكين المعالجة/التصحيح اللاسلكي.</string>
