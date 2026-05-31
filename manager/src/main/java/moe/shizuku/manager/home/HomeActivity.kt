@@ -9,7 +9,7 @@ import moe.shizuku.manager.Helps
 import moe.shizuku.manager.R
 import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.app.AppActivity
-import moe.shizuku.manager.management.ApplicationManagementActivity
+import moe.shizuku.manager.management.AppsManagementActivity
 import moe.shizuku.manager.management.appsViewModel
 import moe.shizuku.manager.shell.ShellTutorialActivity
 import moe.shizuku.manager.settings.SettingsActivity
@@ -56,7 +56,7 @@ abstract class HomeActivity : AppActivity() {
                 },
                 onStopService = { stopService() },
                 onManageApps = {
-                    startActivity(Intent(this, ApplicationManagementActivity::class.java))
+                    startActivity(Intent(this, AppsManagementActivity::class.java))
                 },
                 onOpenTerminal = {
                     startActivity(Intent(this, ShellTutorialActivity::class.java))

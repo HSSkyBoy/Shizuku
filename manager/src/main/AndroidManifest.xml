@@ -88,7 +88,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".management.ApplicationManagementActivity"
+            android:name=".management.AppsManagementActivity"
             android:label="@string/home_app_management_title" />
         <activity
             android:name=".adb.AdbPairingTutorialActivity"

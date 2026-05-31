@@ -11,7 +11,7 @@ import rikka.lifecycle.Status
 import rikka.shizuku.Shizuku
 import java.util.Objects
 
-class ApplicationManagementActivity : AppActivity() {
+class AppsManagementActivity : AppActivity() {
 
     private val viewModel by appsViewModel()
 

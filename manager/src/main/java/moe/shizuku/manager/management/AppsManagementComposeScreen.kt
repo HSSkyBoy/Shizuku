@@ -1,7 +1,11 @@
 package moe.shizuku.manager.management
 
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
+import android.graphics.Bitmap
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -33,19 +37,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import moe.shizuku.manager.Helps
 import moe.shizuku.manager.R
 import moe.shizuku.manager.authorization.AuthorizationManager
 import moe.shizuku.manager.ui.theme.ShizukuComposeTheme
-import moe.shizuku.manager.utils.CustomTabsHelper
+import moe.shizuku.manager.utils.AppIconCache
 import moe.shizuku.manager.utils.ShizukuSystemApis
 import moe.shizuku.manager.utils.UserHandleCompat
 
@@ -125,7 +135,6 @@ private fun ApplicationManagementContent(
     }
 
     if (dialogState == ManagementDialogState.AdbLimited) {
-        val context = LocalContext.current
         AlertDialog(
             onDismissRequest = { dialogState = null },
             confirmButton = {
@@ -206,6 +215,12 @@ private fun AppCard(
                 .padding(horizontal = 20.dp, vertical = 18.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            AppIcon(
+                applicationInfo = applicationInfo,
+                userId = userId,
+                modifier = Modifier.size(40.dp)
+            )
+            Spacer(modifier = Modifier.size(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = label,
@@ -233,6 +248,63 @@ private fun AppCard(
             )
         }
     }
+}
+
+@Composable
+private fun AppIcon(
+    applicationInfo: ApplicationInfo,
+    userId: Int,
+    modifier: Modifier = Modifier
+) {
+    val bitmap by rememberAppIconBitmap(
+        applicationInfo = applicationInfo,
+        userId = userId,
+        size = 40.dp
+    )
+
+    Box(
+        modifier = modifier.clip(MaterialTheme.shapes.medium),
+        contentAlignment = Alignment.Center
+    ) {
+        if (bitmap != null) {
+            Image(
+                bitmap = bitmap!!.asImageBitmap(),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Outlined.Info,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
+
+@Composable
+private fun rememberAppIconBitmap(
+    applicationInfo: ApplicationInfo,
+    userId: Int,
+    size: Dp
+) : androidx.compose.runtime.State<Bitmap?> {
+    val context = LocalContext.current
+    val density = LocalDensity.current
+    val sizePx = with(density) { size.roundToPx() }
+
+    return produceState<Bitmap?>(
+        initialValue = null,
+        key1 = applicationInfo.packageName,
+        key2 = userId,
+        key3 = sizePx
+    ) {
+    value = withContext(Dispatchers.IO) {
+        runCatching {
+            AppIconCache.getOrLoadBitmap(context, applicationInfo, userId, sizePx)
+        }.getOrNull()
+    }
+}
 }
 
 @Immutable
