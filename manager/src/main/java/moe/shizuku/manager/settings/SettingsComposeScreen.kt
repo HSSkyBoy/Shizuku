@@ -479,17 +479,65 @@ private fun buildLocaleItems(context: Context): List<LocaleChoice> {
         LocaleChoice(
             tag = tag,
             label = if (index == 0) {
-                context.getString(R.string.follow_system)
+                context.getString(R.string.settings_language_system)
             } else {
-                Locale.forLanguageTag(tag).getDisplayName(ShizukuSettings.getLocale())
+                localeLabel(tag)
             },
             selected = tag == currentTag
         )
     }
 }
 
+private fun localeLabel(tag: String): String {
+    return when (tag) {
+        "ang" -> "Old English (ca. 450-1100)"
+        "ar" -> "العربية"
+        "ars" -> "العربية النجدية"
+        "az" -> "Azərbaycanca"
+        "bn" -> "বাংলা"
+        "ca" -> "Català"
+        "cs" -> "Čeština"
+        "de" -> "Deutsch"
+        "el" -> "Ελληνικά"
+        "en" -> "English"
+        "eo" -> "Esperanto"
+        "es" -> "Español"
+        "es-419" -> "Español (Latinoamérica)"
+        "es-CL" -> "Español (Chile)"
+        "et" -> "Eesti"
+        "fa" -> "فارسی"
+        "fil" -> "Filipino"
+        "fr" -> "Français"
+        "he" -> "עברית"
+        "hu" -> "Magyar"
+        "hy" -> "Հայերեն"
+        "id" -> "Indonesia"
+        "it" -> "Italiano"
+        "ja" -> "日本語"
+        "ka" -> "ქართული"
+        "ko" -> "한국어"
+        "ms" -> "Melayu"
+        "nl" -> "Nederlands"
+        "pl" -> "Polski"
+        "pt" -> "Português"
+        "pt-BR" -> "Português (Brasil)"
+        "ro" -> "Română"
+        "ru" -> "Русский"
+        "sl" -> "Slovenščina"
+        "sr" -> "Српски"
+        "ta" -> "தமிழ்"
+        "th" -> "ไทย"
+        "tr" -> "Türkçe"
+        "uk" -> "Українська"
+        "vi" -> "Tiếng Việt"
+        "zh-CN" -> "简体中文"
+        "zh-TW" -> "繁體中文"
+        else -> tag
+    }
+}
+
 private fun currentLanguageLabel(context: Context): String {
-    return buildLocaleItems(context).firstOrNull { it.selected }?.label ?: context.getString(R.string.follow_system)
+    return buildLocaleItems(context).firstOrNull { it.selected }?.label ?: context.getString(R.string.settings_language_system)
 }
 
 private fun currentNightModeLabel(context: Context): String {

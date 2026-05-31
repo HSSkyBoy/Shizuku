@@ -11,7 +11,6 @@
         <item name="homeCardStyle">@style/Card.Light</item>
         <item name="materialCardViewFilledStyle">@style/Widget.Shizuku.HomeCard</item>
         <item name="toolbarStyle">@style/Widget.Shizuku.HomeToolbar</item>
-        <item name="preferenceTheme">@style/ThemeOverlay.Shizuku.Preference</item>
 
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
@@ -31,7 +30,6 @@
         <item name="homeCardStyle">@style/Card</item>
         <item name="materialCardViewFilledStyle">@style/Widget.Shizuku.HomeCard</item>
         <item name="toolbarStyle">@style/Widget.Shizuku.HomeToolbar</item>
-        <item name="preferenceTheme">@style/ThemeOverlay.Shizuku.Preference</item>
 
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
