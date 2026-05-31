@@ -6,10 +6,10 @@ import android.provider.DocumentsContract
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import moe.shizuku.manager.Helps
-import moe.shizuku.manager.app.AppBarActivity
+import moe.shizuku.manager.app.AppActivity
 import moe.shizuku.manager.utils.CustomTabsHelper
 
-class ShellTutorialActivity : AppBarActivity() {
+class ShellTutorialActivity : AppActivity() {
 
     companion object {
 

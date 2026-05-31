@@ -15,6 +15,7 @@ import moe.shizuku.manager.shell.ShellTutorialActivity
 import moe.shizuku.manager.settings.SettingsActivity
 import moe.shizuku.manager.starter.StarterActivity
 import moe.shizuku.manager.utils.CustomTabsHelper
+import moe.shizuku.manager.adb.AdbWirelessHelper
 import rikka.lifecycle.Status
 import rikka.lifecycle.viewModels
 import rikka.shizuku.Shizuku
@@ -67,18 +68,17 @@ abstract class HomeActivity : AppActivity() {
                 },
                 onPairWireless = {
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                        if (display?.displayId ?: 0 > 0) {
-                            AdbPairDialogFragment().show(supportFragmentManager)
-                        } else {
-                            startActivity(Intent(this, moe.shizuku.manager.adb.AdbPairingTutorialActivity::class.java))
-                        }
+                        startActivity(Intent(this, moe.shizuku.manager.adb.AdbPairingTutorialActivity::class.java))
                     }
                 },
                 onStartWirelessAdb = {
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                        AdbDialogFragment().show(supportFragmentManager)
-                    } else {
-                        WadbNotEnabledDialogFragment().show(supportFragmentManager)
+                        val port = moe.shizuku.manager.utils.EnvironmentUtils.getAdbTcpPort()
+                        if (port > 0) {
+                            AdbWirelessHelper().launchStarterActivity(this, "127.0.0.1", port)
+                        } else {
+                            startActivity(Intent(this, moe.shizuku.manager.adb.AdbPairingTutorialActivity::class.java))
+                        }
                     }
                 },
                 onOpenAdbPermissionHelp = {

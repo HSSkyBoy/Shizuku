@@ -5,13 +5,13 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import android.widget.Toast
-import moe.shizuku.manager.app.AppBarActivity
+import moe.shizuku.manager.app.AppActivity
 import moe.shizuku.manager.authorization.AuthorizationManager
 import rikka.lifecycle.Status
 import rikka.shizuku.Shizuku
 import java.util.Objects
 
-class ApplicationManagementActivity : AppBarActivity() {
+class ApplicationManagementActivity : AppActivity() {
 
     private val viewModel by appsViewModel()
 

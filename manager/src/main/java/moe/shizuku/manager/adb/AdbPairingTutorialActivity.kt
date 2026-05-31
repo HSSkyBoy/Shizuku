@@ -11,16 +11,14 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
 import moe.shizuku.manager.AppConstants
-import moe.shizuku.manager.app.AppBarActivity
-import moe.shizuku.manager.databinding.AdbPairingTutorialActivityBinding
+import moe.shizuku.manager.app.AppActivity
 import rikka.compatibility.DeviceCompatibility
 
 @RequiresApi(Build.VERSION_CODES.R)
-class AdbPairingTutorialActivity : AppBarActivity() {
+class AdbPairingTutorialActivity : AppActivity() {
 
     companion object {
         private const val ANDROID_17_API = 37
@@ -28,17 +26,10 @@ class AdbPairingTutorialActivity : AppBarActivity() {
         private const val REQUEST_LOCAL_NETWORK_PERMISSION = 1001
     }
 
-    private lateinit var binding: AdbPairingTutorialActivityBinding
-
     private var notificationEnabled: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val context = this
-
-        binding = AdbPairingTutorialActivityBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         notificationEnabled = isNotificationEnabled()
 
@@ -46,42 +37,29 @@ class AdbPairingTutorialActivity : AppBarActivity() {
             ensureLocalNetworkPermissionOrStartPairing()
         }
 
-        binding.apply {
-            syncNotificationEnabled()
-
-            if (DeviceCompatibility.isMiui()) {
-                miui.isVisible = true
-            }
-
-            developerOptions.setOnClickListener {
-                val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                intent.putExtra(":settings:fragment_args_key", "toggle_adb_wireless")
-                try {
-                    context.startActivity(intent)
-                } catch (e: ActivityNotFoundException) {
+        setContent {
+            AdbPairingTutorialComposeScreen(
+                notificationEnabled = notificationEnabled,
+                showMiuiHint = DeviceCompatibility.isMiui(),
+                onNavigateUp = { finish() },
+                onOpenDeveloperOptions = {
+                    val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    intent.putExtra(":settings:fragment_args_key", "toggle_adb_wireless")
+                    try {
+                        startActivity(intent)
+                    } catch (_: ActivityNotFoundException) {
+                    }
+                },
+                onOpenNotificationOptions = {
+                    val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                    intent.putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+                    try {
+                        startActivity(intent)
+                    } catch (_: ActivityNotFoundException) {
+                    }
                 }
-            }
-
-            notificationOptions.setOnClickListener {
-                val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                try {
-                    context.startActivity(intent)
-                } catch (e: ActivityNotFoundException) {
-                }
-            }
-        }
-    }
-
-    private fun syncNotificationEnabled() {
-        binding.apply {
-            step1.isVisible = notificationEnabled
-            step2.isVisible = notificationEnabled
-            step3.isVisible = notificationEnabled
-            network.isVisible = notificationEnabled
-            notification.isVisible = notificationEnabled
-            notificationDisabled.isGone = notificationEnabled
+            )
         }
     }
 
@@ -100,11 +78,11 @@ class AdbPairingTutorialActivity : AppBarActivity() {
         val newNotificationEnabled = isNotificationEnabled()
         if (newNotificationEnabled != notificationEnabled) {
             notificationEnabled = newNotificationEnabled
-            syncNotificationEnabled()
 
             if (newNotificationEnabled) {
                 ensureLocalNetworkPermissionOrStartPairing()
             }
+            recreate()
         }
     }
 

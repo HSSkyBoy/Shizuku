@@ -2,10 +2,12 @@ package moe.shizuku.manager.starter
 
 import android.content.Context
 import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
@@ -15,8 +17,7 @@ import moe.shizuku.manager.AppConstants.EXTRA
 import moe.shizuku.manager.R
 import moe.shizuku.manager.adb.AdbKeyException
 import moe.shizuku.manager.adb.AdbWirelessHelper
-import moe.shizuku.manager.app.AppBarActivity
-import moe.shizuku.manager.databinding.StarterActivityBinding
+import moe.shizuku.manager.app.AppActivity
 import rikka.lifecycle.Resource
 import rikka.lifecycle.Status
 import rikka.lifecycle.viewModels
@@ -26,7 +27,7 @@ import javax.net.ssl.SSLProtocolException
 
 private class NotRootedException : Exception()
 
-class StarterActivity : AppBarActivity() {
+class StarterActivity : AppActivity() {
 
     private val viewModel by viewModels {
         ViewModel(
@@ -37,14 +38,10 @@ class StarterActivity : AppBarActivity() {
         )
     }
 
+    private val message = MutableLiveData<Int?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_close_24)
-
-        val binding = StarterActivityBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         viewModel.output.observe(this) {
             val output = it.data!!.trim()
@@ -79,14 +76,20 @@ class StarterActivity : AppBarActivity() {
                     }
                 }
 
-                if (message != 0) {
-                    MaterialAlertDialogBuilder(this)
-                        .setMessage(message)
-                        .setPositiveButton(android.R.string.ok, null)
-                        .show()
-                }
+                if (message != 0) this.message.value = message
             }
-            binding.text1.text = output
+        }
+
+        setContent {
+            val outputState by viewModel.output.observeAsState()
+            val messageState by message.observeAsState()
+            StarterComposeScreen(
+                output = outputState?.data?.toString()?.trim().orEmpty(),
+                titleRes = R.string.starter,
+                messageRes = messageState,
+                onNavigateUp = { finish() },
+                onDismissMessage = { message.value = null }
+            )
         }
     }
 

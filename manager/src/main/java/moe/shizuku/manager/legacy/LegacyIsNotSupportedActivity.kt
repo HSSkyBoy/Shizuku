@@ -4,11 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import androidx.activity.compose.setContent
 import moe.shizuku.manager.MainActivity
 import moe.shizuku.manager.R
 import moe.shizuku.manager.app.AppActivity
-import moe.shizuku.manager.ktx.toHtml
 import rikka.html.text.HtmlCompat
 
 class LegacyIsNotSupportedActivity : AppActivity() {
@@ -51,31 +50,39 @@ class LegacyIsNotSupportedActivity : AppActivity() {
 
         val v3Support = ai.metaData?.getBoolean("moe.shizuku.client.V3_SUPPORT") == true
         if (v3Support) {
-            MaterialAlertDialogBuilder(this)
-                    .setTitle(getString(R.string.dialog_requesting_legacy_title, label))
-                    .setMessage(getString(R.string.dialog_requesting_legacy_message, label).toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE))
-                    .setPositiveButton(android.R.string.ok, null)
-                    .setNeutralButton(R.string.dialog_requesting_legacy_button_open_shizuku) { _, _ ->
-                        startActivity(Intent(this, MainActivity::class.java)
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                    }
-                    .setOnDismissListener {
+            setContent {
+                LegacyNoticeComposeScreen(
+                    title = getString(R.string.dialog_requesting_legacy_title, label),
+                    message = HtmlCompat.fromHtml(
+                        getString(R.string.dialog_requesting_legacy_message, label),
+                        HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE
+                    ).toString(),
+                    primaryLabel = getString(android.R.string.ok),
+                    secondaryLabel = getString(R.string.dialog_requesting_legacy_button_open_shizuku),
+                    onPrimary = {
                         setResult(RESULT_ERROR)
                         finish()
+                    },
+                    onSecondary = {
+                        startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                     }
-                    .setCancelable(false)
-                    .show()
+                )
+            }
         } else {
-            MaterialAlertDialogBuilder(this)
-                    .setTitle(getString(R.string.dialog_legacy_not_support_title, label))
-                    .setMessage(getString(R.string.dialog_legacy_not_support_message, label).toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE))
-                    .setPositiveButton(android.R.string.ok, null)
-                    .setOnDismissListener {
+            setContent {
+                LegacyNoticeComposeScreen(
+                    title = getString(R.string.dialog_legacy_not_support_title, label),
+                    message = HtmlCompat.fromHtml(
+                        getString(R.string.dialog_legacy_not_support_message, label),
+                        HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE
+                    ).toString(),
+                    primaryLabel = getString(android.R.string.ok),
+                    onPrimary = {
                         setResult(RESULT_ERROR)
                         finish()
                     }
-                    .setCancelable(false)
-                    .show()
+                )
+            }
         }
     }
 }
