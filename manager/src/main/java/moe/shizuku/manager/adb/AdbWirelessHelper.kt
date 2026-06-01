@@ -24,7 +24,6 @@ import java.net.Socket
 class AdbWirelessHelper {
     companion object {
         private const val TCPIP_REBIND_TIMEOUT_MS = 5_000L
-        private const val DEFAULT_ADB_PORT = 5555
     }
 
     fun validateThenEnableWirelessAdb(
@@ -198,8 +197,8 @@ class AdbWirelessHelper {
         commandOutput: StringBuilder,
         onOutput: (String) -> Unit
     ) {
-        val newPort = getConfiguredTcpipPort() ?: DEFAULT_ADB_PORT
-        if (newPort == currentPort) {
+        val newPort = getConfiguredTcpipPort()
+        if (newPort == null || newPort == currentPort) {
             return
         }
 
