@@ -35,10 +35,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,6 +60,7 @@ import moe.shizuku.manager.ui.theme.ShizukuComposeTheme
 import moe.shizuku.manager.utils.AppIconCache
 import moe.shizuku.manager.utils.ShizukuSystemApis
 import moe.shizuku.manager.utils.UserHandleCompat
+import rikka.html.text.HtmlCompat
 
 @Composable
 fun ApplicationManagementComposeScreen(
@@ -82,6 +85,17 @@ private fun ApplicationManagementContent(
     onTogglePackage: (PackageInfo) -> ToggleResult
 ) {
     var dialogState by remember { mutableStateOf<ManagementDialogState?>(null) }
+    val grantStates = remember { mutableStateMapOf<String, Boolean>() }
+
+    LaunchedEffect(packages) {
+        val currentKeys = packages.mapNotNull { packageInfo ->
+            val uid = packageInfo.applicationInfo?.uid ?: return@mapNotNull null
+            val key = packageGrantKey(packageInfo.packageName, uid)
+            grantStates[key] = AuthorizationManager.granted(packageInfo.packageName, uid)
+            key
+        }.toSet()
+        grantStates.keys.removeAll { it !in currentKeys }
+    }
 
     Scaffold(
         topBar = {
@@ -117,13 +131,15 @@ private fun ApplicationManagementContent(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(packages.filter { it.applicationInfo != null }, key = { it.packageName + "#" + it.applicationInfo!!.uid }) { packageInfo ->
-                        val granted = AuthorizationManager.granted(packageInfo.packageName, packageInfo.applicationInfo!!.uid)
+                        val uid = packageInfo.applicationInfo!!.uid
+                        val grantKey = packageGrantKey(packageInfo.packageName, uid)
+                        val granted = grantStates[grantKey] ?: AuthorizationManager.granted(packageInfo.packageName, uid)
                         AppCard(
                             packageInfo = packageInfo,
                             granted = granted,
                             onToggle = {
                                 when (onTogglePackage(packageInfo)) {
-                                    ToggleResult.Success -> Unit
+                                    ToggleResult.Success -> grantStates[grantKey] = AuthorizationManager.granted(packageInfo.packageName, uid)
                                     ToggleResult.AdbLimited -> dialogState = ManagementDialogState.AdbLimited
                                 }
                             }
@@ -143,13 +159,17 @@ private fun ApplicationManagementContent(
                 }
             },
             title = { Text(stringResource(R.string.app_management_dialog_adb_is_limited_title)) },
-            text = { Text(stringResource(R.string.app_management_dialog_adb_is_limited_message, Helps.ADB.get())) },
+            text = { Text(plainText(stringResource(R.string.app_management_dialog_adb_is_limited_message, Helps.ADB.get()))) },
             containerColor = MaterialTheme.colorScheme.errorContainer,
             icon = {
                 Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onErrorContainer)
             }
         )
     }
+}
+
+private fun packageGrantKey(packageName: String, uid: Int): String {
+    return "$packageName#$uid"
 }
 
 @Composable
@@ -315,4 +335,8 @@ enum class ToggleResult {
 
 private enum class ManagementDialogState {
     AdbLimited
+}
+
+private fun plainText(value: String): String {
+    return HtmlCompat.fromHtml(value).toString().replace(Regex("\\s+"), " ").trim()
 }

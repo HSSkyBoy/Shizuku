@@ -1,26 +1,26 @@
 package moe.shizuku.manager.starter
 
 import android.content.Context
-import android.os.Bundle
 import android.os.Build
-import androidx.activity.compose.setContent
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import moe.shizuku.manager.AppConstants.EXTRA
 import moe.shizuku.manager.R
 import moe.shizuku.manager.adb.AdbKeyException
 import moe.shizuku.manager.adb.AdbMdns
 import moe.shizuku.manager.adb.AdbWirelessHelper
-import moe.shizuku.manager.app.AppActivity
+import moe.shizuku.manager.app.AppBarActivity
+import moe.shizuku.manager.databinding.StarterActivityBinding
 import moe.shizuku.manager.utils.EnvironmentUtils
 import rikka.lifecycle.Resource
 import rikka.lifecycle.Status
@@ -31,7 +31,18 @@ import javax.net.ssl.SSLProtocolException
 
 private class NotRootedException : Exception()
 
-class StarterActivity : AppActivity() {
+class StarterActivity : AppBarActivity() {
+
+    companion object {
+        private const val WAIT_FOR_SERVICE_TIMEOUT_MS = 8_000L
+        const val EXTRA_IS_ROOT = "$EXTRA.IS_ROOT"
+        const val EXTRA_HOST = "$EXTRA.HOST"
+        const val EXTRA_PORT = "$EXTRA.PORT"
+        const val EXTRA_FORCE_RESTART = "$EXTRA.FORCE_RESTART"
+    }
+
+    private var waitingForServiceListener: Shizuku.OnBinderReceivedListener? = null
+    private var waitForServiceJob: Job? = null
 
     private val viewModel by viewModels {
         ViewModel(
@@ -43,27 +54,19 @@ class StarterActivity : AppActivity() {
         )
     }
 
-    private val message = MutableLiveData<Int?>(null)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_close_24)
+
+        val binding = StarterActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         viewModel.output.observe(this) {
             val output = it.data!!.trim()
             if (output.endsWith("info: shizuku_starter exit with 0")) {
-                viewModel.appendOutput("")
-                viewModel.appendOutput("Waiting for service...")
-
-                Shizuku.addBinderReceivedListener(object : Shizuku.OnBinderReceivedListener {
-                    override fun onBinderReceived() {
-                        Shizuku.removeBinderReceivedListener(this)
-                        viewModel.appendOutput("Service started, this window will be automatically closed soon")
-
-                        window?.decorView?.postDelayed({
-                            if (!isFinishing) finish()
-                        }, 800)
-                    }
-                })
+                beginWaitingForService()
             } else if (it.status == Status.ERROR) {
                 var message = 0
                 when (it.error) {
@@ -81,29 +84,82 @@ class StarterActivity : AppActivity() {
                     }
                 }
 
-                if (message != 0) this.message.value = message
+                if (message != 0) {
+                    MaterialAlertDialogBuilder(this)
+                        .setMessage(message)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+                }
             }
-        }
-
-        setContent {
-            val outputState by viewModel.output.observeAsState()
-            val messageState by message.observeAsState()
-            StarterComposeScreen(
-                output = outputState?.data?.toString()?.trim().orEmpty(),
-                titleRes = R.string.starter,
-                messageRes = messageState,
-                onNavigateUp = { finish() },
-                onDismissMessage = { message.value = null }
-            )
+            binding.text1.text = output
         }
     }
 
-    companion object {
+    override fun onDestroy() {
+        waitingForServiceListener?.let(Shizuku::removeBinderReceivedListener)
+        waitingForServiceListener = null
+        waitForServiceJob?.cancel()
+        waitForServiceJob = null
+        super.onDestroy()
+    }
 
-        const val EXTRA_IS_ROOT = "$EXTRA.IS_ROOT"
-        const val EXTRA_HOST = "$EXTRA.HOST"
-        const val EXTRA_PORT = "$EXTRA.PORT"
-        const val EXTRA_FORCE_RESTART = "$EXTRA.FORCE_RESTART"
+    private fun beginWaitingForService() {
+        if (waitingForServiceListener != null) {
+            return
+        }
+
+        viewModel.appendOutput("")
+        viewModel.appendOutput("Waiting for service...")
+
+        val listener = object : Shizuku.OnBinderReceivedListener {
+            override fun onBinderReceived() {
+                completeServiceStart(this)
+            }
+        }
+        waitingForServiceListener = listener
+        waitForServiceJob = viewModel.viewModelScope.launch(Dispatchers.IO) {
+            delay(WAIT_FOR_SERVICE_TIMEOUT_MS)
+            if (waitingForServiceListener === listener) {
+                postTimeout()
+            }
+        }
+
+        if (Shizuku.pingBinder()) {
+            completeServiceStart(listener)
+            return
+        }
+
+        Shizuku.addBinderReceivedListenerSticky(listener)
+    }
+
+    private fun completeServiceStart(listener: Shizuku.OnBinderReceivedListener) {
+        if (waitingForServiceListener !== listener) {
+            return
+        }
+
+        Shizuku.removeBinderReceivedListener(listener)
+        waitingForServiceListener = null
+        waitForServiceJob?.cancel()
+        waitForServiceJob = null
+        viewModel.appendOutput("Service started, this window will be automatically closed in 3 seconds")
+
+        window?.decorView?.postDelayed({
+            if (!isFinishing) finish()
+        }, 3000)
+    }
+
+    private fun postTimeout() {
+        runOnUiThread {
+            val listener = waitingForServiceListener ?: return@runOnUiThread
+            Shizuku.removeBinderReceivedListener(listener)
+            waitingForServiceListener = null
+            waitForServiceJob = null
+            viewModel.appendOutput("Service did not respond in time.")
+            MaterialAlertDialogBuilder(this)
+                .setMessage(R.string.start_service_timeout)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+        }
     }
 }
 
@@ -116,7 +172,7 @@ private class ViewModel(
 ) : androidx.lifecycle.ViewModel() {
     companion object {
         private const val MDNS_DISCOVERY_TIMEOUT_MS = 3_000L
-        private const val FORCE_RESTART_TIMEOUT_MS = 1_500L
+        private const val FORCE_RESTART_TIMEOUT_MS = 5_000L
         private const val FORCE_RESTART_POLL_INTERVAL_MS = 50L
     }
 
@@ -156,10 +212,11 @@ private class ViewModel(
     }
 
     private fun postResult(throwable: Throwable? = null) {
-        if (throwable == null)
+        if (throwable == null) {
             _output.postValue(Resource.success(sb))
-        else
+        } else {
             _output.postValue(Resource.error(throwable, sb))
+        }
     }
 
     private fun startRoot() {

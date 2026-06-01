@@ -24,6 +24,7 @@ private const val kExportedKeyLabel = "adb-label\u0000"
 private const val kExportedKeySize = 64
 
 private const val kPairingPacketHeaderSize = 6
+private const val kPairingSocketTimeoutMillis = 15_000
 
 private class PeerInfo(
         val type: Byte,
@@ -203,9 +204,11 @@ class AdbPairingClient(private val host: String, private val port: Int, private 
     private fun setupTlsConnection() {
         socket = Socket(host, port)
         socket.tcpNoDelay = true
+        socket.soTimeout = kPairingSocketTimeoutMillis
 
         val sslContext = key.sslContext
         val sslSocket = sslContext.socketFactory.createSocket(socket, host, port, true) as SSLSocket
+        sslSocket.soTimeout = kPairingSocketTimeoutMillis
         sslSocket.startHandshake()
         Log.d(TAG, "Handshake succeeded.")
 

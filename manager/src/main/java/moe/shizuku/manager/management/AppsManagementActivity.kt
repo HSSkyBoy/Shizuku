@@ -56,7 +56,6 @@ class AppsManagementActivity : AppActivity() {
                         } else {
                             AuthorizationManager.grant(packageInfo.packageName, uid)
                         }
-                        viewModel.load(true)
                         ToggleResult.Success
                     } catch (e: SecurityException) {
                         val shizukuUid = try {

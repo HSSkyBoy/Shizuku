@@ -1,21 +1,34 @@
 package moe.shizuku.manager.home
 
+import android.Manifest.permission.WRITE_SECURE_SETTINGS
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AlertDialog
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import moe.shizuku.manager.Helps
-import moe.shizuku.manager.R
 import moe.shizuku.manager.ShizukuSettings
+import moe.shizuku.manager.adb.AdbMdns
+import moe.shizuku.manager.adb.AdbWirelessHelper
 import moe.shizuku.manager.app.AppActivity
 import moe.shizuku.manager.management.AppsManagementActivity
 import moe.shizuku.manager.management.appsViewModel
-import moe.shizuku.manager.shell.ShellTutorialActivity
 import moe.shizuku.manager.settings.SettingsActivity
+import moe.shizuku.manager.shell.ShellTutorialActivity
+import moe.shizuku.manager.starter.Starter
 import moe.shizuku.manager.starter.StarterActivity
 import moe.shizuku.manager.utils.CustomTabsHelper
-import moe.shizuku.manager.adb.AdbWirelessHelper
+import moe.shizuku.manager.utils.EnvironmentUtils
+import rikka.core.util.ClipboardUtils
 import rikka.lifecycle.Status
 import rikka.lifecycle.viewModels
 import rikka.shizuku.Shizuku
@@ -72,15 +85,19 @@ abstract class HomeActivity : AppActivity() {
                     }
                 },
                 onStartWirelessAdb = {
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                        AdbWirelessHelper().launchStarterActivity(this, "127.0.0.1", 0, true)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        showWirelessAdbDiscoveryDialog()
                     } else {
-                        val port = moe.shizuku.manager.utils.EnvironmentUtils.getAdbTcpPort()
+                        val port = EnvironmentUtils.getAdbTcpPort()
                         if (port > 0) {
-                            AdbWirelessHelper().launchStarterActivity(this, "127.0.0.1", port, true)
+                            startWirelessAdb(port)
+                        } else {
+                            showWirelessAdbNotEnabledDialog()
                         }
                     }
                 },
+                onCopyAdbCommand = { copyAdbCommand() },
+                onSendAdbCommand = { sendAdbCommand() },
                 onOpenAdbPermissionHelp = {
                     CustomTabsHelper.launchUrlOrCopy(this, Helps.ADB_PERMISSION.get())
                 },
@@ -123,4 +140,95 @@ abstract class HomeActivity : AppActivity() {
         })
     }
 
+    private fun copyAdbCommand() {
+        if (ClipboardUtils.put(this, Starter.adbCommand)) {
+            Toast.makeText(
+                this,
+                getString(moe.shizuku.manager.R.string.toast_copied_to_clipboard, Starter.adbCommand),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun sendAdbCommand() {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, Starter.adbCommand)
+        }
+        startActivity(Intent.createChooser(intent, getString(moe.shizuku.manager.R.string.home_adb_dialog_view_command_button_send)))
+    }
+
+    private fun startWirelessAdb(port: Int) {
+        AdbWirelessHelper().launchStarterActivity(this, "127.0.0.1", port, true)
+    }
+
+    private fun showWirelessAdbNotEnabledDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setMessage(moe.shizuku.manager.R.string.dialog_wireless_adb_not_enabled)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
+    }
+
+    private fun openDevelopmentSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(":settings:fragment_args_key", "toggle_adb_wireless")
+        }
+        try {
+            startActivity(intent)
+        } catch (_: ActivityNotFoundException) {
+        }
+    }
+
+    private fun showWirelessAdbDiscoveryDialog() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
+
+        val discoveredPort = MutableLiveData<Int>()
+        val adbMdns = AdbMdns(this, AdbMdns.TLS_CONNECT) {
+            discoveredPort.postValue(it)
+        }
+        val currentPort = EnvironmentUtils.getAdbTcpPort()
+        var dialog: AlertDialog? = null
+        val observer = Observer<Int> {
+            if (it in 1..65535) {
+                dialog?.dismiss()
+                startWirelessAdb(it)
+            }
+        }
+
+        dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(moe.shizuku.manager.R.string.dialog_adb_discovery)
+            .setMessage(moe.shizuku.manager.R.string.dialog_adb_discovery_message)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(moe.shizuku.manager.R.string.development_settings, null)
+            .apply {
+                if (currentPort in 1..65535) {
+                    setNeutralButton(currentPort.toString(), null)
+                }
+            }
+            .create()
+
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.setOnShowListener {
+            adbMdns.start()
+            discoveredPort.observe(this, observer)
+            if (checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
+                Settings.Global.putInt(contentResolver, "adb_wifi_enabled", 1)
+                Settings.Global.putInt(contentResolver, Settings.Global.ADB_ENABLED, 1)
+                Settings.Global.putLong(contentResolver, "adb_allowed_connection_time", 0L)
+            }
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                openDevelopmentSettings()
+            }
+            dialog.getButton(AlertDialog.BUTTON_NEUTRAL)?.setOnClickListener {
+                dialog.dismiss()
+                startWirelessAdb(EnvironmentUtils.getAdbTcpPort())
+            }
+        }
+        dialog.setOnDismissListener {
+            discoveredPort.removeObserver(observer)
+            adbMdns.stop()
+        }
+        dialog.show()
+    }
 }

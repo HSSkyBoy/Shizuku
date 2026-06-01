@@ -14,4 +14,7 @@ data class ServiceStatus(
 
     val versionName: String
         get() = if (patchVersion >= 0) "$apiVersion.$patchVersion" else apiVersion.toString()
+
+    val hasCompleteVersion: Boolean
+        get() = apiVersion >= 0 && patchVersion >= 0
 }

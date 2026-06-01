@@ -1,6 +1,7 @@
 package moe.shizuku.manager.ui.theme
 
 import android.app.Activity
+import android.view.Window
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -81,8 +82,7 @@ fun ShizukuComposeTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (context as? Activity)?.window ?: return@SideEffect
-            window.statusBarColor = Color.Transparent.toArgb()
-            window.navigationBarColor = Color.Transparent.toArgb()
+            applyTransparentSystemBars(window)
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !useDarkTheme
             WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = !useDarkTheme
         }
@@ -93,4 +93,12 @@ fun ShizukuComposeTheme(
         typography = ShizukuTypography,
         content = content
     )
+}
+
+@Suppress("DEPRECATION")
+private fun applyTransparentSystemBars(window: Window) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        window.statusBarColor = Color.Transparent.toArgb()
+        window.navigationBarColor = Color.Transparent.toArgb()
+    }
 }

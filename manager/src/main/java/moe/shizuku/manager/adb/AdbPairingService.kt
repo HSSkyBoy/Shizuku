@@ -15,9 +15,13 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.lifecycle.Observer
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import moe.shizuku.manager.R
 import moe.shizuku.manager.ShizukuSettings
 import rikka.core.ktx.unsafeLazy
@@ -40,7 +44,8 @@ class AdbPairingService : Service() {
         private const val stopAction = "stop"
         private const val replyAction = "reply"
         private const val remoteInputResultKey = "paring_code"
-        private const val portKey = "paring_code"
+        private const val portKey = "pairing_port"
+        private const val pairingTimeoutMillis = 15_000L
 
         fun startIntent(context: Context): Intent {
             return Intent(context, AdbPairingService::class.java).setAction(startAction)
@@ -56,6 +61,7 @@ class AdbPairingService : Service() {
     }
 
     private var adbMdns: AdbMdns? = null
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private val observer = Observer<Int> { port ->
         Log.i(tag, "Pairing service port: $port")
@@ -138,6 +144,7 @@ class AdbPairingService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        serviceScope.cancel()
         stopSearch()
     }
 
@@ -147,7 +154,8 @@ class AdbPairingService : Service() {
     }
 
     private fun onInput(code: String, port: Int): Notification {
-        GlobalScope.launch(Dispatchers.IO) {
+        stopSearch()
+        serviceScope.launch {
             val host = "127.0.0.1"
 
             val key = try {
@@ -157,8 +165,12 @@ class AdbPairingService : Service() {
                 return@launch
             }
 
-            AdbPairingClient(host, port, code, key).runCatching {
-                start()
+            runCatching {
+                withTimeout(pairingTimeoutMillis) {
+                    AdbPairingClient(host, port, code, key).use { client ->
+                        client.start()
+                    }
+                }
             }.onFailure {
                 handleResult(false, it)
             }.onSuccess {
@@ -194,6 +206,9 @@ class AdbPairingService : Service() {
                 }
                 is AdbKeyException -> {
                     getString(R.string.adb_error_key_store)
+                }
+                is TimeoutCancellationException -> {
+                    getString(R.string.cannot_connect_port)
                 }
                 else -> {
                     exception?.let { Log.getStackTraceString(it) }

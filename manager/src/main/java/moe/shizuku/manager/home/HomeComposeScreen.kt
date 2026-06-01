@@ -2,10 +2,10 @@ package moe.shizuku.manager.home
 
 import android.os.Build
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -29,15 +29,15 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material.icons.outlined.Wifi
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -51,20 +51,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import moe.shizuku.manager.R
 import moe.shizuku.manager.model.ServiceStatus
+import moe.shizuku.manager.starter.Starter
 import moe.shizuku.manager.ui.theme.ShizukuComposeTheme
 import moe.shizuku.manager.utils.EnvironmentUtils
 import moe.shizuku.manager.utils.UserHandleCompat
-import moe.shizuku.manager.starter.Starter
 import rikka.html.text.HtmlCompat
 
 @Composable
@@ -80,6 +80,8 @@ fun HomeComposeScreen(
     onOpenWirelessGuide: () -> Unit,
     onPairWireless: () -> Unit,
     onStartWirelessAdb: () -> Unit,
+    onCopyAdbCommand: () -> Unit,
+    onSendAdbCommand: () -> Unit,
     onOpenAdbPermissionHelp: () -> Unit,
     onOpenLearnMore: () -> Unit
 ) {
@@ -96,6 +98,8 @@ fun HomeComposeScreen(
             onOpenWirelessGuide = onOpenWirelessGuide,
             onPairWireless = onPairWireless,
             onStartWirelessAdb = onStartWirelessAdb,
+            onCopyAdbCommand = onCopyAdbCommand,
+            onSendAdbCommand = onSendAdbCommand,
             onOpenAdbPermissionHelp = onOpenAdbPermissionHelp,
             onOpenLearnMore = onOpenLearnMore
         )
@@ -116,6 +120,8 @@ private fun HomeScreenContent(
     onOpenWirelessGuide: () -> Unit,
     onPairWireless: () -> Unit,
     onStartWirelessAdb: () -> Unit,
+    onCopyAdbCommand: () -> Unit,
+    onSendAdbCommand: () -> Unit,
     onOpenAdbPermissionHelp: () -> Unit,
     onOpenLearnMore: () -> Unit
 ) {
@@ -256,51 +262,28 @@ private fun HomeScreenContent(
             AlertDialog(
                 onDismissRequest = { dialog = null },
                 confirmButton = {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        TextButton(onClick = {
-                            rikka.core.util.ClipboardUtils.put(context, Starter.adbCommand)
-                            dialog = null
-                        }) {
-                            Text(stringResource(R.string.home_adb_dialog_view_command_copy_button))
-                        }
-                        TextButton(onClick = {
-                            val sendIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(android.content.Intent.EXTRA_TEXT, Starter.adbCommand)
-                            }
-                            context.startActivity(
-                                android.content.Intent.createChooser(
-                                    sendIntent,
-                                    context.getString(R.string.home_adb_dialog_view_command_button_send)
-                                )
-                            )
-                            dialog = null
-                        }) {
-                            Text(stringResource(R.string.home_adb_dialog_view_command_button_send))
-                        }
+                    TextButton(onClick = {
+                        dialog = null
+                        onCopyAdbCommand()
+                    }) {
+                        Text(stringResource(R.string.home_adb_dialog_view_command_copy_button))
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { dialog = null }) {
-                        Text(stringResource(android.R.string.cancel))
+                    TextButton(onClick = {
+                        dialog = null
+                        onSendAdbCommand()
+                    }) {
+                        Text(stringResource(R.string.home_adb_dialog_view_command_button_send))
                     }
                 },
                 title = { Text(stringResource(R.string.home_adb_button_view_command)) },
                 text = {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(
-                            text = Starter.adbCommand,
-                            fontFamily = FontFamily.Monospace,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Text(
-                            text = plainText(context.getString(R.string.home_adb_dialog_view_command_message, Starter.adbCommand))
-                                .removePrefix(Starter.adbCommand)
-                                .trim(),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    Text(
+                        text = Starter.adbCommand,
+                        fontFamily = FontFamily.Monospace,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 },
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                 shape = MaterialTheme.shapes.extraLarge
@@ -313,35 +296,22 @@ private fun HomeScreenContent(
 
 @Composable
 private fun LinkRow(label: String, url: String) {
-    val context = LocalContext.current
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { moe.shizuku.manager.utils.CustomTabsHelper.launchUrlOrCopy(context, url) }
-            .padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(Icons.Outlined.Link, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-        Spacer(modifier = Modifier.size(12.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.primary
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Icon(
-            Icons.AutoMirrored.Outlined.OpenInNew,
-            contentDescription = stringResource(R.string.action_open),
-            tint = MaterialTheme.colorScheme.primary
-        )
-    }
+    Text(
+        text = label,
+        color = MaterialTheme.colorScheme.primary,
+        style = MaterialTheme.typography.bodyMedium
+    )
+    Text(
+        text = url,
+        color = MaterialTheme.colorScheme.secondary,
+        style = MaterialTheme.typography.bodySmall
+    )
 }
 
-@Immutable
-private sealed interface HomeDialog {
-    data object About : HomeDialog
-    data object Stop : HomeDialog
-    data object AdbCommand : HomeDialog
+private enum class HomeDialog {
+    About,
+    Stop,
+    AdbCommand
 }
 
 private fun buildHomeItems(
@@ -361,7 +331,6 @@ private fun buildHomeItems(
 ): List<HomeUiItem> {
     val resolvedStatus = status ?: ServiceStatus()
     val running = resolvedStatus.isRunning
-    val canManage = resolvedStatus.permission
     val items = mutableListOf<HomeUiItem>()
 
     items += HomeUiItem.Status(
@@ -371,23 +340,26 @@ private fun buildHomeItems(
             context.getString(R.string.home_status_service_not_running, context.getString(R.string.app_name))
         },
         summary = if (running) {
-            val user = if (resolvedStatus.uid == 0) {
-                context.getString(R.string.service_user_root)
+            if (resolvedStatus.hasCompleteVersion) {
+                context.getString(
+                    R.string.home_status_service_version,
+                    if (resolvedStatus.uid == 0) "root" else "adb",
+                    resolvedStatus.versionName
+                )
             } else {
-                context.getString(R.string.service_user_adb)
+                context.getString(
+                    R.string.home_status_service_version_incomplete,
+                    resolvedStatus.apiVersion,
+                    if (resolvedStatus.uid == 0) "root" else "adb"
+                )
             }
-            context.getString(
-                R.string.home_status_service_version,
-                user,
-                resolvedStatus.versionName
-            )
         } else {
-            context.getString(R.string.home_status_compose_not_running_summary)
+            ""
         },
         running = running
     )
 
-    if (canManage) {
+    if (resolvedStatus.permission) {
         items += HomeUiItem.Action(
             title = context.resources.getQuantityString(
                 R.plurals.home_app_management_authorized_apps_count,
@@ -429,19 +401,10 @@ private fun buildHomeItems(
     }
 
     if (UserHandleCompat.myUserId() == 0) {
-        val rootAvailable = EnvironmentUtils.isRooted()
+        val root = EnvironmentUtils.isRooted()
         val rootRestart = running && resolvedStatus.uid == 0
-        if (rootAvailable || !rootAvailable) {
-            items += HomeUiItem.Action(
-                title = context.getString(R.string.home_root_title),
-                summary = plainText(
-                    context.getString(R.string.home_root_description, "Don't kill my app!")
-                ),
-                icon = Icons.Outlined.PlayArrow,
-                enabled = true,
-                primaryActionLabel = if (rootRestart) context.getString(R.string.home_root_button_restart) else context.getString(R.string.home_root_button_start),
-                onPrimaryAction = if (rootRestart) onRestartRoot else onStartRoot
-            )
+        if (root) {
+            items += rootItem(context, rootRestart, onStartRoot, onRestartRoot)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || EnvironmentUtils.getAdbTcpPort() > 0) {
@@ -465,12 +428,16 @@ private fun buildHomeItems(
 
         items += HomeUiItem.Action(
             title = context.getString(R.string.home_adb_title),
-            summary = plainText(context.getString(R.string.home_adb_description, "")),
+            summary = plainText(context.getString(R.string.home_adb_description, moe.shizuku.manager.Helps.ADB.get())),
             icon = Icons.Outlined.Computer,
             enabled = true,
             primaryActionLabel = context.getString(R.string.home_adb_button_view_command),
             onPrimaryAction = onShowAdbCommand
         )
+
+        if (!root) {
+            items += rootItem(context, rootRestart, onStartRoot, onRestartRoot)
+        }
     }
 
     items += HomeUiItem.Action(
@@ -482,6 +449,22 @@ private fun buildHomeItems(
     )
     return items
 }
+
+private fun rootItem(
+    context: android.content.Context,
+    rootRestart: Boolean,
+    onStartRoot: () -> Unit,
+    onRestartRoot: () -> Unit
+) = HomeUiItem.Action(
+    title = context.getString(R.string.home_root_title),
+    summary = plainText(
+        context.getString(R.string.home_root_description, "Don't kill my app!")
+    ),
+    icon = Icons.Outlined.PlayArrow,
+    enabled = true,
+    primaryActionLabel = if (rootRestart) context.getString(R.string.home_root_button_restart) else context.getString(R.string.home_root_button_start),
+    onPrimaryAction = if (rootRestart) onRestartRoot else onStartRoot
+)
 
 @Composable
 private fun StatusCard(item: HomeUiItem.Status) {

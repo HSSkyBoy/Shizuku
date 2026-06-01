@@ -138,7 +138,16 @@ class AdbWirelessHelper {
     }
 
 
-    private fun changeTcpipPortIfNeeded(
+    private fun getConfiguredTcpipPort(): Int? {
+        val value = ShizukuSettings.getPreferences().getString(TCPIP_PORT, "")?.trim()
+        if (value.isNullOrEmpty()) {
+            return null
+        }
+        val port = value.toIntOrNull()
+        return port?.takeIf { it in 1..65535 }
+    }
+
+    private fun changeTcpipPort(
         host: String,
         port: Int,
         newPort: Int,
@@ -146,11 +155,6 @@ class AdbWirelessHelper {
         commandOutput: StringBuilder,
         onOutput: (String) -> Unit
     ): Boolean {
-        if (newPort < 1 || newPort > 65535) {
-            Log.w(AppConstants.TAG, "Invalid TCP/IP port: $newPort")
-            return false
-        }
-
         AdbClient(host, port, key).use { client ->
             client.connect()
 
@@ -211,19 +215,9 @@ class AdbWirelessHelper {
                 val commandOutput = StringBuilder()
 
                 executeAdbRootIfNeeded(host, port, key, commandOutput, onOutput)
-                var newPort: Int = -1
-                ShizukuSettings.getPreferences().getString(TCPIP_PORT, "").let {
-                    if (it.isNullOrEmpty())
-                        true
-                    else try {
-                        newPort = it.toInt()
-                        false
-                    } catch (_: NumberFormatException) {
-                        true
-                    }
-                }
+                val newPort = getConfiguredTcpipPort()
                 val finalPort =
-                    if (changeTcpipPortIfNeeded(
+                    if (newPort != null && newPort != port && changeTcpipPort(
                             host,
                             port,
                             newPort,
@@ -246,7 +240,9 @@ class AdbWirelessHelper {
                             return@launch
                         }
                         newPort
-                    } else port
+                    } else {
+                        port
+                    }
 
                 AdbClient(host, finalPort, key).use { client ->
                     try {

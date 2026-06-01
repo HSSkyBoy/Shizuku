@@ -25,8 +25,18 @@ subprojects {
 }
 
 apply from: 'api/manifest.gradle'
-def gitCommitId = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
-def gitCommitCount = Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())
+def gitOutput = { List<String> command ->
+    def process = command.execute(null, project.rootDir)
+    def output = new StringBuffer()
+    def error = new StringBuffer()
+    process.waitForProcessOutput(output, error)
+    if (process.exitValue() != 0) {
+        throw new GradleException("${command.join(' ')} failed: ${error.toString().trim()}")
+    }
+    return output.toString().trim()
+}
+def gitCommitId = gitOutput(['git', 'rev-parse', '--short', 'HEAD'])
+def gitCommitCount = Integer.parseInt(gitOutput(['git', 'rev-list', '--count', 'HEAD']))
 def baseVersionName = "${api_version_major}.6.1-RC1"
 ext {
     versionCode = gitCommitCount

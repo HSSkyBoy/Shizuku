@@ -8,6 +8,7 @@
     <string name="home_status_service_is_running">%1$s is running</string>
     <string name="home_status_service_not_running">%1$s is not running</string>
     <string name="home_status_service_version">Version %2$s, %1$s</string>
+    <string name="home_status_service_version_incomplete">Version %1$d.x, %2$s</string>
     <string name="home_status_service_version_update"><![CDATA[Version %2$s, %1$s<br>Start again to update to version %3$s]]></string>
     <string name="service_user_root" translatable="false">root</string>
     <string name="service_user_adb" translatable="false">adb</string>
@@ -176,6 +177,7 @@ With %1$s, in any terminal app, you can connect to and interact with the shell r
     <string name="starting_root_shell" translatable="false">Starting root shell…</string>
     <string name="starting_on_wireless_adb" translatable="false">Starting service with wirelessADB…</string>
     <string name="start_with_root_failed">Can\'t start service because root permission is not granted or this device is not rooted.</string>
+    <string name="start_service_timeout">Shizuku service did not respond in time. Please try starting again.</string>
 
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Can\'t start browser</string>
