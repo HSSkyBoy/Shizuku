@@ -37,7 +37,7 @@ def gitOutput = { List<String> command ->
 }
 def gitCommitId = gitOutput(['git', 'rev-parse', '--short', 'HEAD'])
 def gitCommitCount = Integer.parseInt(gitOutput(['git', 'rev-list', '--count', 'HEAD']))
-def baseVersionName = "${api_version_major}.6.1-RC1"
+def baseVersionName = "${api_version_major}.6.1-RC2"
 ext {
     versionCode = gitCommitCount
     versionName = "${baseVersionName}.r${gitCommitCount}.${gitCommitId}"
