@@ -13,6 +13,9 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import moe.shizuku.manager.AppConstants
 import moe.shizuku.manager.app.AppActivity
 import rikka.compatibility.DeviceCompatibility
@@ -26,20 +29,18 @@ class AdbPairingTutorialActivity : AppActivity() {
         private const val REQUEST_LOCAL_NETWORK_PERMISSION = 1001
     }
 
-    private var notificationEnabled: Boolean = false
+    private var state by mutableStateOf(PairingTutorialState())
+    private var localNetworkPermissionRequested = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        notificationEnabled = isNotificationEnabled()
-
-        if (notificationEnabled) {
-            ensureLocalNetworkPermissionOrStartPairing()
-        }
+        syncState()
+        startPairingIfReady()
 
         setContent {
             AdbPairingTutorialComposeScreen(
-                notificationEnabled = notificationEnabled,
+                state = state,
                 showMiuiHint = DeviceCompatibility.isMiui(),
                 onNavigateUp = { finish() },
                 onOpenDeveloperOptions = {
@@ -58,6 +59,10 @@ class AdbPairingTutorialActivity : AppActivity() {
                         startActivity(intent)
                     } catch (_: ActivityNotFoundException) {
                     }
+                },
+                onRequestLocalNetworkPermission = {
+                    localNetworkPermissionRequested = false
+                    ensureLocalNetworkPermissionOrStartPairing()
                 }
             )
         }
@@ -75,14 +80,14 @@ class AdbPairingTutorialActivity : AppActivity() {
     override fun onResume() {
         super.onResume()
 
-        val newNotificationEnabled = isNotificationEnabled()
-        if (newNotificationEnabled != notificationEnabled) {
-            notificationEnabled = newNotificationEnabled
-
-            if (newNotificationEnabled) {
-                ensureLocalNetworkPermissionOrStartPairing()
-            }
-            recreate()
+        val oldState = state
+        syncState()
+        if (
+            state.notificationEnabled &&
+            state.localNetworkPermissionGranted &&
+            (!oldState.notificationEnabled || !oldState.localNetworkPermissionGranted || state.pairingServiceStartFailed)
+        ) {
+            startPairingService()
         }
     }
 
@@ -95,10 +100,23 @@ class AdbPairingTutorialActivity : AppActivity() {
 
     private fun ensureLocalNetworkPermissionOrStartPairing() {
         if (hasLocalNetworkPermission()) {
+            syncState()
             startPairingService()
             return
         }
+        if (localNetworkPermissionRequested) {
+            syncState()
+            return
+        }
+        localNetworkPermissionRequested = true
         requestPermissions(arrayOf(ACCESS_LOCAL_NETWORK), REQUEST_LOCAL_NETWORK_PERMISSION)
+        syncState()
+    }
+
+    private fun startPairingIfReady() {
+        if (state.notificationEnabled) {
+            ensureLocalNetworkPermissionOrStartPairing()
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -110,6 +128,8 @@ class AdbPairingTutorialActivity : AppActivity() {
         if (requestCode != REQUEST_LOCAL_NETWORK_PERMISSION) {
             return
         }
+        localNetworkPermissionRequested = false
+        syncState()
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             startPairingService()
         }
@@ -119,6 +139,7 @@ class AdbPairingTutorialActivity : AppActivity() {
         val intent = AdbPairingService.startIntent(this)
         try {
             startForegroundService(intent)
+            state = state.copy(pairingServiceStartFailed = false)
         } catch (e: Throwable) {
             Log.e(AppConstants.TAG, "startForegroundService", e)
 
@@ -131,7 +152,23 @@ class AdbPairingTutorialActivity : AppActivity() {
                     Toast.makeText(this, "OP_START_FOREGROUND is denied. What are you doing?", Toast.LENGTH_LONG).show()
                 }
                 startService(intent)
+                state = state.copy(pairingServiceStartFailed = false)
+            } else {
+                state = state.copy(pairingServiceStartFailed = true)
             }
         }
     }
+
+    private fun syncState() {
+        state = state.copy(
+            notificationEnabled = isNotificationEnabled(),
+            localNetworkPermissionGranted = hasLocalNetworkPermission()
+        )
+    }
 }
+
+data class PairingTutorialState(
+    val notificationEnabled: Boolean = false,
+    val localNetworkPermissionGranted: Boolean = true,
+    val pairingServiceStartFailed: Boolean = false
+)

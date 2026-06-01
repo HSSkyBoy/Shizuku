@@ -44,19 +44,21 @@ import moe.shizuku.manager.ui.theme.ShizukuComposeTheme
 
 @Composable
 fun AdbPairingTutorialComposeScreen(
-    notificationEnabled: Boolean,
+    state: PairingTutorialState,
     showMiuiHint: Boolean,
     onNavigateUp: () -> Unit,
     onOpenDeveloperOptions: () -> Unit,
-    onOpenNotificationOptions: () -> Unit
+    onOpenNotificationOptions: () -> Unit,
+    onRequestLocalNetworkPermission: () -> Unit
 ) {
     ShizukuComposeTheme {
         AdbPairingTutorialContent(
-            notificationEnabled = notificationEnabled,
+            state = state,
             showMiuiHint = showMiuiHint,
             onNavigateUp = onNavigateUp,
             onOpenDeveloperOptions = onOpenDeveloperOptions,
-            onOpenNotificationOptions = onOpenNotificationOptions
+            onOpenNotificationOptions = onOpenNotificationOptions,
+            onRequestLocalNetworkPermission = onRequestLocalNetworkPermission
         )
     }
 }
@@ -64,12 +66,14 @@ fun AdbPairingTutorialComposeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AdbPairingTutorialContent(
-    notificationEnabled: Boolean,
+    state: PairingTutorialState,
     showMiuiHint: Boolean,
     onNavigateUp: () -> Unit,
     onOpenDeveloperOptions: () -> Unit,
-    onOpenNotificationOptions: () -> Unit
+    onOpenNotificationOptions: () -> Unit,
+    onRequestLocalNetworkPermission: () -> Unit
 ) {
+    val readyForPairing = state.notificationEnabled && state.localNetworkPermissionGranted && !state.pairingServiceStartFailed
     val steps = listOf(
         PairingStep(
             icon = Icons.Outlined.LooksOne,
@@ -111,7 +115,7 @@ private fun AdbPairingTutorialContent(
                 ),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                if (notificationEnabled) {
+                if (state.notificationEnabled) {
                     item {
                         CalloutCard(
                             icon = Icons.Outlined.NotificationsActive,
@@ -128,12 +132,30 @@ private fun AdbPairingTutorialContent(
                     }
                 }
 
-                if (notificationEnabled) {
+                if (state.notificationEnabled) {
                     item {
-                        CalloutCard(
-                            icon = Icons.Outlined.Info,
-                            text = stringResource(R.string.adb_pairing_tutorial_content_network),
-                            secondaryText = stringResource(R.string.adb_pairing_tutorial_content_network_limation_not_foreground)
+                        if (state.localNetworkPermissionGranted) {
+                            CalloutCard(
+                                icon = Icons.Outlined.Info,
+                                text = stringResource(R.string.adb_pairing_tutorial_content_network),
+                                secondaryText = stringResource(R.string.adb_pairing_tutorial_content_network_limation_not_foreground)
+                            )
+                        } else {
+                            WarningCard(
+                                title = stringResource(R.string.adb_pairing_tutorial_content_network_blocked),
+                                action = stringResource(android.R.string.ok),
+                                onAction = onRequestLocalNetworkPermission
+                            )
+                        }
+                    }
+                }
+
+                if (state.pairingServiceStartFailed) {
+                    item {
+                        WarningCard(
+                            title = stringResource(R.string.adb_pairing_tutorial_content_pairing_service_failed),
+                            action = stringResource(R.string.action_retry),
+                            onAction = onRequestLocalNetworkPermission
                         )
                     }
                 }
@@ -147,7 +169,7 @@ private fun AdbPairingTutorialContent(
                     }
                 }
 
-                if (notificationEnabled) {
+                if (readyForPairing) {
                     items(steps) { step ->
                         StepCard(step)
                     }

@@ -59,6 +59,9 @@
     <string name="adb_pairing_tutorial_content_finish">Back to Shizuku and start Shizuku.</string>
     <string name="adb_pairing_tutorial_content_network">Shizuku needs to access local network. It is controlled by the network permission.</string>
     <string name="adb_pairing_tutorial_content_network_limation_not_foreground">Some systems (such as MIUI) disallow apps to access the network when they are not visible, even if the app uses foreground service as standard. Please disable battery optimization features for Shizuku on such systems.</string>
+    <string name="adb_pairing_tutorial_content_network_blocked">The pairing process needs local network access to discover the pairing service. Please allow local network access for Shizuku.</string>
+    <string name="adb_pairing_tutorial_content_pairing_service_failed">Could not start the pairing service. Please try again.</string>
+    <string name="action_retry">Retry</string>
 
     <!-- Home - Root -->
     <string name="home_root_title"><![CDATA[Start (for rooted devices)]]></string>
