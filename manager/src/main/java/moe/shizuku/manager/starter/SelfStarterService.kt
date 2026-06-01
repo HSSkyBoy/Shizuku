@@ -1,6 +1,10 @@
 package moe.shizuku.manager.starter
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
+import android.content.pm.ServiceInfo
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
@@ -16,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import moe.shizuku.manager.AppConstants
+import moe.shizuku.manager.R
 import moe.shizuku.manager.adb.AdbKeyException
 import moe.shizuku.manager.adb.AdbMdns
 import moe.shizuku.manager.adb.AdbWirelessHelper
@@ -48,6 +53,7 @@ class SelfStarterService : Service(), LifecycleOwner {
     override fun onCreate() {
         super.onCreate()
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
+        startServiceNotification()
         Log.i(AppConstants.TAG, "SelfStarterService created")
     }
 
@@ -134,10 +140,46 @@ class SelfStarterService : Service(), LifecycleOwner {
                             applicationContext, "Error: ${e.message}", Toast.LENGTH_LONG
                         ).show()
                     }
+                    adbWirelessHelper.disableWirelessAdb(contentResolver)
                     stopSelf()
                 }
             },
-            onSuccess = { lifecycleScope.launch(Dispatchers.Main) { stopSelf() } })
+            onSuccess = {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    adbWirelessHelper.disableWirelessAdb(contentResolver)
+                    stopSelf()
+                }
+            })
+    }
+
+    private fun startServiceNotification() {
+        val nm = getSystemService(NotificationManager::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    AppConstants.NOTIFICATION_CHANNEL_STATUS,
+                    getString(R.string.notification_channel_service_status),
+                    NotificationManager.IMPORTANCE_LOW
+                )
+            )
+        }
+
+        val notification = Notification.Builder(this, AppConstants.NOTIFICATION_CHANNEL_STATUS)
+            .setSmallIcon(R.drawable.ic_system_icon)
+            .setColor(getColor(R.color.notification))
+            .setContentTitle(getString(R.string.notification_service_starting))
+            .setOngoing(true)
+            .build()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(
+                AppConstants.NOTIFICATION_ID_STATUS,
+                notification,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE
+            )
+        } else {
+            startForeground(AppConstants.NOTIFICATION_ID_STATUS, notification)
+        }
     }
 
     override fun onDestroy() {

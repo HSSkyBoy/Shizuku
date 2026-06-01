@@ -97,7 +97,7 @@ class BootCompleteReceiver : BroadcastReceiver() {
             )
             if (wirelessAdbStatus) {
                 val intentService = Intent(context, SelfStarterService::class.java)
-                context.startService(intentService)
+                context.startForegroundService(intentService)
             }
         } catch (e: SecurityException) {
             e.printStackTrace()

@@ -25,7 +25,7 @@ class ShizukuReceiver : BroadcastReceiver() {
                 )
                 if (wirelessAdbStatus) {
                     val intentService = Intent(context, SelfStarterService::class.java)
-                    context.startService(intentService)
+                    context.startForegroundService(intentService)
                 }
             }
         }

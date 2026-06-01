@@ -154,7 +154,8 @@
         <service
             android:name=".starter.SelfStarterService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="shortService" />
 
         <receiver
             android:name=".receiver.BootCompleteReceiver"

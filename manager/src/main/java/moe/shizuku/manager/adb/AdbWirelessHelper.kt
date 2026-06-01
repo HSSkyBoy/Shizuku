@@ -82,6 +82,17 @@ class AdbWirelessHelper {
         }
     }
 
+    fun disableWirelessAdb(contentResolver: ContentResolver) {
+        try {
+            Settings.Global.putInt(contentResolver, "adb_wifi_enabled", 0)
+            Log.i(AppConstants.TAG, "Wireless Debugging disabled via secure setting.")
+        } catch (se: SecurityException) {
+            Log.e(AppConstants.TAG, "Permission denied trying to disable wireless debugging.", se)
+        } catch (e: Exception) {
+            Log.e(AppConstants.TAG, "Error disabling wireless debugging.", e)
+        }
+    }
+
     fun launchStarterActivity(context: Context, host: String, port: Int) {
         val intent = Intent(context, StarterActivity::class.java).apply {
             putExtra(StarterActivity.EXTRA_IS_ROOT, false)
