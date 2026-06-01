@@ -14,7 +14,6 @@ import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import moe.shizuku.manager.AppConstants.EXTRA
 import moe.shizuku.manager.R
@@ -167,7 +166,7 @@ private class ViewModel(
         sb.append("Starting with root...").append('\n').append('\n')
         postResult()
 
-        GlobalScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             if (!Shell.getShell().isRoot) {
                 Shell.getCachedShell()?.close()
                 sb.append('\n').append("Can't open root shell, try again...").append('\n')
