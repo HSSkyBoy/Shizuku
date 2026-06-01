@@ -1,6 +1,7 @@
 package moe.shizuku.manager.home
 
 import android.Manifest.permission.WRITE_SECURE_SETTINGS
+import android.app.NotificationManager
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -18,6 +19,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import moe.shizuku.manager.Helps
 import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.adb.AdbMdns
+import moe.shizuku.manager.adb.AdbPairingService
 import moe.shizuku.manager.adb.AdbWirelessHelper
 import moe.shizuku.manager.app.AppActivity
 import moe.shizuku.manager.management.AppsManagementActivity
@@ -35,6 +37,10 @@ import rikka.shizuku.Shizuku
 
 abstract class HomeActivity : AppActivity() {
 
+    companion object {
+        const val EXTRA_START_SERVICE_VIA_WADB = "moe.shizuku.manager.extra.START_SERVICE_VIA_WADB"
+    }
+
     private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
         checkServerStatus()
         appsModel.load()
@@ -49,6 +55,8 @@ abstract class HomeActivity : AppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        handleIntent(intent)
 
         homeModel.serviceStatus.observe(this) {
             if (it.status == Status.SUCCESS) {
@@ -85,10 +93,20 @@ abstract class HomeActivity : AppActivity() {
                     }
                 },
                 onStartWirelessAdb = {
+                    val adbWirelessHelper = AdbWirelessHelper()
+                    val customPort = adbWirelessHelper.getConfiguredTcpipPort() ?: -1
+                    val systemPort = EnvironmentUtils.getAdbTcpPort()
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        showWirelessAdbDiscoveryDialog()
+                        if (systemPort in 1..65535) {
+                            startWirelessAdb(systemPort)
+                        } else if (customPort in 1..65535) {
+                            startWirelessAdb(customPort)
+                        } else {
+                            showWirelessAdbDiscoveryDialog()
+                        }
                     } else {
-                        val port = EnvironmentUtils.getAdbTcpPort()
+                        val port = if (systemPort > 0) systemPort else customPort
                         if (port > 0) {
                             startWirelessAdb(port)
                         } else {
@@ -114,6 +132,30 @@ abstract class HomeActivity : AppActivity() {
     override fun onResume() {
         super.onResume()
         checkServerStatus()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        if (intent?.getBooleanExtra(EXTRA_START_SERVICE_VIA_WADB, false) == true) {
+            val nm = getSystemService(NotificationManager::class.java)
+            nm.cancel(AdbPairingService.NOTIFICATION_ID)
+
+            val adbWirelessHelper = AdbWirelessHelper()
+            val customPort = adbWirelessHelper.getConfiguredTcpipPort() ?: -1
+            val systemPort = EnvironmentUtils.getAdbTcpPort()
+
+            if (systemPort in 1..65535) {
+                startWirelessAdb(systemPort)
+            } else if (customPort in 1..65535) {
+                startWirelessAdb(customPort)
+            } else {
+                showWirelessAdbDiscoveryDialog()
+            }
+        }
     }
 
     private fun checkServerStatus() {
@@ -159,7 +201,7 @@ abstract class HomeActivity : AppActivity() {
     }
 
     private fun startWirelessAdb(port: Int) {
-        AdbWirelessHelper().launchStarterActivity(this, "127.0.0.1", port, true)
+        AdbWirelessHelper().launchStarterActivity(this, "127.0.0.1", port)
     }
 
     private fun showWirelessAdbNotEnabledDialog() {
@@ -208,8 +250,9 @@ abstract class HomeActivity : AppActivity() {
             }
             .create()
 
-        dialog.setCanceledOnTouchOutside(false)
-        dialog.setOnShowListener {
+        val adbDialog = dialog
+        adbDialog.setCanceledOnTouchOutside(false)
+        adbDialog.setOnShowListener {
             adbMdns.start()
             discoveredPort.observe(this, observer)
             if (checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
@@ -217,18 +260,18 @@ abstract class HomeActivity : AppActivity() {
                 Settings.Global.putInt(contentResolver, Settings.Global.ADB_ENABLED, 1)
                 Settings.Global.putLong(contentResolver, "adb_allowed_connection_time", 0L)
             }
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            adbDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 openDevelopmentSettings()
             }
-            dialog.getButton(AlertDialog.BUTTON_NEUTRAL)?.setOnClickListener {
-                dialog.dismiss()
+            adbDialog.getButton(AlertDialog.BUTTON_NEUTRAL)?.setOnClickListener {
+                adbDialog.dismiss()
                 startWirelessAdb(EnvironmentUtils.getAdbTcpPort())
             }
         }
-        dialog.setOnDismissListener {
+        adbDialog.setOnDismissListener {
             discoveredPort.removeObserver(observer)
             adbMdns.stop()
         }
-        dialog.show()
+        adbDialog.show()
     }
 }

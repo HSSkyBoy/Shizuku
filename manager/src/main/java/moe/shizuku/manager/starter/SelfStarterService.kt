@@ -117,19 +117,22 @@ class SelfStarterService : Service(), LifecycleOwner {
         } else {
             Log.i(
                 AppConstants.TAG,
-                "Using fallback: SystemProperties for ADB port (or wireless debugging setting off)."
+                "Using fallback: SystemProperties/Custom Port for ADB port (or wireless debugging setting off)."
             )
-            val port = EnvironmentUtils.getAdbTcpPort()
+            val systemPort = EnvironmentUtils.getAdbTcpPort()
+            val customPort = adbWirelessHelper.getConfiguredTcpipPort() ?: -1
+            val port = if (systemPort > 0) systemPort else customPort
+
             if (port > 0) {
                 Log.i(
                     AppConstants.TAG,
-                    "Found adb port via SystemProperties: $port, starting Shizuku directly."
+                    "Found adb port: $port, starting Shizuku directly."
                 )
                 startShizukuViaAdb("127.0.0.1", port, disableWirelessDebuggingWhenFinished)
             } else {
                 Log.e(
                     AppConstants.TAG,
-                    "Could not determine ADB TCP port via SystemProperties, aborting."
+                    "Could not determine ADB TCP port, aborting."
                 )
                 stopSelf()
             }

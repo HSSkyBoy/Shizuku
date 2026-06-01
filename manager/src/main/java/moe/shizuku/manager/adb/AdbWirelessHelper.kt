@@ -24,6 +24,7 @@ import java.net.Socket
 class AdbWirelessHelper {
     companion object {
         private const val TCPIP_REBIND_TIMEOUT_MS = 5_000L
+        private const val DEFAULT_ADB_PORT = 5555
     }
 
     fun validateThenEnableWirelessAdb(
@@ -138,7 +139,7 @@ class AdbWirelessHelper {
     }
 
 
-    private fun getConfiguredTcpipPort(): Int? {
+    fun getConfiguredTcpipPort(): Int? {
         val value = ShizukuSettings.getPreferences().getString(TCPIP_PORT, "")?.trim()
         if (value.isNullOrEmpty()) {
             return null
@@ -190,6 +191,25 @@ class AdbWirelessHelper {
         return false
     }
 
+    private fun changeTcpipPortAfterStartIfNeeded(
+        host: String,
+        currentPort: Int,
+        key: AdbKey,
+        commandOutput: StringBuilder,
+        onOutput: (String) -> Unit
+    ) {
+        val newPort = getConfiguredTcpipPort() ?: DEFAULT_ADB_PORT
+        if (newPort == currentPort) {
+            return
+        }
+
+        try {
+            changeTcpipPort(host, currentPort, newPort, key, commandOutput, onOutput)
+        } catch (e: Throwable) {
+            Log.w(AppConstants.TAG, "Failed to switch ADB TCP/IP port after Shizuku start", e)
+        }
+    }
+
     fun startShizukuViaAdb(
         host: String,
         port: Int,
@@ -215,36 +235,8 @@ class AdbWirelessHelper {
                 val commandOutput = StringBuilder()
 
                 executeAdbRootIfNeeded(host, port, key, commandOutput, onOutput)
-                val newPort = getConfiguredTcpipPort()
-                val finalPort =
-                    if (newPort != null && newPort != port && changeTcpipPort(
-                            host,
-                            port,
-                            newPort,
-                            key,
-                            commandOutput,
-                            onOutput
-                        )
-                    ) {
-                        if (!waitForAdbPortAvailable(
-                                host = host,
-                                port = newPort,
-                                timeoutMs = TCPIP_REBIND_TIMEOUT_MS
-                            )
-                        ) {
-                            Log.w(
-                                AppConstants.TAG,
-                                "Timeout waiting for ADB to listen on new port $newPort"
-                            )
-                            onError(Exception("Timeout waiting for ADB to listen on new port $newPort"))
-                            return@launch
-                        }
-                        newPort
-                    } else {
-                        port
-                    }
 
-                AdbClient(host, finalPort, key).use { client ->
+                AdbClient(host, port, key).use { client ->
                     try {
                         client.connect()
                         Log.i(
@@ -264,6 +256,8 @@ class AdbWirelessHelper {
                         return@launch
                     }
                 }
+
+                changeTcpipPortAfterStartIfNeeded(host, port, key, commandOutput, onOutput)
 
                 Log.i(AppConstants.TAG, "Shizuku start via ADB completed successfully")
                 onSuccess()

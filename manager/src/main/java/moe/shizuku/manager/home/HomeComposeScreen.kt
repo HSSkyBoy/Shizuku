@@ -59,6 +59,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import moe.shizuku.manager.Helps
 import moe.shizuku.manager.R
 import moe.shizuku.manager.model.ServiceStatus
 import moe.shizuku.manager.starter.Starter
@@ -404,7 +405,7 @@ private fun buildHomeItems(
         val root = EnvironmentUtils.isRooted()
         val rootRestart = running && resolvedStatus.uid == 0
         if (root) {
-            items += rootItem(context, rootRestart, onStartRoot, onRestartRoot)
+            items += rootItem(context, running, rootRestart, onStartRoot, onRestartRoot)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || EnvironmentUtils.getAdbTcpPort() > 0) {
@@ -428,7 +429,7 @@ private fun buildHomeItems(
 
         items += HomeUiItem.Action(
             title = context.getString(R.string.home_adb_title),
-            summary = plainText(context.getString(R.string.home_adb_description, moe.shizuku.manager.Helps.ADB.get())),
+            summary = plainText(context.getString(R.string.home_adb_description, Helps.ADB.get())),
             icon = Icons.Outlined.Computer,
             enabled = true,
             primaryActionLabel = context.getString(R.string.home_adb_button_view_command),
@@ -436,7 +437,7 @@ private fun buildHomeItems(
         )
 
         if (!root) {
-            items += rootItem(context, rootRestart, onStartRoot, onRestartRoot)
+            items += rootItem(context, running, rootRestart, onStartRoot, onRestartRoot)
         }
     }
 
@@ -452,13 +453,26 @@ private fun buildHomeItems(
 
 private fun rootItem(
     context: android.content.Context,
+    running: Boolean,
     rootRestart: Boolean,
     onStartRoot: () -> Unit,
     onRestartRoot: () -> Unit
 ) = HomeUiItem.Action(
     title = context.getString(R.string.home_root_title),
     summary = plainText(
-        context.getString(R.string.home_root_description, "Don't kill my app!")
+        buildString {
+            append(context.getString(R.string.home_root_description, "Don't kill my app!"))
+            if (running) {
+                append("<p>")
+                append(
+                    context.getString(
+                        R.string.home_root_description_sui,
+                        "Sui",
+                        "Sui"
+                    )
+                )
+            }
+        }
     ),
     icon = Icons.Outlined.PlayArrow,
     enabled = true,

@@ -125,7 +125,8 @@ private fun AdbPairingTutorialContent(
                 } else {
                     item {
                         WarningCard(
-                            title = stringResource(R.string.adb_pairing_tutorial_content_notification_blocked),
+                            title = stringResource(R.string.permission_missing),
+                            body = stringResource(R.string.adb_pairing_tutorial_content_notification_blocked),
                             action = stringResource(R.string.notification_settings),
                             onAction = onOpenNotificationOptions
                         )
@@ -142,8 +143,9 @@ private fun AdbPairingTutorialContent(
                             )
                         } else {
                             WarningCard(
-                                title = stringResource(R.string.adb_pairing_tutorial_content_network_blocked),
-                                action = stringResource(android.R.string.ok),
+                                title = stringResource(R.string.permission_missing),
+                                body = stringResource(R.string.adb_pairing_tutorial_content_network_blocked),
+                                action = stringResource(R.string.action_retry),
                                 onAction = onRequestLocalNetworkPermission
                             )
                         }
@@ -153,7 +155,8 @@ private fun AdbPairingTutorialContent(
                 if (state.pairingServiceStartFailed) {
                     item {
                         WarningCard(
-                            title = stringResource(R.string.adb_pairing_tutorial_content_pairing_service_failed),
+                            title = stringResource(R.string.notification_service_start_failed),
+                            body = stringResource(R.string.adb_pairing_tutorial_content_pairing_service_failed),
                             action = stringResource(R.string.action_retry),
                             onAction = onRequestLocalNetworkPermission
                         )
