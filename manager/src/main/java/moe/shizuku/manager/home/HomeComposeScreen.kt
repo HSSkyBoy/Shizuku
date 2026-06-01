@@ -379,7 +379,7 @@ private fun buildHomeItems(
             context.getString(
                 R.string.home_status_service_version,
                 user,
-                "${resolvedStatus.apiVersion}.${resolvedStatus.patchVersion}"
+                resolvedStatus.versionName
             )
         } else {
             context.getString(R.string.home_status_compose_not_running_summary)

@@ -24,7 +24,11 @@ class ShizukuReceiver : BroadcastReceiver() {
                     context.contentResolver, context
                 )
                 if (wirelessAdbStatus) {
-                    val intentService = Intent(context, SelfStarterService::class.java)
+                    val intentService = Intent(context, SelfStarterService::class.java).apply {
+                        putExtra(SelfStarterService.EXTRA_AUTO_ENABLE_WIRELESS_DEBUGGING, true)
+                        putExtra(SelfStarterService.EXTRA_FORCE_RESTART, false)
+                        putExtra(SelfStarterService.EXTRA_DISABLE_WIRELESS_DEBUGGING_WHEN_FINISHED, true)
+                    }
                     context.startForegroundService(intentService)
                 }
             }

@@ -73,11 +73,11 @@ abstract class HomeActivity : AppActivity() {
                 },
                 onStartWirelessAdb = {
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                        AdbWirelessHelper().launchStarterActivity(this, "127.0.0.1", 0, true)
+                    } else {
                         val port = moe.shizuku.manager.utils.EnvironmentUtils.getAdbTcpPort()
                         if (port > 0) {
-                            AdbWirelessHelper().launchStarterActivity(this, "127.0.0.1", port)
-                        } else {
-                            startActivity(Intent(this, moe.shizuku.manager.adb.AdbPairingTutorialActivity::class.java))
+                            AdbWirelessHelper().launchStarterActivity(this, "127.0.0.1", port, true)
                         }
                     }
                 },

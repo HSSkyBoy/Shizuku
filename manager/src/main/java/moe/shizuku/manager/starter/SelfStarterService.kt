@@ -30,6 +30,15 @@ import java.net.ConnectException
 
 class SelfStarterService : Service(), LifecycleOwner {
 
+    companion object {
+        const val EXTRA_AUTO_ENABLE_WIRELESS_DEBUGGING =
+            "moe.shizuku.manager.extra.AUTO_ENABLE_WIRELESS_DEBUGGING"
+        const val EXTRA_FORCE_RESTART =
+            "moe.shizuku.manager.extra.FORCE_RESTART"
+        const val EXTRA_DISABLE_WIRELESS_DEBUGGING_WHEN_FINISHED =
+            "moe.shizuku.manager.extra.DISABLE_WIRELESS_DEBUGGING_WHEN_FINISHED"
+    }
+
     private val lifecycleRegistry = LifecycleRegistry(this)
     override val lifecycle: Lifecycle
         get() = lifecycleRegistry
@@ -37,6 +46,7 @@ class SelfStarterService : Service(), LifecycleOwner {
     private val portLive = MutableLiveData<Int>()
     private var adbMdns: AdbMdns? = null
     private val adbWirelessHelper = AdbWirelessHelper()
+    private var disableWirelessDebuggingWhenFinished = false
 
     private val portObserver = Observer<Int> { p ->
         if (p in 1..65535) {
@@ -44,7 +54,7 @@ class SelfStarterService : Service(), LifecycleOwner {
                 AppConstants.TAG, "Discovered adb port via mDNS: $p, starting Shizuku directly"
             )
             // Do not launch activity, start ADB connection directly
-            startShizukuViaAdb("127.0.0.1", p)
+            startShizukuViaAdb("127.0.0.1", p, disableWirelessDebuggingWhenFinished)
         } else {
             Log.w(AppConstants.TAG, "mDNS returned invalid port: $p")
         }
@@ -61,11 +71,30 @@ class SelfStarterService : Service(), LifecycleOwner {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         Log.i(AppConstants.TAG, "SelfStarterService starting command")
 
-        // Already running? Bail out.
+        val forceRestart = intent?.getBooleanExtra(EXTRA_FORCE_RESTART, false) == true
+        disableWirelessDebuggingWhenFinished =
+            intent?.getBooleanExtra(EXTRA_DISABLE_WIRELESS_DEBUGGING_WHEN_FINISHED, false) == true
+
+        // Already running? Manual start can choose to force restart.
         if (Shizuku.pingBinder()) {
-            Log.i(AppConstants.TAG, "Shizuku is already running, stopping service.")
-            stopSelf()
-            return START_NOT_STICKY
+            if (!forceRestart) {
+                Log.i(AppConstants.TAG, "Shizuku is already running, stopping service.")
+                stopSelf()
+                return START_NOT_STICKY
+            }
+            Log.i(AppConstants.TAG, "Shizuku is running, forcing stop before restart.")
+            try {
+                Shizuku.exit()
+                Thread.sleep(300)
+            } catch (tr: Throwable) {
+                Log.w(AppConstants.TAG, "Failed to force stop Shizuku before restart", tr)
+            }
+        }
+
+        val autoEnableWirelessDebugging =
+            intent?.getBooleanExtra(EXTRA_AUTO_ENABLE_WIRELESS_DEBUGGING, false) == true
+        if (autoEnableWirelessDebugging && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            adbWirelessHelper.validateThenEnableWirelessAdb(contentResolver, this, false)
         }
 
         val wirelessEnabled = Settings.Global.getInt(contentResolver, "adb_wifi_enabled", 0) == 1
@@ -96,7 +125,7 @@ class SelfStarterService : Service(), LifecycleOwner {
                     AppConstants.TAG,
                     "Found adb port via SystemProperties: $port, starting Shizuku directly."
                 )
-                startShizukuViaAdb("127.0.0.1", port)
+                startShizukuViaAdb("127.0.0.1", port, disableWirelessDebuggingWhenFinished)
             } else {
                 Log.e(
                     AppConstants.TAG,
@@ -110,9 +139,13 @@ class SelfStarterService : Service(), LifecycleOwner {
         return START_NOT_STICKY
     }
 
-    private fun startShizukuViaAdb(host: String, port: Int) {
+    private fun startShizukuViaAdb(
+        host: String,
+        port: Int,
+        disableWirelessDebuggingWhenFinished: Boolean
+    ) {
         lifecycleScope.launch(Dispatchers.Main) {
-            Toast.makeText(this@SelfStarterService, "Starting Shizuku service…", Toast.LENGTH_SHORT)
+            Toast.makeText(this@SelfStarterService, "Starting Shizuku service...", Toast.LENGTH_SHORT)
                 .show()
         }
 
@@ -140,13 +173,17 @@ class SelfStarterService : Service(), LifecycleOwner {
                             applicationContext, "Error: ${e.message}", Toast.LENGTH_LONG
                         ).show()
                     }
-                    adbWirelessHelper.disableWirelessAdb(contentResolver)
+                    if (disableWirelessDebuggingWhenFinished) {
+                        adbWirelessHelper.disableWirelessAdb(contentResolver)
+                    }
                     stopSelf()
                 }
             },
             onSuccess = {
                 lifecycleScope.launch(Dispatchers.Main) {
-                    adbWirelessHelper.disableWirelessAdb(contentResolver)
+                    if (disableWirelessDebuggingWhenFinished) {
+                        adbWirelessHelper.disableWirelessAdb(contentResolver)
+                    }
                     stopSelf()
                 }
             })
@@ -195,3 +232,4 @@ class SelfStarterService : Service(), LifecycleOwner {
 
     override fun onBind(intent: Intent?): IBinder? = null
 }
+

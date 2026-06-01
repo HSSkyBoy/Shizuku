@@ -22,6 +22,9 @@ import moe.shizuku.manager.starter.StarterActivity
 import java.net.Socket
 
 class AdbWirelessHelper {
+    companion object {
+        private const val TCPIP_REBIND_TIMEOUT_MS = 5_000L
+    }
 
     fun validateThenEnableWirelessAdb(
         contentResolver: ContentResolver,
@@ -93,11 +96,17 @@ class AdbWirelessHelper {
         }
     }
 
-    fun launchStarterActivity(context: Context, host: String, port: Int) {
+    fun launchStarterActivity(
+        context: Context,
+        host: String,
+        port: Int,
+        forceRestart: Boolean = false
+    ) {
         val intent = Intent(context, StarterActivity::class.java).apply {
             putExtra(StarterActivity.EXTRA_IS_ROOT, false)
             putExtra(StarterActivity.EXTRA_HOST, host)
             putExtra(StarterActivity.EXTRA_PORT, port)
+            putExtra(StarterActivity.EXTRA_FORCE_RESTART, forceRestart)
         }
         context.startActivity(intent)
     }
@@ -223,7 +232,12 @@ class AdbWirelessHelper {
                             onOutput
                         )
                     ) {
-                        if (!waitForAdbPortAvailable(host, newPort)) {
+                        if (!waitForAdbPortAvailable(
+                                host = host,
+                                port = newPort,
+                                timeoutMs = TCPIP_REBIND_TIMEOUT_MS
+                            )
+                        ) {
                             Log.w(
                                 AppConstants.TAG,
                                 "Timeout waiting for ADB to listen on new port $newPort"

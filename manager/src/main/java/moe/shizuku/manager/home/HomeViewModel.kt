@@ -28,7 +28,7 @@ class HomeViewModel : ViewModel() {
 
         val uid = Shizuku.getUid()
         val apiVersion = Shizuku.getVersion()
-        val patchVersion = Shizuku.getServerPatchVersion().let { if (it < 0) 0 else it }
+        val patchVersion = Shizuku.getServerPatchVersion()
         val seContext = if (apiVersion >= 6) {
             try {
                 Shizuku.getSELinuxContext()

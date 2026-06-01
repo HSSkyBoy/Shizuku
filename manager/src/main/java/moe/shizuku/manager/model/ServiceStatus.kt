@@ -11,4 +11,7 @@ data class ServiceStatus(
 ) {
     val isRunning: Boolean
         get() = uid != -1 && Shizuku.pingBinder()
+
+    val versionName: String
+        get() = if (patchVersion >= 0) "$apiVersion.$patchVersion" else apiVersion.toString()
 }
