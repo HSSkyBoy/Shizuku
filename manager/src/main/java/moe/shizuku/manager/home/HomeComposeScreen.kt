@@ -41,7 +41,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -151,6 +150,8 @@ private fun HomeScreenContent(
     )
 
     Scaffold(
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name)) },
@@ -186,22 +187,20 @@ private fun HomeScreenContent(
             )
         }
     ) { innerPadding ->
-        Surface(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    start = 20.dp,
-                    top = innerPadding.calculateTopPadding() + 12.dp,
-                    end = 20.dp,
-                    bottom = innerPadding.calculateBottomPadding() + 20.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                items(items) { item ->
-                    when (item) {
-                        is HomeUiItem.Status -> StatusCard(item)
-                        is HomeUiItem.Action -> ActionCard(item)
-                    }
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(
+                start = 20.dp,
+                top = innerPadding.calculateTopPadding() + 12.dp,
+                end = 20.dp,
+                bottom = innerPadding.calculateBottomPadding() + 20.dp
+            ),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            items(items) { item ->
+                when (item) {
+                    is HomeUiItem.Status -> StatusCard(item)
+                    is HomeUiItem.Action -> ActionCard(item)
                 }
             }
         }
@@ -476,12 +475,18 @@ private fun rootItem(
 private fun StatusCard(item: HomeUiItem.Status) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = if (item.running) {
+            containerColor = (if (item.running) {
                 MaterialTheme.colorScheme.surfaceContainerHigh
             } else {
                 MaterialTheme.colorScheme.errorContainer
+            }).copy(alpha = 0.7f),
+            contentColor = if (item.running) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onErrorContainer
             }
         ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         shape = MaterialTheme.shapes.extraLarge
     ) {
         Row(
@@ -517,12 +522,18 @@ private fun ActionCard(item: HomeUiItem.Action) {
             .fillMaxWidth()
             .clickable(enabled = item.onClick != null && item.enabled) { item.onClick?.invoke() },
         colors = CardDefaults.cardColors(
-            containerColor = if (item.tonal) {
+            containerColor = (if (item.tonal) {
                 MaterialTheme.colorScheme.surfaceContainerLow
             } else {
                 MaterialTheme.colorScheme.errorContainer
+            }).copy(alpha = 0.7f),
+            contentColor = if (item.tonal) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onErrorContainer
             }
         ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         shape = MaterialTheme.shapes.extraLarge
     ) {
         Column(modifier = Modifier.padding(24.dp)) {

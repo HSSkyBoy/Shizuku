@@ -25,19 +25,24 @@ fun RequestPermissionComposeScreen(
     onTertiary: () -> Unit
 ) {
     ShizukuComposeTheme {
-        Surface {
+        Surface(color = androidx.compose.ui.graphics.Color.Transparent) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp, vertical = 24.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 shape = MaterialTheme.shapes.extraLarge
             ) {
                 Column(
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text(title, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
+                    Text(
+                        title,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                     PermissionActionButton(primaryLabel, onPrimary)
                     PermissionActionButton(secondaryLabel, onSecondary)
                     PermissionActionButton(tertiaryLabel, onTertiary)
