@@ -152,7 +152,6 @@
     <string name="more_options">更多選項</string>
     <string name="service_user_root">root</string>
     <string name="service_user_adb">adb</string>
-    <string name="home_status_service_version_incomplete">版本 %1$d.x，%2$s</string>
     <string name="home_status_compose_not_running_summary">重新連線以恢復特權存取。</string>
     <string name="settings_language_system">跟隨系統</string>
     <string name="settings_use_system_color_summary">可用時跟隨 Material You 動態色彩。</string>

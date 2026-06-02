@@ -341,19 +341,11 @@ private fun buildHomeItems(
             context.getString(R.string.home_status_service_not_running, context.getString(R.string.app_name))
         },
         summary = if (running) {
-            if (resolvedStatus.hasCompleteVersion) {
-                context.getString(
-                    R.string.home_status_service_version,
-                    if (resolvedStatus.uid == 0) "root" else "adb",
-                    resolvedStatus.versionName
-                )
-            } else {
-                context.getString(
-                    R.string.home_status_service_version_incomplete,
-                    resolvedStatus.apiVersion,
-                    if (resolvedStatus.uid == 0) "root" else "adb"
-                )
-            }
+            context.getString(
+                R.string.home_status_service_version,
+                if (resolvedStatus.uid == 0) "root" else "adb",
+                resolvedStatus.versionName
+            )
         } else {
             ""
         },
