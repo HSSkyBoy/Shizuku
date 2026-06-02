@@ -3,6 +3,7 @@ package moe.shizuku.manager.ui.theme
 import android.app.Activity
 import android.view.Window
 import android.os.Build
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.app.ThemeHelper
 
 private val LightColors = lightColorScheme(
@@ -68,15 +70,47 @@ private val DarkColors = darkColorScheme(
 
 @Composable
 fun ShizukuComposeTheme(
-    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    useDarkTheme: Boolean = when (ShizukuSettings.getNightMode()) {
+        AppCompatDelegate.MODE_NIGHT_YES -> true
+        AppCompatDelegate.MODE_NIGHT_NO -> false
+        else -> isSystemInDarkTheme()
+    },
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
     val view = LocalView.current
-    val colorScheme = if (ThemeHelper.isUsingSystemColor() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        if (useDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-    } else {
-        if (useDarkTheme) DarkColors else LightColors
+
+    val isBlackTheme = useDarkTheme && ThemeHelper.isBlackNightTheme(context)
+
+    val colorScheme = when {
+        ThemeHelper.isUsingSystemColor() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val dynamicScheme = if (useDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (isBlackTheme) {
+                dynamicScheme.copy(
+                    surface = Color.Black,
+                    surfaceContainer = Color.Black,
+                    surfaceContainerHigh = Color(0xFF111111),
+                    surfaceContainerLow = Color.Black,
+                    background = Color.Black
+                )
+            } else {
+                dynamicScheme
+            }
+        }
+        useDarkTheme -> {
+            if (isBlackTheme) {
+                DarkColors.copy(
+                    surface = Color.Black,
+                    surfaceContainer = Color.Black,
+                    surfaceContainerHigh = Color(0xFF111111),
+                    surfaceContainerLow = Color.Black,
+                    background = Color.Black
+                )
+            } else {
+                DarkColors
+            }
+        }
+        else -> LightColors
     }
 
     if (!view.isInEditMode) {

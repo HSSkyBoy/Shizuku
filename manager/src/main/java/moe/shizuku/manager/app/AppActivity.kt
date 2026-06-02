@@ -13,7 +13,7 @@ import rikka.material.app.MaterialActivity
 abstract class AppActivity : MaterialActivity() {
 
     override fun computeUserThemeKey(): String {
-        return ThemeHelper.getTheme(this) + ThemeHelper.isUsingSystemColor()
+        return ThemeHelper.getThemeKey(this)
     }
 
     override fun onApplyUserThemeResource(theme: Theme, isDecorView: Boolean) {
@@ -24,7 +24,9 @@ abstract class AppActivity : MaterialActivity() {
                 theme.applyStyle(R.style.ThemeOverlay_DynamicColors_Light, true)
         }
 
-        theme.applyStyle(ThemeHelper.getThemeStyleRes(this), true)
+        if (ThemeHelper.isBlackNightTheme(this) && resources.configuration.isNight()) {
+            theme.applyStyle(R.style.ThemeOverlay_Black, true)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
