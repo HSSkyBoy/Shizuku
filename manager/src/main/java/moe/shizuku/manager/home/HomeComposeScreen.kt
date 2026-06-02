@@ -345,9 +345,7 @@ private fun buildHomeItems(
                 if (resolvedStatus.uid == 0) "root" else "adb",
                 resolvedStatus.versionName
             )
-        } else {
-            ""
-        },
+        } else null,
         running = running
     )
 
@@ -504,11 +502,13 @@ private fun StatusCard(item: HomeUiItem.Status) {
             Column(
                 modifier = Modifier
                     .padding(start = 16.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 Text(item.title, style = MaterialTheme.typography.titleLarge)
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(item.summary, style = MaterialTheme.typography.bodyMedium)
+                item.summary?.let {
+                    Text(it, style = MaterialTheme.typography.bodyMedium)
+                }
             }
         }
     }
@@ -604,7 +604,7 @@ private fun ActionCard(item: HomeUiItem.Action) {
 private sealed interface HomeUiItem {
     data class Status(
         val title: String,
-        val summary: String,
+        val summary: String?,
         val running: Boolean
     ) : HomeUiItem
 
