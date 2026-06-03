@@ -41,12 +41,7 @@ class AdbWirelessHelper {
 
             runBlocking {
                 while (elapsed < timeoutMs) {
-                    val networkCapabilities =
-                        connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-                    if (networkCapabilities != null && networkCapabilities.hasTransport(
-                            NetworkCapabilities.TRANSPORT_WIFI
-                        )
-                    ) {
+                    if (hasWifiTransport(connectivityManager)) {
                         enableWirelessADB(contentResolver, context)
                         return@runBlocking
                     }
@@ -56,15 +51,20 @@ class AdbWirelessHelper {
             }
         }
 
-        val networkCapabilities =
-            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-        if (networkCapabilities != null && networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+        if (hasWifiTransport(connectivityManager)) {
             enableWirelessADB(contentResolver, context)
             return true
         } else {
             Log.w(AppConstants.TAG, "Wireless ADB auto-start condition not met: Not on Wi-Fi.")
         }
         return false
+    }
+
+    private fun hasWifiTransport(connectivityManager: ConnectivityManager): Boolean {
+        return connectivityManager.allNetworks.any { network ->
+            connectivityManager.getNetworkCapabilities(network)
+                ?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true
+        }
     }
 
     private fun enableWirelessADB(contentResolver: ContentResolver, context: Context) {
