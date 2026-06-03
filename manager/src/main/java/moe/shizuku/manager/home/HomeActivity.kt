@@ -73,6 +73,7 @@ abstract class HomeActivity : AppActivity() {
             HomeComposeScreen(
                 status = serviceStatus?.data,
                 grantedCount = grantedCount?.data,
+                onNavigateBack = { finish() },
                 onOpenSettings = {
                     startActivity(Intent(this, SettingsActivity::class.java))
                 },

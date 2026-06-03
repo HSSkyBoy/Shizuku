@@ -48,9 +48,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
@@ -78,6 +81,8 @@ import moe.shizuku.manager.utils.EnvironmentUtils
 import moe.shizuku.manager.watchdog.WatchdogService
 import rikka.material.app.LocaleDelegate
 import java.util.Locale
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsComposeScreen(
@@ -101,6 +106,23 @@ private fun SettingsScreenContent(
     val context = LocalContext.current
     var dialogState by remember { mutableStateOf<SettingsDialogState?>(null) }
     val model = remember { buildSettingsModel(context) }
+    val switchStates = remember { mutableStateMapOf<String, Boolean>() }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(model) {
+        switchStates.clear()
+        model.asSequence()
+            .flatMap { it.items.asSequence() }
+            .filterIsInstance<SettingsItem.SwitchItem>()
+            .forEach { switchStates[it.key] = it.checked }
+    }
+
+    fun recreateAfterAnimation() {
+        scope.launch {
+            delay(200)
+            onRecreateRequested()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -132,13 +154,16 @@ private fun SettingsScreenContent(
                     SettingsSectionCard(
                         title = section.title,
                         items = section.items,
+                        switchStates = switchStates,
                         onToggle = { item, checked ->
                             when (item.key) {
                                 KEEP_START_ON_BOOT -> {
+                                    switchStates[KEEP_START_ON_BOOT] = checked
+                                    if (checked) switchStates[KEEP_START_ON_BOOT_WIRELESS] = false
                                     saveBoolean(context, KEEP_START_ON_BOOT, checked)
                                     if (checked) saveBoolean(context, KEEP_START_ON_BOOT_WIRELESS, false)
                                     setBootReceiverEnabled(context, checked || getBoolean(context, KEEP_START_ON_BOOT_WIRELESS))
-                                    onRecreateRequested()
+                                    recreateAfterAnimation()
                                 }
 
                                 KEEP_START_ON_BOOT_WIRELESS -> {
@@ -149,14 +174,17 @@ private fun SettingsScreenContent(
                                     if (checked && !hasSecurePermission) {
                                         dialogState = SettingsDialogState.WirelessPermission
                                     } else {
+                                        switchStates[KEEP_START_ON_BOOT_WIRELESS] = checked
+                                        if (checked) switchStates[KEEP_START_ON_BOOT] = false
                                         saveBoolean(context, KEEP_START_ON_BOOT_WIRELESS, checked)
                                         if (checked) saveBoolean(context, KEEP_START_ON_BOOT, false)
                                         setBootReceiverEnabled(context, checked || getBoolean(context, KEEP_START_ON_BOOT))
-                                        onRecreateRequested()
+                                        recreateAfterAnimation()
                                     }
                                 }
 
                                 WATCHDOG_ENABLED_ADB -> {
+                                    switchStates[WATCHDOG_ENABLED_ADB] = checked
                                     saveBoolean(context, WATCHDOG_ENABLED_ADB, checked)
                                     if (checked) {
                                         if (ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ADB
@@ -167,13 +195,14 @@ private fun SettingsScreenContent(
                                     } else {
                                         WatchdogService.stop(context)
                                     }
-                                    onRecreateRequested()
+                                    recreateAfterAnimation()
                                 }
 
                                 ThemeHelper.KEY_BLACK_NIGHT_THEME,
                                 ThemeHelper.KEY_USE_SYSTEM_COLOR -> {
+                                    switchStates[item.key] = checked
                                     saveBoolean(context, item.key, checked)
-                                    onRecreateRequested()
+                                    recreateAfterAnimation()
                                 }
                             }
                         },
@@ -449,6 +478,7 @@ private fun buildSettingsModel(context: Context): List<SettingsSection> {
 private fun SettingsSectionCard(
     title: String,
     items: List<SettingsItem>,
+    switchStates: Map<String, Boolean>,
     onToggle: (SettingsItem.SwitchItem, Boolean) -> Unit,
     onClick: (SettingsItem) -> Unit
 ) {
@@ -465,6 +495,7 @@ private fun SettingsSectionCard(
             items.forEachIndexed { index, item ->
                 SettingsRow(
                     item = item,
+                    switchStates = switchStates,
                     onToggle = onToggle,
                     onClick = onClick
                 )
@@ -479,6 +510,7 @@ private fun SettingsSectionCard(
 @Composable
 private fun SettingsRow(
     item: SettingsItem,
+    switchStates: Map<String, Boolean>,
     onToggle: (SettingsItem.SwitchItem, Boolean) -> Unit,
     onClick: (SettingsItem) -> Unit
 ) {
@@ -496,8 +528,9 @@ private fun SettingsRow(
             Text(item.summary, style = MaterialTheme.typography.bodyMedium)
         }
         if (item is SettingsItem.SwitchItem) {
+            val checked = switchStates[item.key] ?: item.checked
             Switch(
-                checked = item.checked,
+                checked = checked,
                 onCheckedChange = { onToggle(item, it) }
             )
         }

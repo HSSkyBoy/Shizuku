@@ -45,6 +45,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -73,6 +74,7 @@ import androidx.core.net.toUri
 fun HomeComposeScreen(
     status: ServiceStatus?,
     grantedCount: Int?,
+    onNavigateBack: () -> Unit,
     onOpenSettings: () -> Unit,
     onStopService: () -> Unit,
     onManageApps: () -> Unit,
@@ -91,6 +93,7 @@ fun HomeComposeScreen(
         HomeScreenContent(
             status = status,
             grantedCount = grantedCount,
+            onNavigateBack = onNavigateBack,
             onOpenSettings = onOpenSettings,
             onStopService = onStopService,
             onManageApps = onManageApps,
@@ -113,6 +116,7 @@ fun HomeComposeScreen(
 private fun HomeScreenContent(
     status: ServiceStatus?,
     grantedCount: Int?,
+    onNavigateBack: () -> Unit,
     onOpenSettings: () -> Unit,
     onStopService: () -> Unit,
     onManageApps: () -> Unit,
@@ -150,6 +154,8 @@ private fun HomeScreenContent(
         onOpenAdbPermissionHelp = onOpenAdbPermissionHelp,
         onOpenLearnMore = onOpenLearnMore
     )
+
+    BackHandler(onBack = onNavigateBack)
 
     Scaffold(
         containerColor = androidx.compose.ui.graphics.Color.Transparent,
