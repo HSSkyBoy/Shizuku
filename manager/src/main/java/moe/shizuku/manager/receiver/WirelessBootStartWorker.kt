@@ -1,6 +1,7 @@
 package moe.shizuku.manager.receiver
 
 import android.Manifest.permission.WRITE_SECURE_SETTINGS
+import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -28,6 +29,7 @@ class WirelessBootStartWorker(
 
     override suspend fun doWork(): Result {
         if (Shizuku.pingBinder()) {
+            UserPresentRestartReceiver.setEnabled(applicationContext, false)
             BootStartNotifications.dismiss(applicationContext)
             return Result.success()
         }
@@ -44,6 +46,20 @@ class WirelessBootStartWorker(
             )
             return Result.failure()
         }
+
+        val keyguardManager =
+            applicationContext.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        if (keyguardManager.isDeviceLocked) {
+            Log.i(AppConstants.TAG, "Wireless boot worker waiting for user unlock")
+            UserPresentRestartReceiver.setEnabled(applicationContext, true)
+            BootStartNotifications.showFailure(
+                applicationContext,
+                applicationContext.getString(moe.shizuku.manager.R.string.boot_start_waiting_for_unlock)
+            )
+            return Result.success()
+        }
+
+        UserPresentRestartReceiver.setEnabled(applicationContext, false)
 
         val wirelessAdbEnabled = if (hasSecureSettingsPermission) {
             try {
@@ -119,6 +135,7 @@ class WirelessBootStartWorker(
 
         fun cancel(context: Context) {
             WorkManager.getInstance(context).cancelUniqueWork(UNIQUE_WORK_NAME)
+            UserPresentRestartReceiver.setEnabled(context, false)
             BootStartNotifications.dismiss(context)
         }
     }

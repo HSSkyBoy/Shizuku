@@ -192,6 +192,15 @@
             android:enabled="true"
             android:exported="false" />
 
+        <receiver
+            android:name=".receiver.UserPresentRestartReceiver"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name=".ShizukuManagerProvider"
             android:authorities="${applicationId}.shizuku"
