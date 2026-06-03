@@ -30,6 +30,7 @@ import moe.shizuku.manager.starter.Starter
 import moe.shizuku.manager.starter.StarterActivity
 import moe.shizuku.manager.utils.CustomTabsHelper
 import moe.shizuku.manager.utils.EnvironmentUtils
+import moe.shizuku.manager.watchdog.WatchdogService
 import rikka.core.util.ClipboardUtils
 import rikka.lifecycle.Status
 import rikka.lifecycle.viewModels
@@ -170,6 +171,7 @@ abstract class HomeActivity : AppActivity() {
 
     private fun stopService() {
         if (!Shizuku.pingBinder()) return
+        WatchdogService.stop(this)
         try {
             Shizuku.exit()
         } catch (_: Throwable) {
@@ -177,6 +179,7 @@ abstract class HomeActivity : AppActivity() {
     }
 
     private fun startRootService() {
+        WatchdogService.stop(this)
         startActivity(Intent(this, StarterActivity::class.java).apply {
             putExtra(StarterActivity.EXTRA_IS_ROOT, true)
         })

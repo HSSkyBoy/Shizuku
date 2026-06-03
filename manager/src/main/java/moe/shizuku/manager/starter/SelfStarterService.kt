@@ -21,10 +21,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import moe.shizuku.manager.AppConstants
 import moe.shizuku.manager.R
+import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.adb.AdbKeyException
 import moe.shizuku.manager.adb.AdbMdns
 import moe.shizuku.manager.adb.AdbWirelessHelper
 import moe.shizuku.manager.utils.EnvironmentUtils
+import moe.shizuku.manager.watchdog.WatchdogService
 import rikka.shizuku.Shizuku
 import java.net.ConnectException
 
@@ -37,6 +39,8 @@ class SelfStarterService : Service(), LifecycleOwner {
             "moe.shizuku.manager.extra.FORCE_RESTART"
         const val EXTRA_DISABLE_WIRELESS_DEBUGGING_WHEN_FINISHED =
             "moe.shizuku.manager.extra.DISABLE_WIRELESS_DEBUGGING_WHEN_FINISHED"
+        const val EXTRA_STARTED_BY_WATCHDOG =
+            "moe.shizuku.manager.extra.STARTED_BY_WATCHDOG"
     }
 
     private val lifecycleRegistry = LifecycleRegistry(this)
@@ -74,6 +78,11 @@ class SelfStarterService : Service(), LifecycleOwner {
         val forceRestart = intent?.getBooleanExtra(EXTRA_FORCE_RESTART, false) == true
         disableWirelessDebuggingWhenFinished =
             intent?.getBooleanExtra(EXTRA_DISABLE_WIRELESS_DEBUGGING_WHEN_FINISHED, false) == true
+        val startedByWatchdog = intent?.getBooleanExtra(EXTRA_STARTED_BY_WATCHDOG, false) == true
+
+        if (startedByWatchdog) {
+            Log.i(AppConstants.TAG, "SelfStarterService invoked by WatchdogService")
+        }
 
         // Already running? Manual start can choose to force restart.
         if (Shizuku.pingBinder()) {
@@ -184,12 +193,21 @@ class SelfStarterService : Service(), LifecycleOwner {
             },
             onSuccess = {
                 lifecycleScope.launch(Dispatchers.Main) {
+                    ShizukuSettings.setLastLaunchMode(ShizukuSettings.LaunchMethod.ADB)
+                    maybeStartWatchdog()
                     if (disableWirelessDebuggingWhenFinished) {
                         adbWirelessHelper.disableWirelessAdb(contentResolver)
                     }
                     stopSelf()
                 }
             })
+    }
+
+    private fun maybeStartWatchdog() {
+        if (!ShizukuSettings.getPreferences().getBoolean(ShizukuSettings.WATCHDOG_ENABLED_ADB, false)) {
+            return
+        }
+        WatchdogService.start(this)
     }
 
     private fun startServiceNotification() {
@@ -235,4 +253,3 @@ class SelfStarterService : Service(), LifecycleOwner {
 
     override fun onBind(intent: Intent?): IBinder? = null
 }
-

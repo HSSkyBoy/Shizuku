@@ -67,6 +67,7 @@ import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.ShizukuSettings.KEEP_START_ON_BOOT
 import moe.shizuku.manager.ShizukuSettings.KEEP_START_ON_BOOT_WIRELESS
 import moe.shizuku.manager.ShizukuSettings.TCPIP_PORT
+import moe.shizuku.manager.ShizukuSettings.WATCHDOG_ENABLED_ADB
 import moe.shizuku.manager.app.ThemeHelper
 import moe.shizuku.manager.ktx.isComponentEnabled
 import moe.shizuku.manager.ktx.setComponentEnabled
@@ -74,6 +75,7 @@ import moe.shizuku.manager.receiver.BootCompleteReceiver
 import moe.shizuku.manager.ui.theme.ShizukuComposeTheme
 import moe.shizuku.manager.utils.CustomTabsHelper
 import moe.shizuku.manager.utils.EnvironmentUtils
+import moe.shizuku.manager.watchdog.WatchdogService
 import rikka.material.app.LocaleDelegate
 import java.util.Locale
 
@@ -152,6 +154,20 @@ private fun SettingsScreenContent(
                                         setBootReceiverEnabled(context, checked || getBoolean(context, KEEP_START_ON_BOOT))
                                         onRecreateRequested()
                                     }
+                                }
+
+                                WATCHDOG_ENABLED_ADB -> {
+                                    saveBoolean(context, WATCHDOG_ENABLED_ADB, checked)
+                                    if (checked) {
+                                        if (ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ADB
+                                            && rikka.shizuku.Shizuku.pingBinder()
+                                        ) {
+                                            WatchdogService.start(context)
+                                        }
+                                    } else {
+                                        WatchdogService.stop(context)
+                                    }
+                                    onRecreateRequested()
                                 }
 
                                 ThemeHelper.KEY_BLACK_NIGHT_THEME,
@@ -351,6 +367,15 @@ private fun buildSettingsModel(context: Context): List<SettingsSection> {
                     summary = context.getString(R.string.settings_start_on_boot_wireless_summary),
                     icon = Icons.Outlined.Wifi,
                     checked = preferences.getBoolean(KEEP_START_ON_BOOT_WIRELESS, false)
+                )
+            )
+            add(
+                SettingsItem.SwitchItem(
+                    key = WATCHDOG_ENABLED_ADB,
+                    title = context.getString(R.string.settings_watchdog_adb),
+                    summary = context.getString(R.string.settings_watchdog_adb_summary),
+                    icon = Icons.Outlined.SettingsEthernet,
+                    checked = preferences.getBoolean(WATCHDOG_ENABLED_ADB, false)
                 )
             )
         }

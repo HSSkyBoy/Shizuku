@@ -125,6 +125,8 @@ With %1$s, in any terminal app, you can connect to and interact with the shell r
     <string name="settings_start_on_boot_wireless">Start on boot (wireless ADB)</string>
     <string name="settings_start_on_boot_summary">For rooted devices, Shizuku is able to start automatically on boot</string>
     <string name="settings_start_on_boot_wireless_summary">For rootless devices, Shizuku can start automatically on boot with Wireless ADB or a reachable TCP ADB port</string>
+    <string name="settings_watchdog_adb">ADB/TCP watchdog</string>
+    <string name="settings_watchdog_adb_summary">Monitor Shizuku after ADB/TCP start and automatically restart it up to 5 times if the service is killed</string>
     <string name="settings_adb_root">ADB root (rooted debugging)</string>
     <string name="settings_adb_root_summary">Operating Systems based on the userdebug builds, Shizuku can have rooted debugging to start at boot.</string>
     <string name="settings_tcpip_port">TCP/IP port</string>
@@ -148,9 +150,12 @@ With %1$s, in any terminal app, you can connect to and interact with the shell r
 
     <!-- Notification -->
     <string name="notification_channel_service_status">Service start status</string>
+    <string name="notification_channel_watchdog">Watchdog status</string>
     <string name="notification_service_starting">Shizuku service is starting…</string>
     <string name="notification_service_start_failed">Start Shizuku service failed.</string>
     <string name="notification_service_start_no_root">Failed to request root permission.</string>
+    <string name="notification_watchdog_title">Shizuku watchdog is active</string>
+    <string name="notification_watchdog_content">Shizuku will be restarted automatically if the ADB/TCP service is killed</string>
     <string name="notification_working">Working…</string>
     <string name="notification_channel_adb_pairing">Wireless debugging pairing</string>
     <string name="notification_adb_pairing_input_paring_code">Enter pairing code</string>

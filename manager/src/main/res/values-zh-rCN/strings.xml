@@ -167,4 +167,9 @@
     <string name="starting_root_shell">正在启动 root shell…</string>
     <string name="start_service_timeout">Shizuku 服务未及时响应。请尝试重新启动。</string>
     <string name="settings_grant_note"><![CDATA[<h1>注意</h1>\n<p>此功能需要 <u><tt>WRITE_SECURE_SETTINGS</tt></u> 权限。</p>\n<h1>警告</h1>\n<p><u><tt>WRITE_SECURE_SETTINGS</tt></u> 是高度敏感的权限，仅在明确操作风险时启用。后续可能产生的任何后果均由用户自行承担。</p>]]></string>
+    <string name="settings_watchdog_adb">ADB/TCP 守护</string>
+    <string name="settings_watchdog_adb_summary">在通过 ADB/TCP 启动后监控 Shizuku；若服务被杀死，则最多自动重启 5 次</string>
+    <string name="notification_channel_watchdog">守护状态</string>
+    <string name="notification_watchdog_title">Shizuku 守护已启用</string>
+    <string name="notification_watchdog_content">如果 ADB/TCP 启动的 Shizuku 服务被杀死，将自动尝试重启</string>
 </resources>
