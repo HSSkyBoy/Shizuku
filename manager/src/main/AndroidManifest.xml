@@ -186,6 +186,12 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".receiver.BootStartActionReceiver"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="false" />
+
         <provider
             android:name=".ShizukuManagerProvider"
             android:authorities="${applicationId}.shizuku"

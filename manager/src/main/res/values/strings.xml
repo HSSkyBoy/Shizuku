@@ -138,6 +138,9 @@ With %1$s, in any terminal app, you can connect to and interact with the shell r
     <string name="wireless_boot_component_error">Failed to enable boot component</string>
     <string name="wireless_boot_permission_tooltip">To automatically start Shizuku on boot with wireless ADB, the WRITE_SECURE_SETTINGS permission must be granted</string>
     <string name="wireless_boot_wifi_required">This feature requires Wi-Fi connection to work</string>
+    <string name="boot_start_notification_title">Wireless ADB auto-start</string>
+    <string name="boot_start_waiting_for_wifi">Waiting for Wi-Fi or a reachable TCP ADB port</string>
+    <string name="boot_start_connecting">Trying to start Shizuku with wireless ADB</string>
 
     <!-- About -->
     <string name="action_about">About</string>
@@ -150,6 +153,7 @@ With %1$s, in any terminal app, you can connect to and interact with the shell r
 
     <!-- Notification -->
     <string name="notification_channel_service_status">Service start status</string>
+    <string name="notification_channel_boot_start">Wireless ADB auto-start</string>
     <string name="notification_channel_watchdog">Watchdog status</string>
     <string name="notification_service_starting">Shizuku service is starting…</string>
     <string name="notification_service_start_failed">Start Shizuku service failed.</string>
