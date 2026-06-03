@@ -9,6 +9,7 @@ import com.topjohnwu.superuser.Shell
 import moe.shizuku.manager.AppConstants
 import moe.shizuku.manager.R
 import moe.shizuku.manager.ShizukuSettings
+import moe.shizuku.manager.adb.AdbWirelessHelper
 import moe.shizuku.manager.starter.Starter
 import moe.shizuku.manager.utils.UserHandleCompat
 import rikka.shizuku.Shizuku
@@ -60,7 +61,7 @@ object ShizukuReceiverStarter {
 
         val hasSecureSettingsPermission =
             context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED
-        val startablePort = WirelessBootStartWorker.getStartableAdbPort()
+        val startablePort = AdbWirelessHelper().getStartableAdbPort()
 
         if (!hasSecureSettingsPermission && startablePort == null) {
             Log.w(AppConstants.TAG, "Wireless boot worker missing WRITE_SECURE_SETTINGS")

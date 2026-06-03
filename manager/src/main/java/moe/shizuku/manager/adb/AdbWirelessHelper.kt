@@ -35,8 +35,8 @@ class AdbWirelessHelper {
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
         if (wait) {
-            val timeoutMs = 15_000L
-            val intervalMs = 500L
+            val timeoutMs = 20_000L
+            val intervalMs = 1000L
             var elapsed = 0L
 
             runBlocking {
@@ -226,51 +226,65 @@ class AdbWirelessHelper {
         onSuccess: () -> Unit = {}
     ) {
         coroutineScope.launch(Dispatchers.IO) {
-            try {
-                Log.d(AppConstants.TAG, "Attempting to start Shizuku via ADB on $host:$port")
+            var attempt = 0
+            while (attempt < 3) {
+                try {
+                    Log.d(AppConstants.TAG, "Attempting to start Shizuku via ADB on $host:$port (attempt $attempt)")
 
-                val key = try {
-                    AdbKey(
-                        PreferenceAdbKeyStore(ShizukuSettings.getPreferences()), "shizuku"
-                    )
-                } catch (e: Throwable) {
-                    Log.e(AppConstants.TAG, "ADB Key error", e)
-                    onError(AdbKeyException(e))
-                    return@launch
-                }
-
-                val commandOutput = StringBuilder()
-
-                executeAdbRootIfNeeded(host, port, key, commandOutput, onOutput)
-
-                AdbClient(host, port, key).use { client ->
-                    try {
-                        client.connect()
-                        Log.i(
-                            AppConstants.TAG,
-                            "ADB connected to $host:$port. Executing starter command..."
+                    val key = try {
+                        AdbKey(
+                            PreferenceAdbKeyStore(ShizukuSettings.getPreferences()), "shizuku"
                         )
-
-                        client.shellCommand(Starter.internalCommand) { output ->
-                            val outputString = String(output)
-                            commandOutput.append(outputString)
-                            onOutput(outputString)
-                            Log.d(AppConstants.TAG, "Shizuku start output chunk: $outputString")
-                        }
                     } catch (e: Throwable) {
-                        Log.e(AppConstants.TAG, "Error during ADB connection/command execution", e)
+                        Log.e(AppConstants.TAG, "ADB Key error", e)
+                        onError(AdbKeyException(e))
+                        return@launch
+                    }
+
+                    val commandOutput = StringBuilder()
+
+                    executeAdbRootIfNeeded(host, port, key, commandOutput, onOutput)
+
+                    AdbClient(host, port, key).use { client ->
+                        try {
+                            client.connect()
+                            Log.i(
+                                AppConstants.TAG,
+                                "ADB connected to $host:$port. Executing starter command..."
+                            )
+
+                            client.shellCommand(Starter.internalCommand) { output ->
+                                val outputString = String(output)
+                                commandOutput.append(outputString)
+                                onOutput(outputString)
+                            }
+                        } catch (e: Throwable) {
+                            Log.e(AppConstants.TAG, "Error during ADB connection/command execution (attempt $attempt)", e)
+                            if (attempt < 2) {
+                                delay(1000L * (attempt + 1))
+                                attempt++
+                                return@use // continue while loop
+                            }
+                            onError(e)
+                            return@launch
+                        }
+                    }
+
+                    changeTcpipPortAfterStartIfNeeded(host, port, key, commandOutput, onOutput)
+
+                    Log.i(AppConstants.TAG, "Shizuku start via ADB completed successfully")
+                    onSuccess()
+                    return@launch
+                } catch (e: Throwable) {
+                    Log.e(AppConstants.TAG, "Error in startShizukuViaAdb (attempt $attempt)", e)
+                    if (attempt < 2) {
+                        delay(1000L * (attempt + 1))
+                        attempt++
+                    } else {
                         onError(e)
                         return@launch
                     }
                 }
-
-                changeTcpipPortAfterStartIfNeeded(host, port, key, commandOutput, onOutput)
-
-                Log.i(AppConstants.TAG, "Shizuku start via ADB completed successfully")
-                onSuccess()
-            } catch (e: Throwable) {
-                Log.e(AppConstants.TAG, "Error in startShizukuViaAdb", e)
-                onError(e)
             }
         }
     }

@@ -85,7 +85,16 @@ class WirelessBootStartWorker(
         }
 
         if (!wirelessAdbEnabled && startablePort == null) {
-            Log.i(AppConstants.TAG, "Wireless boot worker waiting for Wi-Fi or TCP ADB port")
+            val attempt = runAttemptCount
+            Log.i(AppConstants.TAG, "Wireless boot worker waiting for Wi-Fi or TCP ADB port (attempt: $attempt)")
+            if (attempt > 5) {
+                Log.w(AppConstants.TAG, "Wireless boot worker giving up after 5 attempts")
+                BootStartNotifications.showFailure(
+                    applicationContext,
+                    applicationContext.getString(moe.shizuku.manager.R.string.wireless_boot_wifi_required)
+                )
+                return Result.failure()
+            }
             BootStartNotifications.showWaitingForNetwork(applicationContext)
             return Result.retry()
         }
