@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.provider.Settings
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
+import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.SettingsEthernet
@@ -179,7 +181,17 @@ private fun SettingsScreenContent(
                                         saveBoolean(context, KEEP_START_ON_BOOT_WIRELESS, checked)
                                         if (checked) saveBoolean(context, KEEP_START_ON_BOOT, false)
                                         setBootReceiverEnabled(context, checked || getBoolean(context, KEEP_START_ON_BOOT))
+                                        
                                         recreateAfterAnimation()
+                                    }
+                                }
+
+                                ShizukuSettings.AUTO_PAIRING_ENABLED -> {
+                                    if (checked && !isNotificationListenerEnabled(context)) {
+                                        dialogState = SettingsDialogState.NotificationAccess
+                                    } else {
+                                        switchStates[ShizukuSettings.AUTO_PAIRING_ENABLED] = checked
+                                        saveBoolean(context, ShizukuSettings.AUTO_PAIRING_ENABLED, checked)
                                     }
                                 }
 
@@ -283,6 +295,30 @@ private fun SettingsScreenContent(
                 },
                 title = { Text(context.getString(R.string.permission_missing)) },
                 text = { Text(context.getString(R.string.wireless_boot_permission_tooltip)) }
+            )
+        }
+
+        SettingsDialogState.NotificationAccess -> {
+            AlertDialog(
+                onDismissRequest = { dialogState = null },
+                confirmButton = {
+                    TextButton(onClick = {
+                        try {
+                            context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+                        } catch (_: Exception) {
+                        }
+                        dialogState = null
+                    }) {
+                        Text(context.getString(android.R.string.ok))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { dialogState = null }) {
+                        Text(context.getString(R.string.cancel))
+                    }
+                },
+                title = { Text(context.getString(R.string.permission_missing)) },
+                text = { Text(context.getString(R.string.auto_pairing_notification_access_tooltip)) }
             )
         }
 
@@ -396,6 +432,15 @@ private fun buildSettingsModel(context: Context): List<SettingsSection> {
                     summary = context.getString(R.string.settings_start_on_boot_wireless_summary),
                     icon = Icons.Outlined.Wifi,
                     checked = preferences.getBoolean(KEEP_START_ON_BOOT_WIRELESS, false)
+                )
+            )
+            add(
+                SettingsItem.SwitchItem(
+                    key = ShizukuSettings.AUTO_PAIRING_ENABLED,
+                    title = context.getString(R.string.settings_auto_pairing),
+                    summary = context.getString(R.string.settings_auto_pairing_summary),
+                    icon = Icons.Outlined.NotificationsActive,
+                    checked = preferences.getBoolean(ShizukuSettings.AUTO_PAIRING_ENABLED, false)
                 )
             )
             add(
@@ -665,6 +710,23 @@ private fun setBootReceiverEnabled(context: Context, enabled: Boolean) {
     context.packageManager.setComponentEnabled(component, enabled)
 }
 
+private fun isNotificationListenerEnabled(context: Context): Boolean {
+    val pkgName = context.packageName
+    val flat = Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")
+    if (!flat.isNullOrEmpty()) {
+        val names = flat.split(":")
+        for (name in names) {
+            val cn = ComponentName.unflattenFromString(name)
+            if (cn != null) {
+                if (pkgName == cn.packageName) {
+                    return true
+                }
+            }
+        }
+    }
+    return false
+}
+
 @Immutable
 private data class SettingsSection(
     val title: String,
@@ -705,6 +767,7 @@ private sealed interface SettingsDialogState {
     data object Language : SettingsDialogState
     data object NightMode : SettingsDialogState
     data object WirelessPermission : SettingsDialogState
+    data object NotificationAccess : SettingsDialogState
     data object TcpIpPort : SettingsDialogState
     data class Command(val command: String) : SettingsDialogState
 }

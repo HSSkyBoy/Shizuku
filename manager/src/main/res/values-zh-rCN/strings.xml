@@ -83,10 +83,13 @@
 \n配对过程开始后，您将能够输入配对码。</string>
     <string name="development_settings">开发者选项</string>
     <string name="home_root_description_sui"><![CDATA[如果您正在使用 Magisk，可以尝试 %1$s。对于 root 用户，它将最终取代 Shizuku。注意，已有的应用需要一点点修改来使用 %2$s。]]></string>
-    <string name="settings_start_on_boot_summary">对于已 root 设备，Shizuku 可以开机启动</string>
     <string name="settings_start_on_boot">开机启动（root）</string>
-    <string name="settings_start_on_boot_wireless_summary">对于未 root 设备，Shizuku 可以通过无线调试或可连接的 TCP ADB 端口开机启动</string>
-    <string name="settings_start_on_boot_wireless">开机启动（无线调试）</string>
+    <string name="settings_start_on_boot_summary">对于已 root 设备，Shizuku 可以开机启动</string>
+    <string name="settings_start_on_boot_wireless">连接 Wi-Fi 时自动启动（无线调试）</string>
+    <string name="settings_start_on_boot_wireless_summary">当连接到 Wi-Fi 时自动启动 Shizuku。需要 WRITE_SECURE_SETTINGS 权限。</string>
+    <string name="settings_auto_pairing">自动配对</string>
+    <string name="settings_auto_pairing_summary">自动从通知中获取配对码</string>
+    <string name="auto_pairing_notification_access_tooltip">自动配对需要“通知使用权”来从系统设置中获取配对码。</string>
     <string name="settings_adb_root">ADB root（root 调试）</string>
     <string name="settings_adb_root_summary">对于以 userdebug 模式构建的系统，Shizuku 可以先将 adbd 重启到 root 模式，然后以 root 模式启动</string>
     <string name="settings_tcpip_port">TCP/IP 端口</string>

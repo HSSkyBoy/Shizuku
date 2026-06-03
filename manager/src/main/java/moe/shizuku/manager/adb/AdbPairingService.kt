@@ -50,6 +50,12 @@ class AdbPairingService : Service() {
         private const val PORT_KEY = "pairing_port"
         private const val PAIRING_TIMEOUT_MILLIS = 15_000L
 
+        private var autoPairCode: String? = null
+
+        fun setAutoPairCode(code: String) {
+            autoPairCode = code
+        }
+
         fun startIntent(context: Context): Intent {
             return Intent(context, AdbPairingService::class.java).setAction(START_ACTION)
         }
@@ -69,6 +75,14 @@ class AdbPairingService : Service() {
     private val observer = Observer<Int> { port ->
         Log.i(TAG, "Pairing service port: $port")
         if (port <= 0) return@Observer
+
+        val code = autoPairCode
+        if (code != null) {
+            Log.i(TAG, "Using auto-detected pairing code: $code")
+            onInput(code, port)
+            autoPairCode = null
+            return@Observer
+        }
 
         // Since the service could be killed before user finishing input,
         // we need to put the port into Intent

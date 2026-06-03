@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import moe.shizuku.manager.R
+import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.ui.theme.ShizukuComposeTheme
 
 @Composable
@@ -49,6 +50,7 @@ fun AdbPairingTutorialComposeScreen(
     onNavigateUp: () -> Unit,
     onOpenDeveloperOptions: () -> Unit,
     onOpenNotificationOptions: () -> Unit,
+    onOpenNotificationAccessSettings: () -> Unit,
     onRequestLocalNetworkPermission: () -> Unit
 ) {
     ShizukuComposeTheme {
@@ -58,6 +60,7 @@ fun AdbPairingTutorialComposeScreen(
             onNavigateUp = onNavigateUp,
             onOpenDeveloperOptions = onOpenDeveloperOptions,
             onOpenNotificationOptions = onOpenNotificationOptions,
+            onOpenNotificationAccessSettings = onOpenNotificationAccessSettings,
             onRequestLocalNetworkPermission = onRequestLocalNetworkPermission
         )
     }
@@ -71,9 +74,11 @@ private fun AdbPairingTutorialContent(
     onNavigateUp: () -> Unit,
     onOpenDeveloperOptions: () -> Unit,
     onOpenNotificationOptions: () -> Unit,
+    onOpenNotificationAccessSettings: () -> Unit,
     onRequestLocalNetworkPermission: () -> Unit
 ) {
     val readyForPairing = state.notificationEnabled && state.localNetworkPermissionGranted && !state.pairingServiceStartFailed
+    val autoPairingEnabled = ShizukuSettings.getPreferences().getBoolean(ShizukuSettings.AUTO_PAIRING_ENABLED, false)
     val steps = listOf(
         PairingStep(
             icon = Icons.Outlined.LooksOne,
@@ -129,6 +134,17 @@ private fun AdbPairingTutorialContent(
                             body = stringResource(R.string.adb_pairing_tutorial_content_notification_blocked),
                             action = stringResource(R.string.notification_settings),
                             onAction = onOpenNotificationOptions
+                        )
+                    }
+                }
+
+                if (autoPairingEnabled && !state.notificationListenerEnabled) {
+                    item {
+                        WarningCard(
+                            title = stringResource(R.string.permission_missing),
+                            body = stringResource(R.string.auto_pairing_notification_access_tooltip),
+                            action = stringResource(android.R.string.ok),
+                            onAction = onOpenNotificationAccessSettings
                         )
                     }
                 }

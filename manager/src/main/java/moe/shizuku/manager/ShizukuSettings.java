@@ -26,6 +26,7 @@ public class ShizukuSettings {
     public static final String KEEP_START_ON_BOOT = "start_on_boot";
     public static final String KEEP_START_ON_BOOT_WIRELESS = "start_on_boot_wireless";
     public static final String WATCHDOG_ENABLED_ADB = "watchdog_enabled_adb";
+    public static final String AUTO_PAIRING_ENABLED = "auto_pairing_enabled";
     public static final String ADB_ROOT = "adb_root";
     public static final String TCPIP_PORT = "tcpip_port";
 
