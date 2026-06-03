@@ -61,7 +61,7 @@
     <string name="starter">启动程序</string>
     <string name="dialog_adb_invalid_port">端口号是一个 10 至 65535 的整数。</string>
     <string name="home_wireless_adb_title"><![CDATA[通过无线调试启动]]></string>
-    <string name="home_wireless_adb_description"><![CDATA[在 Android 11 或更高版本上，您可以直接从您的设备启用无线调试并启动 Shizuku，无需连接到计算机。<p>请先查看分步骤指南。]]></string>
+    <string name="home_wireless_adb_description"><![CDATA[在 Android 11 或更高版本上，您可以直接从您的设备启用无线调试并启动 Shizuku，无需连接到计算机。<p>如果已授予 WRITE_SECURE_SETTINGS 权限，那么在无线调试可用或存在可连接的 TCP ADB 端口时，Shizuku 也可以在未 root 的情况下开机自动重启。<p>请先查看分步骤指南。]]></string>
     <string name="action_stop">停止 Shizuku</string>
     <string name="dialog_stop_message">Shizuku 服务将被停止。</string>
     <string name="paring_code_is_wrong">配对码错误。</string>
@@ -85,7 +85,7 @@
     <string name="home_root_description_sui"><![CDATA[如果您正在使用 Magisk，可以尝试 %1$s。对于 root 用户，它将最终取代 Shizuku。注意，已有的应用需要一点点修改来使用 %2$s。]]></string>
     <string name="settings_start_on_boot_summary">对于已 root 设备，Shizuku 可以开机启动</string>
     <string name="settings_start_on_boot">开机启动（root）</string>
-    <string name="settings_start_on_boot_wireless_summary">对于未 root 设备，Shizuku 可以通过无线调试开机启动</string>
+    <string name="settings_start_on_boot_wireless_summary">对于未 root 设备，Shizuku 可以通过无线调试或可连接的 TCP ADB 端口开机启动</string>
     <string name="settings_start_on_boot_wireless">开机启动（无线调试）</string>
     <string name="settings_adb_root">ADB root（root 调试）</string>
     <string name="settings_adb_root_summary">对于以 userdebug 模式构建的系统，Shizuku 可以先将 adbd 重启到 root 模式，然后以 root 模式启动</string>
@@ -128,7 +128,7 @@
     <string name="adb_pairing_tutorial_content_miui_2">否则，您可能会无法从通知输入配对码。</string>
     <string name="adb_pairing_tutorial_content_notification">一条来自 Shizuku 的通知将帮助您完成配对。</string>
     <string name="adb_pairing_tutorial_content_left_is_clickable">请注意，“无线调试”选项的左侧是可点击的，点按它将打开一个新的页面。仅打开右侧的开关是错误的。</string>
-    <string name="home_wireless_adb_description_pre_11"><![CDATA[在 Android 11 之前，需要连接到计算机才能启用无线调试。]]></string>
+    <string name="home_wireless_adb_description_pre_11"><![CDATA[在 Android 11 之前，通常需要连接到计算机才能启用无线调试。如果已经配置并可连接 TCP ADB，Shizuku 仍然可以在没有 Wi-Fi 的情况下重启。]]></string>
     <string name="home_wireless_adb_view_guide_button">分步骤指南</string>
     <string name="adb_pairing_tutorial_content_network">Shizuku 需要访问本地网络。它由网络权限控制。</string>
     <string name="adb_pairing_tutorial_content_network_limation_not_foreground">某些系统（例如 MIUI）不允许应用在不可见时访问网络，即使应用已按标准使用前台服务。请在此类系统上为 Shizuku 禁用电池优化功能。</string>

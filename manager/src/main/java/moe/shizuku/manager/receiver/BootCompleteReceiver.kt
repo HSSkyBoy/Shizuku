@@ -92,16 +92,22 @@ class BootCompleteReceiver : BroadcastReceiver() {
         )
 
         try {
+            val startablePort = adbWirelessHelper.getStartableAdbPort()
             val wirelessAdbStatus = adbWirelessHelper.validateThenEnableWirelessAdb(
                 context.contentResolver, context, true
             )
-            if (wirelessAdbStatus) {
+            if (wirelessAdbStatus || startablePort != null) {
                 val intentService = Intent(context, SelfStarterService::class.java).apply {
-                    putExtra(SelfStarterService.EXTRA_AUTO_ENABLE_WIRELESS_DEBUGGING, true)
+                    putExtra(SelfStarterService.EXTRA_AUTO_ENABLE_WIRELESS_DEBUGGING, wirelessAdbStatus)
                     putExtra(SelfStarterService.EXTRA_FORCE_RESTART, false)
-                    putExtra(SelfStarterService.EXTRA_DISABLE_WIRELESS_DEBUGGING_WHEN_FINISHED, true)
+                    putExtra(
+                        SelfStarterService.EXTRA_DISABLE_WIRELESS_DEBUGGING_WHEN_FINISHED,
+                        wirelessAdbStatus
+                    )
                 }
                 context.startForegroundService(intentService)
+            } else {
+                Log.w(AppConstants.TAG, "No Wi-Fi or TCP ADB port available for wireless boot start")
             }
         } catch (e: SecurityException) {
             e.printStackTrace()

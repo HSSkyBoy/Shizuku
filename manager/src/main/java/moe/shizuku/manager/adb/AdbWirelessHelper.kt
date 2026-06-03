@@ -147,6 +147,14 @@ class AdbWirelessHelper {
         return port?.takeIf { it in 1..65535 }
     }
 
+    fun getStartableAdbPort(): Int? {
+        val systemPort = moe.shizuku.manager.utils.EnvironmentUtils.getAdbTcpPort()
+        if (systemPort in 1..65535) {
+            return systemPort
+        }
+        return getConfiguredTcpipPort()
+    }
+
     private fun changeTcpipPort(
         host: String,
         port: Int,

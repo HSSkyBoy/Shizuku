@@ -65,7 +65,7 @@
     <string name="starter">啟動程式</string>
     <string name="dialog_adb_invalid_port">通訊埠號碼是一個 10 至 65535 的整數。</string>
     <string name="home_wireless_adb_title"><![CDATA[透過無線偵錯啟動]]></string>
-    <string name="home_wireless_adb_description"><![CDATA[在 Android 11 或更高版本上，您可以直接從您的裝置啟用無線偵錯並啟動 Shizuku，無需連接到電腦。<p>請先查看分步驟指南。]]></string>
+    <string name="home_wireless_adb_description"><![CDATA[在 Android 11 或更高版本上，您可以直接從您的裝置啟用無線偵錯並啟動 Shizuku，無需連接到電腦。<p>如果已授予 WRITE_SECURE_SETTINGS 權限，那麼在無線偵錯可用或存在可連線的 TCP ADB 連接埠時，Shizuku 也可以在未取得 Root 權限的情況下開機自動重新啟動。<p>請先查看分步驟指南。]]></string>
     <string name="action_stop">停止 Shizuku</string>
     <string name="dialog_stop_message">Shizuku 服務將被停止。</string>
     <string name="paring_code_is_wrong">配對碼錯誤。</string>
@@ -89,7 +89,7 @@
     <string name="home_root_description_sui"><![CDATA[如果您正在使用 Magisk，可以嘗試 %1$s。對於 Root 使用者，它將最終取代 Shizuku。注意，已有的應用程式需要一點點修改來使用 %2$s。]]></string>
     <string name="settings_start_on_boot_summary">對於已取得 Root 權限的裝置，Shizuku 可以開機啟動</string>
     <string name="settings_start_on_boot">開機啟動（Root）</string>
-    <string name="settings_start_on_boot_wireless_summary">對於未取得 Root 權限的裝置，Shizuku 可以透過無線偵錯開機啟動</string>
+    <string name="settings_start_on_boot_wireless_summary">對於未取得 Root 權限的裝置，Shizuku 可以透過無線偵錯或可連線的 TCP ADB 連接埠開機啟動</string>
     <string name="settings_start_on_boot_wireless">開機啟動（無線偵錯）</string>
     <string name="settings_adb_root">ADB Root（Root 偵錯）</string>
     <string name="settings_adb_root_summary">對於以 userdebug 模式建構的系統，Shizuku 可以先將 adbd 重新啟動到 Root 模式，然後以 Root 模式啟動</string>
@@ -132,7 +132,7 @@
     <string name="adb_pairing_tutorial_content_miui_2">否則，您可能會無法從通知輸入配對碼。</string>
     <string name="adb_pairing_tutorial_content_notification">一條來自 Shizuku 的通知將幫助您完成配對。</string>
     <string name="adb_pairing_tutorial_content_left_is_clickable">請注意，「無線偵錯」選項的左側是可點選的，點選它將開啟一個新的頁面。僅開啟右側的開關是錯誤的。</string>
-    <string name="home_wireless_adb_description_pre_11"><![CDATA[在 Android 11 之前，需要連接到電腦才能啟用無線偵錯。]]></string>
+    <string name="home_wireless_adb_description_pre_11"><![CDATA[在 Android 11 之前，通常需要連接到電腦才能啟用無線偵錯。如果已經設定並可連線 TCP ADB，Shizuku 仍然可以在沒有 Wi-Fi 的情況下重新啟動。]]></string>
     <string name="home_wireless_adb_view_guide_button">分步驟指南</string>
     <string name="adb_pairing_tutorial_content_network">Shizuku 需要存取區域網路。它由網路權限控制。</string>
     <string name="adb_pairing_tutorial_content_network_limation_not_foreground">某些系統(如 MIUI) 不允許應用程式在不可見時存取網路，即使應用程式已按標準使用前景服務。請在此類系統上為 Shizuku 停用電池最佳化功能。</string>
