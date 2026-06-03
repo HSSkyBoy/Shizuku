@@ -1,5 +1,6 @@
 package moe.shizuku.manager.home
 
+import android.content.Intent
 import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -66,6 +67,7 @@ import moe.shizuku.manager.ui.theme.ShizukuComposeTheme
 import moe.shizuku.manager.utils.EnvironmentUtils
 import moe.shizuku.manager.utils.UserHandleCompat
 import rikka.html.text.HtmlCompat
+import androidx.core.net.toUri
 
 @Composable
 fun HomeComposeScreen(
@@ -296,6 +298,7 @@ private fun HomeScreenContent(
 
 @Composable
 private fun LinkRow(label: String, url: String) {
+    val context = LocalContext.current
     Text(
         text = label,
         color = MaterialTheme.colorScheme.primary,
@@ -303,6 +306,9 @@ private fun LinkRow(label: String, url: String) {
     )
     Text(
         text = url,
+        modifier = Modifier.clickable {
+            context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
+        },
         color = MaterialTheme.colorScheme.secondary,
         style = MaterialTheme.typography.bodySmall
     )
