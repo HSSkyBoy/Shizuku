@@ -304,8 +304,22 @@ private fun SettingsScreenContent(
                 confirmButton = {
                     TextButton(onClick = {
                         try {
-                            context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+                            val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS).apply {
+                                    putExtra(
+                                        Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME,
+                                        ComponentName(context, moe.shizuku.manager.adb.AdbPairingNotificationListener::class.java).flattenToString()
+                                    )
+                                }
+                            } else {
+                                Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+                            }
+                            context.startActivity(intent)
                         } catch (_: Exception) {
+                            try {
+                                context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+                            } catch (_: Exception) {
+                            }
                         }
                         dialogState = null
                     }) {

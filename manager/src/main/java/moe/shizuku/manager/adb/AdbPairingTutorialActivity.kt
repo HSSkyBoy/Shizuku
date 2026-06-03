@@ -80,8 +80,22 @@ class AdbPairingTutorialActivity : AppActivity() {
                 },
                 onOpenNotificationAccessSettings = {
                     try {
-                        startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+                        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS).apply {
+                                putExtra(
+                                    Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME,
+                                    ComponentName(this@AdbPairingTutorialActivity, AdbPairingNotificationListener::class.java).flattenToString()
+                                )
+                            }
+                        } else {
+                            Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+                        }
+                        startActivity(intent)
                     } catch (_: ActivityNotFoundException) {
+                        try {
+                            startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+                        } catch (_: ActivityNotFoundException) {
+                        }
                     }
                 },
                 onRequestLocalNetworkPermission = {
