@@ -46,6 +46,7 @@ hidden-compat = { group = "dev.rikka.hidden", name = "compat", version.ref = "hi
 hidden-stub = { group = "dev.rikka.hidden", name = "stub", version.ref = "hidden-api" }
 refine-runtime = { group = "dev.rikka.tools.refine", name = "runtime", version.ref = "refine" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
+androidx-core = { group = "androidx.core", name = "core", version.ref = "androidx-core" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidx-browser" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity-compose" }
