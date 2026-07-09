@@ -10,8 +10,8 @@ subprojects {
     plugins.withId("com.android.base") {
         android {
             compileSdk = 37
-            buildToolsVersion = "37.0.0"
-            ndkVersion = "29.0.13599879"
+            buildToolsVersion = '37.0.0'
+            ndkVersion = '30.0.14904198'
             defaultConfig {
                 minSdk = 24
                 targetSdk = 37
@@ -20,7 +20,14 @@ subprojects {
                 sourceCompatibility = JavaVersion.VERSION_21
                 targetCompatibility = JavaVersion.VERSION_21
             }
+            buildFeatures {
+                aidl = true
+            }
         }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.compilerArgs << '-Xlint:deprecation'
     }
 }
 

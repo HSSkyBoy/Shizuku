@@ -1,6 +1,6 @@
 plugins {
-    id 'com.android.application'
-    id 'dev.rikka.tools.refine'
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.refine)
 }
 
 android {
@@ -29,30 +29,33 @@ android {
     }
 }
 
-android.applicationVariants.all { variant ->
-    variant.outputs.all {
-        def outDir = new File(rootDir, "out")
-        def mappingPath = new File(outDir, "mapping").absolutePath
-        def dexPath = "${rootProject.rootDir.path}/manager/src/main/assets"
-        variant.assembleProvider.get().doLast {
-            if (variant.getBuildType().isMinifyEnabled()) {
-                copy {
-                    from variant.mappingFileProvider.get()
-                    into mappingPath
-                    rename { String fileName ->
-                        mappingPath + File.separator + "cmd-v${variant.versionName}.txt"
-                    }
-                }
-            }
-            copy {
-                def file = zipTree(file(outputFile)).matching { include 'classes*.dex' }.singleFile
+tasks.matching { it.name == 'assembleDebug' || it.name == 'assembleRelease' }.configureEach {
+    doLast {
+        def variantName = name == 'assembleRelease' ? 'release' : 'debug'
+        def outDir = new File(rootDir, 'out')
+        def mappingPath = new File(outDir, 'mapping')
+        def dexPath = new File(rootProject.rootDir, 'manager/src/main/assets')
 
-                from file
-                into dexPath
-                rename { String fileName ->
-                    fileName.replace(file.getName(), "rish_shizuku.dex")
-                }
+        if (variantName == 'release') {
+            copy {
+                from layout.buildDirectory.file("outputs/mapping/${variantName}/mapping.txt")
+                into mappingPath
+                rename { "cmd-v${rootProject.ext.versionName}.txt" }
             }
+        }
+
+        def apkFiles = fileTree(layout.buildDirectory.dir("outputs/apk/${variantName}").get().asFile) {
+            include '*.apk'
+        }.files
+        if (apkFiles.isEmpty()) {
+            throw new GradleException("No APK found for variant ${variantName}")
+        }
+
+        copy {
+            from zipTree(apkFiles.iterator().next())
+            into dexPath
+            include 'classes*.dex'
+            rename { 'rish_shizuku.dex' }
         }
     }
 }

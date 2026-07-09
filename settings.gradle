@@ -1,17 +1,28 @@
+import org.apache.tools.ant.DirectoryScanner
+
 pluginManagement {
     repositories {
+        gradlePluginPortal()
         google()
         mavenLocal()
         mavenCentral()
+        maven {
+            url("https://jitpack.io")
+            content {
+                includeGroup("com.github.LSPosed.AutoResConfig")
+                includeGroup("com.github.LSPosed.MaterialThemeBuilder")
+            }
+        }
     }
-    plugins {
-        id("com.android.application") version "8.10.1"
-        id("com.android.library") version "8.10.1"
-        id("org.jetbrains.kotlin.android") version "2.1.21"
-        id("org.jetbrains.kotlin.plugin.compose") version "2.1.21"
-        id("dev.rikka.tools.autoresconfig") version "1.2.2"
-        id("dev.rikka.tools.materialthemebuilder") version "1.5.1"
-        id("dev.rikka.tools.refine") version "4.4.0"
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id == "dev.rikka.tools.autoresconfig") {
+                useModule("com.github.LSPosed.AutoResConfig:gradle-plugin:${requested.version}")
+            }
+            if (requested.id.id == "dev.rikka.tools.materialthemebuilder") {
+                useModule("com.github.LSPosed.MaterialThemeBuilder:gradle-plugin:${requested.version}")
+            }
+        }
     }
 }
 dependencyResolutionManagement {
@@ -27,31 +38,9 @@ dependencyResolutionManagement {
             }
         }
     }
-    versionCatalogs {
-        libs {
-            version('hidden-api', '4.4.0')
-            library('hidden-compat', 'dev.rikka.hidden', 'compat').versionRef('hidden-api')
-            library('hidden-stub', 'dev.rikka.hidden', 'stub').versionRef('hidden-api')
-
-            version('refine', '4.4.0')
-            library('refine-runtime', 'dev.rikka.tools.refine', 'runtime').versionRef('refine')
-            library('refine-annotation', 'dev.rikka.tools.refine', 'annotation').versionRef('refine')
-            library('refine-annotation-processor', 'dev.rikka.tools.refine', 'annotation-processor').versionRef('refine')
-
-            version('androidx-annotation', '1.8.2')
-            library('androidx-annotation', 'androidx.annotation', 'annotation').versionRef('androidx-annotation')
-
-            version('androidx-core', '1.13.1')
-            library('androidx-core', 'androidx.core', 'core').versionRef('androidx-core')
-
-            version('parcelablelist', '2.0.1')
-            library('parcelablelist', 'dev.rikka.rikkax.parcelablelist', 'parcelablelist').versionRef('parcelablelist')
-
-            version('libcxx', '27.0.12077973')
-            library('libcxx', 'org.lsposed.libcxx', 'libcxx').versionRef('libcxx')
-        }
-    }
 }
+
+DirectoryScanner.removeDefaultExclude("**/.gitattributes")
 
 include ':server', ':starter', ':shell'
 include ':manager'
@@ -66,7 +55,7 @@ if (propFile.canRead()) {
     props.load(new FileInputStream(propFile))
 
     if (props != null) {
-        if (props["api.useLocal"].equals("true")) {
+        if (props["api.useLocal"] == "true") {
             root = props["api.dir"]
         }
     }
@@ -89,6 +78,3 @@ project(':provider').projectDir = file("$root${File.separator}provider")
 
 include ':server-shared'
 project(':server-shared').projectDir = file("$root${File.separator}server-shared")
-
-include ':hidden-api-stub'
-project(':hidden-api-stub').projectDir = file("$root${File.separator}hidden-api-stub")

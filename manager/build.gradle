@@ -3,12 +3,11 @@ import com.android.build.gradle.internal.tasks.CompileArtProfileTask
 import java.nio.file.Paths
 
 plugins {
-    id('com.android.application')
-    id('org.jetbrains.kotlin.android')
-    id('org.jetbrains.kotlin.plugin.compose')
-    id('dev.rikka.tools.refine')
-    id('dev.rikka.tools.autoresconfig')
-    id('dev.rikka.tools.materialthemebuilder')
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.rikka.autoresconfig)
+    alias(libs.plugins.rikka.materialthemebuilder)
+    alias(libs.plugins.refine)
 }
 
 android {
@@ -50,9 +49,6 @@ android {
             version = "3.31.0+"
         }
     }
-    kotlinOptions {
-        jvmTarget = "21"
-    }
     packagingOptions {
         jniLibs {
             useLegacyPackaging true
@@ -66,71 +62,86 @@ android {
     }
     lint {
         checkReleaseBuilds false
+        disable += ['MissingTranslation', 'ExtraTranslation', 'IntentReset']
     }
 }
 
 autoResConfig {
-    generatedClassFullName = "rikka.shizuku.manager.ShizukuLocales"
+    generatedClassFullName = 'rikka.shizuku.manager.ShizukuLocales'
     generateRes = false
-    generatedArrayFirstItem = "SYSTEM"
+    generatedArrayFirstItem = 'SYSTEM'
     generateLocaleConfig = true
 }
 
 materialThemeBuilder {
     themes {
         shizuku {
-            primaryColor = "#3F51B5"
-            lightThemeFormat = "Theme.Material3.Light.%s"
-            lightThemeParent = "Theme.Material3.Light.Rikka"
-            darkThemeFormat = "Theme.Material3.Dark.%s"
-            darkThemeParent = "Theme.Material3.Dark.Rikka"
+            primaryColor = '#3F51B5'
+            lightThemeFormat = 'Theme.Material3.Light.%s'
+            lightThemeParent = 'Theme.Material3.Light.Rikka'
+            darkThemeFormat = 'Theme.Material3.Dark.%s'
+            darkThemeParent = 'Theme.Material3.Dark.Rikka'
         }
     }
     generatePalette = true
     generateTextColors = true
 }
 
-def collapseReleaseResourceNames = task('collapseReleaseResourceNames').doLast {
-    def aapt2 = Paths.get(project.android.sdkDirectory.path, 'build-tools', project.android.buildToolsVersion, 'aapt2')
-    def zip = Paths.get(project.buildDir.path, 'intermediates',
-            'optimized_processed_res', 'release', 'optimizeReleaseResources', 'resources-release-optimize.ap_')
-    def optimized = new File("${zip}.opt")
-    def cmd = exec {
-        commandLine aapt2, 'optimize', '--collapse-resource-names',
-                '--resources-config-path', 'aapt2-resources.cfg',
-                '-o', optimized, zip
-        ignoreExitValue false
-    }
-    if (cmd.exitValue == 0) {
-        delete(zip)
-        optimized.renameTo("$zip")
+def collapseReleaseResourceNames = tasks.register('collapseReleaseResourceNames') {
+    doLast {
+        def sdkDirectory = androidComponents.sdkComponents.sdkDirectory.get().asFile
+        def aapt2 = Paths.get(sdkDirectory.path, 'build-tools', android.buildToolsVersion, 'aapt2')
+        def zip = Paths.get(project.buildDir.path, 'intermediates',
+                'optimized_processed_res', 'release', 'optimizeReleaseResources', 'resources-release-optimize.ap_')
+        def optimized = new File("${zip}.opt")
+        def execResult = project.providers.exec {
+            commandLine aapt2, 'optimize', '--collapse-resource-names',
+                    '--resources-config-path', 'aapt2-resources.cfg',
+                    '-o', optimized, zip
+            ignoreExitValue = true
+        }.result.get()
+        if (execResult.exitValue == 0) {
+            delete(zip)
+            optimized.renameTo("$zip")
+        }
     }
 }
 
-afterEvaluate {
-    tasks.getByName('optimizeReleaseResources').finalizedBy(collapseReleaseResourceNames)
-    tasks.getByName('preReleaseBuild').dependsOn(':shell:assembleRelease')
-    tasks.getByName('preDebugBuild').dependsOn(':shell:assembleDebug')
+tasks.matching { it.name == 'optimizeReleaseResources' }.configureEach {
+    finalizedBy(collapseReleaseResourceNames)
 }
 
-android.applicationVariants.configureEach { variant ->
-    variant.outputs.configureEach {
-        outputFileName = "shizuku-v${variant.versionName}-${variant.name}.apk"
+tasks.matching { it.name == 'preReleaseBuild' }.configureEach {
+    dependsOn(':shell:assembleRelease')
+}
 
-        variant.assembleProvider.get().doLast {
-            def outDir = new File(rootDir, "out")
-            def mappingDir = new File(outDir, "mapping").absolutePath
-            def apkDir = new File(outDir, "apk").absolutePath
+tasks.matching { it.name == 'preDebugBuild' }.configureEach {
+    dependsOn(':shell:assembleDebug')
+}
 
-            if (variant.getBuildType().isMinifyEnabled()) {
-                copy {
-                    from variant.mappingFileProvider.get()
-                    into mappingDir
-                    rename { String fileName -> "mapping-${variant.versionName}.txt" }
-                }
-                copy {
-                    from outputFile
-                    into apkDir
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        def variantName = variant.name
+        def variantCap = variantName.substring(0, 1).toUpperCase() + variantName.substring(1)
+
+        tasks.matching { it.name == "assemble${variantCap}" }.configureEach {
+            doLast {
+                def outDir = new File(rootDir, 'out')
+                def mappingDir = new File(outDir, 'mapping')
+                def apkDir = new File(outDir, 'apk')
+
+                if (variant.buildType == 'release') {
+                    copy {
+                        from layout.buildDirectory.file("outputs/mapping/${variantName}/mapping.txt")
+                        into mappingDir
+                        rename { "mapping-${rootProject.ext.versionName}.txt" }
+                    }
+                    copy {
+                        from layout.buildDirectory.dir("outputs/apk/${variantName}")
+                        into apkDir
+                        include '*.apk'
+                        rename { "shizuku-v${rootProject.ext.versionName}-${variantName}.apk" }
+                    }
                 }
             }
         }
@@ -146,8 +157,8 @@ configurations.configureEach {
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
+    implementation libs.kotlinx.coroutines.core
+    implementation libs.kotlinx.coroutines.android
 
     implementation project(':server')
     implementation project(':common')
@@ -159,43 +170,43 @@ dependencies {
     implementation libs.hidden.compat
     compileOnly libs.hidden.stub
 
-    implementation 'androidx.browser:browser:1.8.0'
-    implementation platform('androidx.compose:compose-bom:2024.09.03')
-    implementation 'androidx.activity:activity-compose:1.10.1'
-    implementation 'androidx.compose.ui:ui'
-    implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation 'androidx.compose.material3:material3'
-    implementation 'androidx.compose.material:material-icons-extended'
-    implementation 'androidx.compose.runtime:runtime-livedata'
-    debugImplementation 'androidx.compose.ui:ui-tooling'
-    implementation 'androidx.core:core-ktx:1.16.0'
-    implementation 'androidx.fragment:fragment-ktx:1.8.7'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.9.0'
-    implementation 'androidx.work:work-runtime-ktx:2.10.1'
+    implementation libs.androidx.browser
+    implementation platform(libs.androidx.compose.bom)
+    implementation libs.androidx.activity.compose
+    implementation libs.androidx.compose.ui
+    implementation libs.androidx.compose.ui.tooling.preview
+    implementation libs.androidx.compose.material3
+    implementation libs.androidx.compose.material.icons.extended
+    implementation libs.androidx.compose.runtime.livedata
+    debugImplementation libs.androidx.compose.ui.tooling
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.fragment.ktx
+    implementation libs.androidx.lifecycle.viewmodel.ktx
+    implementation libs.androidx.lifecycle.livedata.ktx
+    implementation libs.androidx.work.runtime.ktx
 
-    implementation 'com.google.android.material:material:1.12.0'
+    implementation libs.material
 
-    implementation 'com.github.topjohnwu.libsu:core:6.0.0'
+    implementation libs.core
 
-    implementation 'dev.rikka.rikkax.appcompat:appcompat:1.6.1'
-    implementation 'dev.rikka.rikkax.compatibility:compatibility:2.0.0'
-    implementation 'dev.rikka.rikkax.core:core-ktx:1.4.1'
-    implementation 'dev.rikka.rikkax.material:material:2.7.2'
-    implementation 'dev.rikka.rikkax.html:html-ktx:1.1.2'
-    implementation 'dev.rikka.rikkax.widget:borderview:1.1.0'
-    implementation 'dev.rikka.rikkax.lifecycle:lifecycle-resource-livedata:1.0.1'
-    implementation 'dev.rikka.rikkax.lifecycle:lifecycle-shared-viewmodel:1.0.1'
-    implementation 'dev.rikka.rikkax.lifecycle:lifecycle-viewmodel-lazy:2.0.0'
+    implementation libs.appcompat
+    implementation libs.compatibility
+    implementation libs.dev.core.ktx
+    implementation libs.dev.material
+    implementation libs.html.ktx
+    implementation libs.borderview
+    implementation libs.lifecycle.resource.livedata
+    implementation libs.lifecycle.shared.viewmodel
+    implementation libs.lifecycle.viewmodel.lazy
 
-    implementation 'io.github.vvb2060.ndk:boringssl:20250114'
-    implementation 'org.lsposed.libcxx:libcxx:27.0.12077973'
+    implementation libs.boringssl
+    implementation libs.libcxx
 
-    implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:6.1'
+    implementation libs.hiddenapibypass
 
-    implementation 'org.bouncycastle:bcpkix-jdk18on:1.80'
+    implementation libs.bcpkix.jdk18on
 
-    implementation 'me.zhanghai.android.appiconloader:appiconloader:1.5.0'
+    implementation libs.appiconloader
 }
 
 apply from: rootProject.file('signing.gradle')

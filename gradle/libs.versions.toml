@@ -1,0 +1,83 @@
+[versions]
+activity-compose = "1.13.0"
+agp = "9.2.1"
+appcompat = "1.6.1"
+appiconloader = "1.5.0"
+bcpkix-jdk18on = "1.84"
+boringssl = "20251124"
+browser = "1.10.0"
+compatibility = "2.0.0"
+compose-bom = "2026.06.01"
+core = "6.0.0"
+core-ktx-version = "1.4.1"
+borderview = "1.1.0"
+fragment-ktx = "1.8.9"
+gson = "2.14.0"
+hiddenapibypass = "6.1"
+html-ktx = "1.1.2"
+kotlin = "2.4.0"
+kotlinx-coroutines-android = "1.11.0"
+libcxx = "29.0.14206865"
+lifecycle-livedata-ktx = "2.11.0"
+lifecycle-resource-livedata = "1.0.1"
+lifecycle-shared-viewmodel = "1.0.1"
+lifecycle-viewmodel-lazy = "2.0.0"
+material = "1.14.0"
+material-version = "2.7.2"
+androidx-annotation = "1.10.0"
+androidx-core = "1.19.0"
+parcelablelist = "2.0.1"
+hidden-api = "4.4.0"
+refine = "4.4.0"
+autoresconfig-plugin = "ebd7e1ec68c89ac38fc2d675786dd120d64653aa"
+materialthemebuilder-plugin = "63f1f189450912baade92876965396ebf1615d4e"
+work-runtime-ktx = "2.11.2"
+
+[libraries]
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
+androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
+androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
+androidx-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+androidx-core = { group = "androidx.core", name = "core", version.ref = "androidx-core" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment-ktx" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle-livedata-ktx" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle-livedata-ktx" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work-runtime-ktx" }
+appcompat = { module = "dev.rikka.rikkax.appcompat:appcompat", version.ref = "appcompat" }
+appiconloader = { module = "me.zhanghai.android.appiconloader:appiconloader", version.ref = "appiconloader" }
+bcpkix-jdk18on = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bcpkix-jdk18on" }
+borderview = { module = "dev.rikka.rikkax.widget:borderview", version.ref = "borderview" }
+boringssl = { module = "io.github.vvb2060.ndk:boringssl", version.ref = "boringssl" }
+compatibility = { module = "dev.rikka.rikkax.compatibility:compatibility", version.ref = "compatibility" }
+core = { module = "com.github.topjohnwu.libsu:core", version.ref = "core" }
+dev-core-ktx = { module = "dev.rikka.rikkax.core:core-ktx", version.ref = "core-ktx-version" }
+dev-material = { module = "dev.rikka.rikkax.material:material", version.ref = "material-version" }
+hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
+html-ktx = { module = "dev.rikka.rikkax.html:html-ktx", version.ref = "html-ktx" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines-android" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-android" }
+libcxx = { module = "org.lsposed.libcxx:libcxx", version.ref = "libcxx" }
+lifecycle-resource-livedata = { module = "dev.rikka.rikkax.lifecycle:lifecycle-resource-livedata", version.ref = "lifecycle-resource-livedata" }
+lifecycle-shared-viewmodel = { module = "dev.rikka.rikkax.lifecycle:lifecycle-shared-viewmodel", version.ref = "lifecycle-shared-viewmodel" }
+lifecycle-viewmodel-lazy = { module = "dev.rikka.rikkax.lifecycle:lifecycle-viewmodel-lazy", version.ref = "lifecycle-viewmodel-lazy" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+parcelablelist = { group = "dev.rikka.rikkax.parcelablelist", name = "parcelablelist", version.ref = "parcelablelist" }
+hidden-compat = { group = "dev.rikka.hidden", name = "compat", version.ref = "hidden-api" }
+hidden-stub = { group = "dev.rikka.hidden", name = "stub", version.ref = "hidden-api" }
+refine-runtime = { group = "dev.rikka.tools.refine", name = "runtime", version.ref = "refine" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+refine = { id = "dev.rikka.tools.refine", version.ref = "refine" }
+rikka-autoresconfig = { id = "dev.rikka.tools.autoresconfig", version.ref = "autoresconfig-plugin" }
+rikka-materialthemebuilder = { id = "dev.rikka.tools.materialthemebuilder", version.ref = "materialthemebuilder-plugin" }
