@@ -211,7 +211,14 @@ class AdbWirelessHelper {
         }
 
         try {
-            changeTcpipPort(host, currentPort, newPort, key, commandOutput, onOutput)
+            val confirmed = changeTcpipPort(host, currentPort, newPort, key, commandOutput, onOutput)
+            if (!confirmed) {
+                Log.w(AppConstants.TAG, "ADB did not confirm TCP/IP port switch to $newPort")
+            }
+
+            if (!waitForAdbPortAvailable(host, newPort, TCPIP_REBIND_TIMEOUT_MS)) {
+                Log.w(AppConstants.TAG, "Timed out waiting for ADB to listen on TCP/IP port $newPort")
+            }
         } catch (e: Throwable) {
             Log.w(AppConstants.TAG, "Failed to switch ADB TCP/IP port after Shizuku start", e)
         }
