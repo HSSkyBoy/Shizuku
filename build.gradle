@@ -24,7 +24,7 @@ subprojects {
     }
 }
 
-apply from: 'api/manifest.gradle'
+apply from: 'api/manifest.gradle.kts'
 def gitOutput = { List<String> command ->
     def process = command.execute(null, project.rootDir)
     def output = new StringBuffer()
