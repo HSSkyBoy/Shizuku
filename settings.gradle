@@ -27,30 +27,6 @@ dependencyResolutionManagement {
             }
         }
     }
-    versionCatalogs {
-        libs {
-            version('hidden-api', '4.4.0')
-            library('hidden-compat', 'dev.rikka.hidden', 'compat').versionRef('hidden-api')
-            library('hidden-stub', 'dev.rikka.hidden', 'stub').versionRef('hidden-api')
-
-            version('refine', '4.4.0')
-            library('refine-runtime', 'dev.rikka.tools.refine', 'runtime').versionRef('refine')
-            library('refine-annotation', 'dev.rikka.tools.refine', 'annotation').versionRef('refine')
-            library('refine-annotation-processor', 'dev.rikka.tools.refine', 'annotation-processor').versionRef('refine')
-
-            version('androidx-annotation', '1.8.2')
-            library('androidx-annotation', 'androidx.annotation', 'annotation').versionRef('androidx-annotation')
-
-            version('androidx-core', '1.13.1')
-            library('androidx-core', 'androidx.core', 'core').versionRef('androidx-core')
-
-            version('parcelablelist', '2.0.1')
-            library('parcelablelist', 'dev.rikka.rikkax.parcelablelist', 'parcelablelist').versionRef('parcelablelist')
-
-            version('libcxx', '27.0.12077973')
-            library('libcxx', 'org.lsposed.libcxx', 'libcxx').versionRef('libcxx')
-        }
-    }
 }
 
 include ':server', ':starter', ':shell'
