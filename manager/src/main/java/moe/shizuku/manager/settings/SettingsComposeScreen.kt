@@ -230,6 +230,11 @@ private fun SettingsScreenContent(
                                 "translation_contributors" -> {
                                 }
 
+                                "battery_optimization" -> {
+                                    moe.shizuku.manager.utils.SettingsHelper.requestIgnoreBatteryOptimizations(context)
+                                    recreateAfterAnimation()
+                                }
+
                                 TCPIP_PORT -> dialogState = SettingsDialogState.TcpIpPort
                             }
                         }
@@ -467,6 +472,18 @@ private fun buildSettingsModel(context: Context): List<SettingsSection> {
                 )
             )
         }
+        add(
+            SettingsItem.StaticItem(
+                key = "battery_optimization",
+                title = context.getString(R.string.settings_battery_optimization),
+                summary = if (moe.shizuku.manager.utils.SettingsHelper.isIgnoringBatteryOptimizations(context)) {
+                    context.getString(R.string.settings_battery_optimization_unrestricted)
+                } else {
+                    context.getString(R.string.settings_battery_optimization_optimized)
+                },
+                icon = Icons.Outlined.PowerSettingsNew
+            )
+        )
         add(
             SettingsItem.StaticItem(
                 key = TCPIP_PORT,

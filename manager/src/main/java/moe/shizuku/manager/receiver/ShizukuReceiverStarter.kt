@@ -11,10 +11,27 @@ import moe.shizuku.manager.R
 import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.adb.AdbWirelessHelper
 import moe.shizuku.manager.starter.Starter
+import moe.shizuku.manager.utils.EnvironmentUtils
 import moe.shizuku.manager.utils.UserHandleCompat
+import moe.shizuku.manager.watchdog.WatchdogService
 import rikka.shizuku.Shizuku
 
 object ShizukuReceiverStarter {
+
+    fun start(context: Context, forceStart: Boolean = false) {
+        if (UserHandleCompat.myUserId() > 0 || (Shizuku.pingBinder() && !forceStart)) {
+            return
+        }
+
+        val lastLaunchMethod = ShizukuSettings.getLastLaunchMode()
+        val isRooted = EnvironmentUtils.isRooted()
+
+        if (lastLaunchMethod == ShizukuSettings.LaunchMethod.ROOT && isRooted) {
+            rootStart()
+        } else {
+            startWireless(context, force = forceStart)
+        }
+    }
 
     fun startOnBoot(context: Context) {
         if (UserHandleCompat.myUserId() > 0 || Shizuku.pingBinder()) {
@@ -37,7 +54,7 @@ object ShizukuReceiverStarter {
             return
         }
 
-        Log.w(AppConstants.TAG, "No support start on boot")
+        Log.w(AppConstants.TAG, "No start on boot option enabled")
     }
 
     fun startWireless(
@@ -50,8 +67,8 @@ object ShizukuReceiverStarter {
             return
         }
 
-        if (requireBootSupport && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            Log.w(AppConstants.TAG, "Wireless boot start requires Android 13 or above")
+        if (requireBootSupport && Build.VERSION.SDK_INT < Build.VERSION_CODES.R && !EnvironmentUtils.isTelevision(context)) {
+            Log.w(AppConstants.TAG, "Wireless boot start requires Android 11 or above")
             BootStartNotifications.showFailure(
                 context,
                 context.getString(R.string.wireless_boot_wifi_required)
@@ -65,10 +82,7 @@ object ShizukuReceiverStarter {
 
         if (!hasSecureSettingsPermission && startablePort == null) {
             Log.w(AppConstants.TAG, "Wireless boot worker missing WRITE_SECURE_SETTINGS")
-            BootStartNotifications.showFailure(
-                context,
-                context.getString(R.string.permission_write_secure_settings_required)
-            )
+            BootStartNotifications.showPermissionError(context)
             return
         }
 

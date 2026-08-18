@@ -209,6 +209,38 @@
             android:exported="false" />
 
         <receiver
+            android:name=".receiver.NotifAttemptReceiver"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver
+            android:name=".receiver.NotifCancelReceiver"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver
+            android:name=".receiver.ManualStartReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="${applicationId}.START" />
+                <action android:name="moe.shizuku.privileged.api.START" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receiver.ManualStopReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="${applicationId}.STOP" />
+                <action android:name="moe.shizuku.privileged.api.STOP" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
             android:name=".receiver.UserPresentRestartReceiver"
             android:enabled="false"
             android:exported="true">

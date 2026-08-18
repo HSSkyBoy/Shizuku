@@ -169,6 +169,16 @@
     <string name="starting_on_wireless_adb">正在通过无线 ADB 启动服务…</string>
     <string name="starting_root_shell">正在启动 root shell…</string>
     <string name="start_service_timeout">Shizuku 服务未及时响应。请尝试重新启动。</string>
+    <string name="boot_start_notification_title">无线 ADB 自动启动</string>
+    <string name="boot_start_waiting_for_wifi">正在等待 Wi-Fi 或可连接的 TCP ADB 端口</string>
+    <string name="boot_start_connecting">正在尝试通过无线 ADB 启动 Shizuku</string>
+    <string name="boot_start_waiting_for_unlock">正在等待设备解锁以继续自动启动</string>
+    <string name="boot_start_action_attempt_now">立即尝试</string>
+    <string name="boot_start_waiting_for_retry">等待重试自动启动</string>
+    <string name="settings_battery_optimization">电池优化</string>
+    <string name="settings_battery_optimization_summary">关闭电池优化以允许 Shizuku 在后台可靠地自动启动</string>
+    <string name="settings_battery_optimization_unrestricted">无限制</string>
+    <string name="settings_battery_optimization_optimized">受优化限制（点按前往设置）</string>
     <string name="settings_grant_note"><![CDATA[<h1>注意</h1>\n<p>此功能需要 <u><tt>WRITE_SECURE_SETTINGS</tt></u> 权限。</p>\n<h1>警告</h1>\n<p><u><tt>WRITE_SECURE_SETTINGS</tt></u> 是高度敏感的权限，仅在明确操作风险时启用。后续可能产生的任何后果均由用户自行承担。</p>]]></string>
     <string name="settings_watchdog_adb">ADB/TCP 守护</string>
     <string name="settings_watchdog_adb_summary">在通过 ADB/TCP 启动后监控 Shizuku；若服务被杀死，则最多自动重启 5 次</string>

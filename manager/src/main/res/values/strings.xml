@@ -145,6 +145,12 @@ With %1$s, in any terminal app, you can connect to and interact with the shell r
     <string name="boot_start_waiting_for_wifi">Waiting for Wi-Fi or a reachable TCP ADB port</string>
     <string name="boot_start_connecting">Trying to start Shizuku with wireless ADB</string>
     <string name="boot_start_waiting_for_unlock">Waiting for device unlock to continue auto-start</string>
+    <string name="boot_start_action_attempt_now">Attempt now</string>
+    <string name="boot_start_waiting_for_retry">Waiting to retry auto-start</string>
+    <string name="settings_battery_optimization">Battery optimization</string>
+    <string name="settings_battery_optimization_summary">Disable battery optimization to allow Shizuku auto-start in the background reliably</string>
+    <string name="settings_battery_optimization_unrestricted">Unrestricted</string>
+    <string name="settings_battery_optimization_optimized">Optimized (tap to disable)</string>
 
     <!-- About -->
     <string name="action_about">About</string>
