@@ -189,4 +189,18 @@
     <string name="notification_channel_watchdog">守護狀態</string>
     <string name="notification_watchdog_title">Shizuku 守護已啟用</string>
     <string name="notification_watchdog_content">如果 ADB/TCP 啟動的 Shizuku 服務被殺死，將自動嘗試重新啟動</string>
+
+    <!-- Batch Application Management -->
+    <string name="action_select_all">全選</string>
+    <string name="action_deselect_all">取消全選</string>
+    <string name="action_batch_management">批量管理</string>
+    <string name="action_grant_selected">允許所選</string>
+    <string name="action_revoke_selected">撤銷所選</string>
+    <string name="action_grant_all">全部允許</string>
+    <string name="action_revoke_all">全部撤銷</string>
+    <string name="batch_selected_count">已選擇 %1$d 項</string>
+    <string name="dialog_confirm_grant_all_title">全部允許</string>
+    <string name="dialog_confirm_grant_all_message">確定要為所有應用程式授予 Shizuku 權限嗎？</string>
+    <string name="dialog_confirm_revoke_all_title">全部撤銷</string>
+    <string name="dialog_confirm_revoke_all_message">確定要撤銷所有應用程式的 Shizuku 權限嗎？</string>
 </resources>

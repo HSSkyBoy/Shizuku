@@ -69,6 +69,30 @@ class AppsManagementActivity : AppActivity() {
                             ToggleResult.Success
                         }
                     }
+                },
+                onBatchToggle = { targetPackages, grant ->
+                    var adbLimitedEncountered = false
+                    targetPackages.forEach { packageInfo ->
+                        val applicationInfo = packageInfo.applicationInfo ?: return@forEach
+                        try {
+                            val uid = applicationInfo.uid
+                            if (grant) {
+                                AuthorizationManager.grant(packageInfo.packageName, uid)
+                            } else {
+                                AuthorizationManager.revoke(packageInfo.packageName, uid)
+                            }
+                        } catch (e: SecurityException) {
+                            val shizukuUid = try {
+                                Shizuku.getUid()
+                            } catch (_: Throwable) {
+                                return@forEach
+                            }
+                            if (shizukuUid != 0) {
+                                adbLimitedEncountered = true
+                            }
+                        }
+                    }
+                    if (adbLimitedEncountered) ToggleResult.AdbLimited else ToggleResult.Success
                 }
             )
         }
