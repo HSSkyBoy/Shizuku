@@ -11,6 +11,8 @@ This is a **fork** of Shizuku. If you are looking for the official Shizuku devel
 - **Core Fixes and Optimizations**:
   - ~~Randomize `/data/local/tmp/shizuku` directory name~~
   - ~~Automatically delete `/data/local/tmp/shizuku_starter` files~~
+  - Enhancing Binder communication and lifecycle management.
+  - Adapted build toolchain to SDK 37 (Android 16/17) and Kotlin 2.4.20.
   - Enable ADB root permissions on userdebug ROMs.
   - Support for custom ADB TCP/IP ports, resolving conflicts when the default port 5555 is occupied.
 
@@ -23,7 +25,8 @@ This is a **fork** of Shizuku. If you are looking for the official Shizuku devel
   - **One-tap Notification Start**: Optimized the Wireless ADB pairing process. After successful pairing, users can start the service directly from the system notification without returning to the app.
   - **TV Device Optimization**: Tailored startup logic and UI layout for Android TV and set-top boxes, ensuring compatibility with remote control operations.
 
-- **Modern Visual Experience**:
+- **Modern Visual Experience & Permission Management**:
+  - **Batch App Permission Management**: Multi-select mode via long-press, select all / deselect all, batch grant or revoke permissions for multiple apps with confirmation dialogs.
   - **Material 3 UI**: Completely rewritten settings and management interfaces using **Jetpack Compose**, featuring smoother animations and more intuitive interaction logic.
   - **Dynamic Colors (Material You)**: Full support for Android 12+ dynamic color systems; the interface tone automatically adjusts to your system wallpaper.
   - **Pure Black Dark Mode**: Added a "Pure Black" theme option for OLED screens, providing extreme visual contrast and effective power saving.
@@ -67,7 +70,7 @@ Android uses `binder` for inter-process communication (IPC). Shizuku guides user
 Shizuku acts as an intermediary: it receives requests from applications, forwards them to the system server, and returns the results. This allows apps to use system APIs with higher privileges, which is almost identical to calling system APIs directly.
 
 ## Developer Guide
-Refer to: <https://github.com/RikkaApps/Shizuku-API>
+Refer to: <https://github.com/XiaoTong6666/Shizuku-API>
 
 ## Developing Shizuku
 
