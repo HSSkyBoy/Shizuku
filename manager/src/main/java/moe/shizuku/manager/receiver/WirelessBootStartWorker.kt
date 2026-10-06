@@ -210,20 +210,21 @@ class WirelessBootStartWorker(
             }
 
             fun handleKeyguardOrAuth() {
-                if (km.isKeyguardLocked || km.isDeviceLocked) {
+                if ((km.isKeyguardLocked || km.isDeviceLocked) && unlockReceiver == null) {
                     val filter = IntentFilter(Intent.ACTION_USER_PRESENT)
-                    unlockReceiver = object : BroadcastReceiver() {
+                    val receiver = object : BroadcastReceiver() {
                         override fun onReceive(context: Context, intent: Intent) {
                             if (intent.action == Intent.ACTION_USER_PRESENT) {
                                 runCatching { context.unregisterReceiver(this) }
                                 unlockReceiver = null
-                                Settings.Global.putInt(cr, "adb_wifi_enabled", 1)
+                                runCatching { Settings.Global.putInt(cr, "adb_wifi_enabled", 1) }
                             }
                         }
                     }
+                    unlockReceiver = receiver
                     ContextCompat.registerReceiver(
                         applicationContext,
-                        unlockReceiver,
+                        receiver,
                         filter,
                         ContextCompat.RECEIVER_NOT_EXPORTED
                     )
@@ -295,7 +296,23 @@ class WirelessBootStartWorker(
 
         fun getStartableAdbPort(): Int? = AdbWirelessHelper().getStartableAdbPort()
 
+        private fun isRunning(context: Context): Boolean = try {
+            WorkManager.getInstance(context)
+                .getWorkInfosForUniqueWork(UNIQUE_WORK_NAME)
+                .get(2, TimeUnit.SECONDS)
+                .any { it.state == WorkInfo.State.RUNNING }
+        } catch (_: Exception) {
+            false
+        }
+
         fun enqueue(context: Context) {
+            // Boot, unlock and Wi-Fi triggers arrive together; REPLACE would cancel an in-flight
+            // ADB start and restart it from scratch.
+            if (isRunning(context)) {
+                Log.i(AppConstants.TAG, "Wireless boot start already running, skip enqueue")
+                return
+            }
+
             val constraints = if (getStartableAdbPort() == null) {
                 BootStartNotifications.showWaitingForNetwork(context)
                 Constraints.Builder()
