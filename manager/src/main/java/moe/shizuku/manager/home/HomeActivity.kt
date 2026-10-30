@@ -33,6 +33,7 @@ import moe.shizuku.manager.starter.Starter
 import moe.shizuku.manager.starter.StarterActivity
 import moe.shizuku.manager.utils.CustomTabsHelper
 import moe.shizuku.manager.utils.EnvironmentUtils
+import moe.shizuku.manager.utils.SettingsPage
 import moe.shizuku.manager.watchdog.WatchdogService
 import rikka.core.util.ClipboardUtils
 import rikka.lifecycle.Status
@@ -219,29 +220,7 @@ abstract class HomeActivity : AppActivity() {
     }
 
     private fun openDevelopmentSettings() {
-        val wirelessSettingsIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Intent("android.settings.WIFI_DEBUG_SETTINGS").apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }
-        } else null
-
-        val devSettingsIntent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            putExtra(":settings:fragment_args_key", "toggle_adb_wireless")
-        }
-
-        try {
-            if (wirelessSettingsIntent != null) {
-                startActivity(wirelessSettingsIntent)
-            } else {
-                startActivity(devSettingsIntent)
-            }
-        } catch (_: ActivityNotFoundException) {
-            try {
-                startActivity(devSettingsIntent)
-            } catch (_: ActivityNotFoundException) {
-            }
-        }
+        SettingsPage.WirelessDebugging.launch(this)
     }
 
     private fun showWirelessAdbDiscoveryDialog() {

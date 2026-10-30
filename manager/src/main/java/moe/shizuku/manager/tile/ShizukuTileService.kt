@@ -23,6 +23,7 @@ import moe.shizuku.manager.receiver.WirelessBootStartWorker
 import moe.shizuku.manager.settings.SettingsActivity
 import moe.shizuku.manager.starter.SelfStarterService
 import moe.shizuku.manager.utils.EnvironmentUtils
+import moe.shizuku.manager.utils.SettingsPage
 import moe.shizuku.manager.watchdog.WatchdogService
 import rikka.shizuku.Shizuku
 
@@ -178,29 +179,17 @@ class ShizukuTileService : TileService() {
     }
 
     private fun openWirelessSettings() {
-        val wirelessSettingsIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Intent("android.settings.WIFI_DEBUG_SETTINGS").apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        if (!SettingsPage.WirelessDebugging.isDeveloperOptionsEnabled(this)) {
+            val intent = Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             }
-        } else null
-
-        val devSettingsIntent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            putExtra(":settings:fragment_args_key", "toggle_adb_wireless")
+            startActivityAndCollapseCompat(intent)
+            Toast.makeText(this, R.string.dialog_developer_options_required_title, Toast.LENGTH_SHORT).show()
+            return
         }
 
-        try {
-            if (wirelessSettingsIntent != null) {
-                startActivityAndCollapseCompat(wirelessSettingsIntent)
-            } else {
-                startActivityAndCollapseCompat(devSettingsIntent)
-            }
-        } catch (_: ActivityNotFoundException) {
-            try {
-                startActivityAndCollapseCompat(devSettingsIntent)
-            } catch (_: ActivityNotFoundException) {
-            }
-        }
+        val targetIntent = SettingsPage.WirelessDebugging.buildIntent(this)
+        startActivityAndCollapseCompat(targetIntent)
     }
 
     private fun startActivityAndCollapseCompat(intent: Intent) {

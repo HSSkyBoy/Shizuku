@@ -252,4 +252,8 @@ With %1$s, in any terminal app, you can connect to and interact with the shell r
     <string name="tile_action_stop">Stop Service</string>
     <string name="tile_service_stopped_toast">Shizuku service stopped</string>
     <string name="tile_service_starting_toast">Starting Shizuku…</string>
+
+    <!-- Developer Options Navigation -->
+    <string name="dialog_developer_options_required_title">Developer options disabled</string>
+    <string name="dialog_developer_options_required_message">Please enable Developer options in system settings first, then turn on Wireless debugging.</string>
 </resources>

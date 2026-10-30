@@ -210,4 +210,8 @@
     <string name="tile_action_stop">停止服务</string>
     <string name="tile_service_stopped_toast">Shizuku 服务已停止</string>
     <string name="tile_service_starting_toast">正在启动 Shizuku…</string>
+
+    <!-- Developer Options Navigation -->
+    <string name="dialog_developer_options_required_title">开发者选项未开启</string>
+    <string name="dialog_developer_options_required_message">请先在系统设置中开启开发者选项，然后再打开无线调试。</string>
 </resources>
