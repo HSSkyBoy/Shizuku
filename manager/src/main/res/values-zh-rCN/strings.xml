@@ -199,4 +199,15 @@
     <string name="dialog_confirm_grant_all_message">确定要为所有应用授予 Shizuku 权限吗？</string>
     <string name="dialog_confirm_revoke_all_title">全部撤销</string>
     <string name="dialog_confirm_revoke_all_message">确定要撤销所有应用的 Shizuku 权限吗？</string>
+
+    <!-- Quick Settings Tile -->
+    <string name="tile_title">Shizuku</string>
+    <string name="tile_running">运行中</string>
+    <string name="tile_stopped">已停止</string>
+    <string name="tile_action_open">打开 Shizuku</string>
+    <string name="tile_action_settings">打开配置</string>
+    <string name="tile_action_restart">重启服务</string>
+    <string name="tile_action_stop">停止服务</string>
+    <string name="tile_service_stopped_toast">Shizuku 服务已停止</string>
+    <string name="tile_service_starting_toast">正在启动 Shizuku…</string>
 </resources>

@@ -241,4 +241,15 @@ With %1$s, in any terminal app, you can connect to and interact with the shell r
     <string name="dialog_confirm_grant_all_message">Are you sure you want to grant Shizuku permission to all apps?</string>
     <string name="dialog_confirm_revoke_all_title">Revoke all apps</string>
     <string name="dialog_confirm_revoke_all_message">Are you sure you want to revoke Shizuku permission from all apps?</string>
+
+    <!-- Quick Settings Tile -->
+    <string name="tile_title">Shizuku</string>
+    <string name="tile_running">Running</string>
+    <string name="tile_stopped">Stopped</string>
+    <string name="tile_action_open">Open Shizuku</string>
+    <string name="tile_action_settings">Open Settings</string>
+    <string name="tile_action_restart">Restart Service</string>
+    <string name="tile_action_stop">Stop Service</string>
+    <string name="tile_service_stopped_toast">Shizuku service stopped</string>
+    <string name="tile_service_starting_toast">Starting Shizuku…</string>
 </resources>
