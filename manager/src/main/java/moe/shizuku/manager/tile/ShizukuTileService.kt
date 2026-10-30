@@ -179,7 +179,7 @@ class ShizukuTileService : TileService() {
 
     private fun openWirelessSettings() {
         val wirelessSettingsIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Intent(Settings.ACTION_WIFI_DEBUG_SETTINGS).apply {
+            Intent("android.settings.WIFI_DEBUG_SETTINGS").apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
         } else null
