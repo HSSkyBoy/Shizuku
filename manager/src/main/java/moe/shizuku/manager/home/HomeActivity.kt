@@ -216,13 +216,28 @@ abstract class HomeActivity : AppActivity() {
     }
 
     private fun openDevelopmentSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
+        val wirelessSettingsIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Intent(Settings.ACTION_WIFI_DEBUG_SETTINGS).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+        } else null
+
+        val devSettingsIntent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             putExtra(":settings:fragment_args_key", "toggle_adb_wireless")
         }
+
         try {
-            startActivity(intent)
+            if (wirelessSettingsIntent != null) {
+                startActivity(wirelessSettingsIntent)
+            } else {
+                startActivity(devSettingsIntent)
+            }
         } catch (_: ActivityNotFoundException) {
+            try {
+                startActivity(devSettingsIntent)
+            } catch (_: ActivityNotFoundException) {
+            }
         }
     }
 
@@ -260,9 +275,13 @@ abstract class HomeActivity : AppActivity() {
             adbMdns.start()
             discoveredPort.observe(this, observer)
             if (checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
-                Settings.Global.putInt(contentResolver, "adb_wifi_enabled", 1)
-                Settings.Global.putInt(contentResolver, Settings.Global.ADB_ENABLED, 1)
-                Settings.Global.putLong(contentResolver, "adb_allowed_connection_time", 0L)
+                runCatching {
+                    Settings.Global.putInt(contentResolver, "adb_wifi_enabled", 1)
+                    Settings.Global.putInt(contentResolver, Settings.Global.ADB_ENABLED, 1)
+                    Settings.Global.putLong(contentResolver, "adb_allowed_connection_time", 0L)
+                }.onFailure {
+                    Log.w(AppConstants.TAG, "Failed to enable wireless debugging via secure settings (requires MANAGE_DEBUGGING on Android 15+)", it)
+                }
             }
             adbDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 openDevelopmentSettings()

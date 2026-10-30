@@ -39,21 +39,22 @@ class AdbWirelessHelper {
             val intervalMs = 1000L
             var elapsed = 0L
 
+            var success = false
             runBlocking {
                 while (elapsed < timeoutMs) {
                     if (hasWifiTransport(connectivityManager)) {
-                        enableWirelessADB(contentResolver, context)
+                        success = enableWirelessADB(contentResolver, context)
                         return@runBlocking
                     }
                     delay(intervalMs)
                     elapsed += intervalMs
                 }
             }
+            return success
         }
 
         if (hasWifiTransport(connectivityManager)) {
-            enableWirelessADB(contentResolver, context)
-            return true
+            return enableWirelessADB(contentResolver, context)
         } else {
             Log.w(AppConstants.TAG, "Wireless ADB auto-start condition not met: Not on Wi-Fi.")
         }
@@ -67,21 +68,22 @@ class AdbWirelessHelper {
         }
     }
 
-    private fun enableWirelessADB(contentResolver: ContentResolver, context: Context) {
+    private fun enableWirelessADB(contentResolver: ContentResolver, context: Context): Boolean {
         // Enable wireless ADB
-        try {
+        return try {
             Settings.Global.putInt(contentResolver, "adb_wifi_enabled", 1)
             Settings.Global.putInt(contentResolver, Settings.Global.ADB_ENABLED, 1)
             Settings.Global.putLong(contentResolver, "adb_allowed_connection_time", 0L)
 
             Log.i(AppConstants.TAG, "Wireless Debugging enabled via secure setting.")
             Toast.makeText(context, "Wireless Debugging enabled", Toast.LENGTH_SHORT).show()
+            true
         } catch (se: SecurityException) {
-            Log.e(AppConstants.TAG, "Permission denied trying to enable wireless debugging.", se)
-            throw se
+            Log.w(AppConstants.TAG, "Permission denied trying to enable wireless debugging (requires MANAGE_DEBUGGING on Android 15+).", se)
+            false
         } catch (e: Exception) {
             Log.e(AppConstants.TAG, "Error enabling wireless debugging.", e)
-            throw e
+            false
         }
     }
 

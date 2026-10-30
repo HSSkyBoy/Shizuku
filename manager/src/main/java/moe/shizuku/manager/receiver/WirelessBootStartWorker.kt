@@ -242,7 +242,7 @@ class WirelessBootStartWorker(
                 }
             }
 
-            Settings.Global.putInt(cr, "adb_wifi_enabled", 1)
+            runCatching { Settings.Global.putInt(cr, "adb_wifi_enabled", 1) }
             cr.registerContentObserver(Settings.Global.getUriFor("adb_wifi_enabled"), false, observer)
             startDiscoveryWithTimeout()
 
