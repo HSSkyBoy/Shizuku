@@ -134,4 +134,19 @@
     <string name="home_app_management_empty">Apps, die Shizuku angefordert oder deklariert haben, werden hier angezeigt.</string>
     <string name="adb_pairing_tutorial_content_left_is_clickable">Bitte beachte, dass der linke Teil der \"Wireless debugging\"-Option anklickbar ist; wird es angetippt öffnet es eine neue Seite. Lediglich den Schalter auf der rechten Seite umzulegen ist falsch.</string>
     <string name="dialog_adb_discovery_message_toggle_wireless_debugging">Bitte versuche \"Wireless debugging\" aus- und einzuschalten, falls es weiterhin sucht.</string>
+
+    <!-- Quick Settings Tile -->
+    <string name="tile_title">Shizuku</string>
+    <string name="tile_running">Aktiv</string>
+    <string name="tile_stopped">Gestoppt</string>
+    <string name="tile_action_open">Shizuku öffnen</string>
+    <string name="tile_action_settings">Einstellungen öffnen</string>
+    <string name="tile_action_restart">Dienst neu starten</string>
+    <string name="tile_action_stop">Dienst beenden</string>
+    <string name="tile_service_stopped_toast">Shizuku-Dienst beendet</string>
+    <string name="tile_service_starting_toast">Shizuku wird gestartet…</string>
+
+    <!-- Developer Options Navigation -->
+    <string name="dialog_developer_options_required_title">Entwickleroptionen deaktiviert</string>
+    <string name="dialog_developer_options_required_message">Bitte aktivieren Sie zuerst die Entwickleroptionen in den Systemeinstellungen und schalten Sie dann das WLAN-Debugging ein.</string>
 </resources>

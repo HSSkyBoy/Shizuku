@@ -133,4 +133,19 @@
 \n
 \n操作を有効にするために､ Shizukuを再起動する必要がある場合があります。</string>
     <string name="dialog_adb_discovery_message_toggle_wireless_debugging">検索され続ける場合は、「ワイヤレスデバッグ」の無効化と有効化をしてみてください。</string>
+
+    <!-- Quick Settings Tile -->
+    <string name="tile_title">Shizuku</string>
+    <string name="tile_running">実行中</string>
+    <string name="tile_stopped">停止中</string>
+    <string name="tile_action_open">Shizuku を開く</string>
+    <string name="tile_action_settings">設定を開く</string>
+    <string name="tile_action_restart">サービスを再起動</string>
+    <string name="tile_action_stop">サービスを停止</string>
+    <string name="tile_service_stopped_toast">Shizuku サービスを停止しました</string>
+    <string name="tile_service_starting_toast">Shizuku を起動しています…</string>
+
+    <!-- Developer Options Navigation -->
+    <string name="dialog_developer_options_required_title">開発者向けオプションが無効です</string>
+    <string name="dialog_developer_options_required_message">システム設定で「開発者向けオプション」を有効にしてから、ワイヤレスデバッグをオンにしてください。</string>
 </resources>

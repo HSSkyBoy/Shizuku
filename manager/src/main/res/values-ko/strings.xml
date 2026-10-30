@@ -133,4 +133,19 @@
     <string name="home_adb_is_limited_title">추가 단계를 진행해야 합니다</string>
     <string name="home_app_management_empty">Shizuku에 요청 또는 선언한 앱들이 여기에 표시됩니다.</string>
     <string name="dialog_adb_discovery_message_toggle_wireless_debugging">\"무선 디버깅\"이 검색중으로 유지된다면 비활성화했다가 다시 활성화해 보세요.</string>
+
+    <!-- Quick Settings Tile -->
+    <string name="tile_title">Shizuku</string>
+    <string name="tile_running">실행 중</string>
+    <string name="tile_stopped">중지됨</string>
+    <string name="tile_action_open">Shizuku 열기</string>
+    <string name="tile_action_settings">설정 열기</string>
+    <string name="tile_action_restart">서비스 다시 시작</string>
+    <string name="tile_action_stop">서비스 중지</string>
+    <string name="tile_service_stopped_toast">Shizuku 서비스가 중지되었습니다</string>
+    <string name="tile_service_starting_toast">Shizuku 시작 중…</string>
+
+    <!-- Developer Options Navigation -->
+    <string name="dialog_developer_options_required_title">개발자 옵션이 비활성화됨</string>
+    <string name="dialog_developer_options_required_message">시스템 설정에서 개발자 옵션을 활성화한 후 무선 디버깅을 켜세요.</string>
 </resources>

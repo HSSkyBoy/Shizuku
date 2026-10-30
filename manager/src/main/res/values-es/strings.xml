@@ -134,4 +134,19 @@
     </plurals>
     <string name="dialog_adb_invalid_port">Puerto es un número del 10 al 65535.</string>
     <string name="dialog_adb_port">Puerto</string>
+
+    <!-- Quick Settings Tile -->
+    <string name="tile_title">Shizuku</string>
+    <string name="tile_running">En ejecución</string>
+    <string name="tile_stopped">Detenido</string>
+    <string name="tile_action_open">Abrir Shizuku</string>
+    <string name="tile_action_settings">Abrir ajustes</string>
+    <string name="tile_action_restart">Reiniciar servicio</string>
+    <string name="tile_action_stop">Detener servicio</string>
+    <string name="tile_service_stopped_toast">Servicio de Shizuku detenido</string>
+    <string name="tile_service_starting_toast">Iniciando Shizuku…</string>
+
+    <!-- Developer Options Navigation -->
+    <string name="dialog_developer_options_required_title">Opciones para desarrolladores desactivadas</string>
+    <string name="dialog_developer_options_required_message">Activa primero las Opciones para desarrolladores en los ajustes del sistema y luego activa la depuración inalámbrica.</string>
 </resources>

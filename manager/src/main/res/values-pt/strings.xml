@@ -135,4 +135,19 @@
     <string name="home_adb_is_limited_title">Você precisa dar um passo extra</string>
     <string name="home_app_management_empty">Os aplicativos que solicitaram ou declararem Shizuku serão exibidos aqui.</string>
     <string name="dialog_adb_discovery_message_toggle_wireless_debugging">Por favor, tente desabilitar e habilitar \"Depuração sem fio\" se continuar procurando.</string>
+
+    <!-- Quick Settings Tile -->
+    <string name="tile_title">Shizuku</string>
+    <string name="tile_running">Em execução</string>
+    <string name="tile_stopped">Parado</string>
+    <string name="tile_action_open">Abrir Shizuku</string>
+    <string name="tile_action_settings">Abrir definições</string>
+    <string name="tile_action_restart">Reiniciar serviço</string>
+    <string name="tile_action_stop">Parar serviço</string>
+    <string name="tile_service_stopped_toast">Serviço Shizuku parado</string>
+    <string name="tile_service_starting_toast">A iniciar o Shizuku…</string>
+
+    <!-- Developer Options Navigation -->
+    <string name="dialog_developer_options_required_title">Opções do programador desativadas</string>
+    <string name="dialog_developer_options_required_message">Primeiro ative as Opções do programador nas definições do sistema e, em seguida, ative a Depuração sem fios.</string>
 </resources>

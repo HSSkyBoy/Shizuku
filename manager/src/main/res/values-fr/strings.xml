@@ -128,4 +128,19 @@
     <string name="home_adb_is_limited_title">Une étape supplémentaire est nécessaire</string>
     <string name="home_app_management_empty">Les applications qui ont demandé ou déclaré l\'accès à Shizuku apparaîtront ici.</string>
     <string name="dialog_adb_discovery_message_toggle_wireless_debugging">Merci d\'essayer de désactiver et de réactiver le \"Débogage sans-fil\" si ça continue à chercher.</string>
+
+    <!-- Quick Settings Tile -->
+    <string name="tile_title">Shizuku</string>
+    <string name="tile_running">En cours d\'exécution</string>
+    <string name="tile_stopped">Arrêté</string>
+    <string name="tile_action_open">Ouvrir Shizuku</string>
+    <string name="tile_action_settings">Ouvrir les paramètres</string>
+    <string name="tile_action_restart">Redémarrer le service</string>
+    <string name="tile_action_stop">Arrêter le service</string>
+    <string name="tile_service_stopped_toast">Service Shizuku arrêté</string>
+    <string name="tile_service_starting_toast">Démarrage de Shizuku…</string>
+
+    <!-- Developer Options Navigation -->
+    <string name="dialog_developer_options_required_title">Options pour les développeurs désactivées</string>
+    <string name="dialog_developer_options_required_message">Veuillez d\'abord activer les Options pour les développeurs dans les paramètres système, puis activez le débogage sans fil.</string>
 </resources>

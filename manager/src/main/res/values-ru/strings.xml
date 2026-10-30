@@ -136,4 +136,19 @@
 \n
 \nВозможно Вам понадобится перезапустить Shizuku для применения изменений.</string>
     <string name="home_adb_is_limited_title">Нужен дополнительный шаг</string>
+
+    <!-- Quick Settings Tile -->
+    <string name="tile_title">Shizuku</string>
+    <string name="tile_running">Работает</string>
+    <string name="tile_stopped">Остановлено</string>
+    <string name="tile_action_open">Открыть Shizuku</string>
+    <string name="tile_action_settings">Открыть настройки</string>
+    <string name="tile_action_restart">Перезапустить службу</string>
+    <string name="tile_action_stop">Остановить службу</string>
+    <string name="tile_service_stopped_toast">Служба Shizuku остановлена</string>
+    <string name="tile_service_starting_toast">Запуск Shizuku…</string>
+
+    <!-- Developer Options Navigation -->
+    <string name="dialog_developer_options_required_title">Параметры разработчика отключены</string>
+    <string name="dialog_developer_options_required_message">Пожалуйста, сначала включите параметры разработчика в настройках системы, затем включите отладку по Wi-Fi.</string>
 </resources>

@@ -134,4 +134,19 @@
 \nNormalmente, essa limitação pode ser eliminada ajustando algumas opções nas “Opções do desenvolvedor”. Por favor, leia a ajuda para obter detalhes sobre como fazer isso.
 \n
 \nPode ser necessário reiniciar o Shizuku para que a operação tenha efeito.</string>
+
+    <!-- Quick Settings Tile -->
+    <string name="tile_title">Shizuku</string>
+    <string name="tile_running">Em execução</string>
+    <string name="tile_stopped">Parado</string>
+    <string name="tile_action_open">Abrir Shizuku</string>
+    <string name="tile_action_settings">Abrir configurações</string>
+    <string name="tile_action_restart">Reiniciar serviço</string>
+    <string name="tile_action_stop">Parar serviço</string>
+    <string name="tile_service_stopped_toast">Serviço Shizuku parado</string>
+    <string name="tile_service_starting_toast">Iniciando o Shizuku…</string>
+
+    <!-- Developer Options Navigation -->
+    <string name="dialog_developer_options_required_title">Opções do desenvolvedor desativadas</string>
+    <string name="dialog_developer_options_required_message">Primeiro ative as Opções do desenvolvedor nas configurações do sistema e, em seguida, ative a Depuração por Wi-Fi.</string>
 </resources>

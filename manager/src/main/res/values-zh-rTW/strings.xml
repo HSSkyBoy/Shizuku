@@ -206,16 +206,16 @@
 
     <!-- Quick Settings Tile -->
     <string name="tile_title">Shizuku</string>
-    <string name="tile_running">運行中</string>
+    <string name="tile_running">執行中</string>
     <string name="tile_stopped">已停止</string>
     <string name="tile_action_open">開啟 Shizuku</string>
-    <string name="tile_action_settings">開啟配置</string>
+    <string name="tile_action_settings">打開設定</string>
     <string name="tile_action_restart">重新啟動服務</string>
     <string name="tile_action_stop">停止服務</string>
     <string name="tile_service_stopped_toast">Shizuku 服務已停止</string>
     <string name="tile_service_starting_toast">正在啟動 Shizuku…</string>
 
     <!-- Developer Options Navigation -->
-    <string name="dialog_developer_options_required_title">開發者選項未開啟</string>
-    <string name="dialog_developer_options_required_message">請先在系統設定中開啟開發者選項，然後再開啟無線除錯。</string>
+    <string name="dialog_developer_options_required_title">開發人員選項未啟用</string>
+    <string name="dialog_developer_options_required_message">請先在系統設定中開啟開發人員選項，然後再開啟無線除錯。</string>
 </resources>

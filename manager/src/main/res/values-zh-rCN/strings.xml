@@ -205,7 +205,7 @@
     <string name="tile_running">运行中</string>
     <string name="tile_stopped">已停止</string>
     <string name="tile_action_open">打开 Shizuku</string>
-    <string name="tile_action_settings">打开配置</string>
+    <string name="tile_action_settings">打开设置</string>
     <string name="tile_action_restart">重启服务</string>
     <string name="tile_action_stop">停止服务</string>
     <string name="tile_service_stopped_toast">Shizuku 服务已停止</string>

@@ -127,4 +127,19 @@
     <string name="settings_use_system_color">Sử dụng màu chủ đề hệ thống</string>
     <string name="home_app_management_empty">Các ứng dụng đã yêu cầu hoặc khai báo Shizuku sẽ hiển thị ở đây.</string>
     <string name="dialog_adb_discovery_message_toggle_wireless_debugging">Vui lòng thử tắt và bật \"Gỡ lỗi không dây\" nếu nó tiếp tục tìm kiếm.</string>
+
+    <!-- Quick Settings Tile -->
+    <string name="tile_title">Shizuku</string>
+    <string name="tile_running">Đang chạy</string>
+    <string name="tile_stopped">Đã dừng</string>
+    <string name="tile_action_open">Mở Shizuku</string>
+    <string name="tile_action_settings">Mở cài đặt</string>
+    <string name="tile_action_restart">Khởi động lại dịch vụ</string>
+    <string name="tile_action_stop">Dừng dịch vụ</string>
+    <string name="tile_service_stopped_toast">Dịch vụ Shizuku đã dừng</string>
+    <string name="tile_service_starting_toast">Đang khởi động Shizuku…</string>
+
+    <!-- Developer Options Navigation -->
+    <string name="dialog_developer_options_required_title">Tùy chọn nhà phát triển đã tắt</string>
+    <string name="dialog_developer_options_required_message">Vui lòng bật Tùy chọn nhà phát triển trong cài đặt hệ thống trước, sau đó bật Gỡ lỗi không dây.</string>
 </resources>
