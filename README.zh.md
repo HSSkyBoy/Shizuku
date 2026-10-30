@@ -14,10 +14,14 @@
   - ~~自动删除 `/data/local/tmp/shizuku_starter` 文件~~
   - 强化 Binder 通讯与使用者服务生命周期管理
   - 全面适配 Android 16/17 (SDK 37)，升级编译工具链至 Kotlin 2.4.20
+  - **Android 17 QPR & 15+ 兼容性修复**：修复因 `MANAGE_DEBUGGING` 权限检查导致的 `SecurityException` 崩溃，提供安全降级与异常保护。
+  - **精准直达无线调试设置**：实现多层级跳转机制（AOSP 快捷图块意图直达、MIUI/HyperOS 高亮定位、开发者选项回退及未开启防呆提示）。
+  - **mDNS 动态 Host 解析**：重构 mDNS 探索逻辑，动态解析局域网 IP 代替硬编码 `127.0.0.1`，并声明 `CHANGE_WIFI_MULTICAST_STATE` 权限提升发现成功率。
   - 在 userdebug ROM 上启用 ADB root 权限
   - 支援自定义 ADB TCP/IP 端口，解决默认 5555 端口被占用的问题。
 
 - **自动化启动与守护 (Watchdog)**：
+  - **下拉快捷图块 (Quick Settings Tile)**：新增系统控制中心快捷图块，实时显示服务运行状态，支持一键启动/停止/重启，长按直达无线调试设置。
   - **开机自启动 (无线侦错)**：支援在部分 Android 11+ 装置上，透过无线侦错环境实现免 Root 开机自动启动服务。
   - **自动唤醒**：当有应用程式请求 Shizuku 服务时，若服务未运行，Manager 将尝试透过无线侦错自动唤醒后台服务。
   - **Watchdog 守护进程**：新增 ADB 模式下的守护服务，实时监控服务状态并在断连时自动修复，显著提升连线稳定性。
