@@ -21,6 +21,7 @@ import moe.shizuku.manager.AppConstants
 import moe.shizuku.manager.Helps
 import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.adb.AdbMdns
+import moe.shizuku.manager.adb.AdbMdnsResult
 import moe.shizuku.manager.adb.AdbPairingService
 import moe.shizuku.manager.adb.AdbWirelessHelper
 import moe.shizuku.manager.app.AppActivity
@@ -206,8 +207,8 @@ abstract class HomeActivity : AppActivity() {
         startActivity(Intent.createChooser(intent, getString(moe.shizuku.manager.R.string.home_adb_dialog_view_command_button_send)))
     }
 
-    private fun startWirelessAdb(port: Int) {
-        AdbWirelessHelper().launchStarterActivity(this, "127.0.0.1", port)
+    private fun startWirelessAdb(port: Int, host: String = "127.0.0.1") {
+        AdbWirelessHelper().launchStarterActivity(this, host, port)
     }
 
     private fun showWirelessAdbNotEnabledDialog() {
@@ -246,16 +247,16 @@ abstract class HomeActivity : AppActivity() {
     private fun showWirelessAdbDiscoveryDialog() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
 
-        val discoveredPort = MutableLiveData<Int>()
+        val discoveredTarget = MutableLiveData<AdbMdnsResult>()
         val adbMdns = AdbMdns(this, AdbMdns.TLS_CONNECT) {
-            discoveredPort.postValue(it)
+            discoveredTarget.postValue(it)
         }
         val currentPort = EnvironmentUtils.getAdbTcpPort()
         var dialog: AlertDialog? = null
-        val observer = Observer<Int> {
-            if (it in 1..65535) {
+        val observer = Observer<AdbMdnsResult> {
+            if (it.isValid) {
                 dialog?.dismiss()
-                startWirelessAdb(it)
+                startWirelessAdb(it.port, it.host)
             }
         }
 
@@ -275,7 +276,7 @@ abstract class HomeActivity : AppActivity() {
         adbDialog.setCanceledOnTouchOutside(false)
         adbDialog.setOnShowListener {
             adbMdns.start()
-            discoveredPort.observe(this, observer)
+            discoveredTarget.observe(this, observer)
             if (checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
                 runCatching {
                     Settings.Global.putInt(contentResolver, "adb_wifi_enabled", 1)
@@ -294,7 +295,7 @@ abstract class HomeActivity : AppActivity() {
             }
         }
         adbDialog.setOnDismissListener {
-            discoveredPort.removeObserver(observer)
+            discoveredTarget.removeObserver(observer)
             adbMdns.stop()
         }
         adbDialog.show()

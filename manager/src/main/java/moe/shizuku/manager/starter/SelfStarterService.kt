@@ -24,6 +24,7 @@ import moe.shizuku.manager.R
 import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.adb.AdbKeyException
 import moe.shizuku.manager.adb.AdbMdns
+import moe.shizuku.manager.adb.AdbMdnsResult
 import moe.shizuku.manager.adb.AdbWirelessHelper
 import moe.shizuku.manager.utils.EnvironmentUtils
 import moe.shizuku.manager.watchdog.WatchdogService
@@ -47,20 +48,20 @@ class SelfStarterService : Service(), LifecycleOwner {
     override val lifecycle: Lifecycle
         get() = lifecycleRegistry
 
-    private val portLive = MutableLiveData<Int>()
+    private val targetLive = MutableLiveData<AdbMdnsResult>()
     private var adbMdns: AdbMdns? = null
     private val adbWirelessHelper = AdbWirelessHelper()
     private var disableWirelessDebuggingWhenFinished = false
 
-    private val portObserver = Observer<Int> { p ->
-        if (p in 1..65535) {
+    private val targetObserver = Observer<AdbMdnsResult> { result ->
+        if (result.isValid) {
             Log.i(
-                AppConstants.TAG, "Discovered adb port via mDNS: $p, starting Shizuku directly"
+                AppConstants.TAG, "Discovered adb target via mDNS: ${result.host}:${result.port}, starting Shizuku directly"
             )
             // Do not launch activity, start ADB connection directly
-            startShizukuViaAdb("127.0.0.1", p, disableWirelessDebuggingWhenFinished)
+            startShizukuViaAdb(result.host, result.port, disableWirelessDebuggingWhenFinished)
         } else {
-            Log.w(AppConstants.TAG, "mDNS returned invalid port: $p")
+            Log.w(AppConstants.TAG, "mDNS returned invalid target: ${result.host}:${result.port}")
         }
     }
 
@@ -113,13 +114,13 @@ class SelfStarterService : Service(), LifecycleOwner {
             Log.i(AppConstants.TAG, "Starting mDNS discovery for wireless ADB port.")
 
             // Remove potential previous observer before adding a new one
-            portLive.removeObserver(portObserver)
-            portLive.observeForever(portObserver)
+            targetLive.removeObserver(targetObserver)
+            targetLive.observeForever(targetObserver)
 
             if (adbMdns == null) {
                 adbMdns =
                     AdbMdns(
-                        context = this, serviceType = AdbMdns.TLS_CONNECT, observer = portObserver
+                        context = this, serviceType = AdbMdns.TLS_CONNECT, observer = targetObserver
                     )
             }
             adbMdns?.start()
@@ -246,7 +247,7 @@ class SelfStarterService : Service(), LifecycleOwner {
             adbMdns?.stop()
         }
 
-        portLive.removeObserver(portObserver) // Clean up the observer
+        targetLive.removeObserver(targetObserver) // Clean up the observer
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         super.onDestroy()
     }
