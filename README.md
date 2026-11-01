@@ -14,6 +14,7 @@ This is a **fork** of Shizuku. If you are looking for the official Shizuku devel
   - Enhancing Binder communication and lifecycle management.
   - Adapted build toolchain to SDK 37 (Android 16/17) and Kotlin 2.4.20.
   - **Android 17 QPR & 15+ Compatibility**: Fixed `SecurityException` crashes caused by `MANAGE_DEBUGGING` permission checks when toggling wireless debugging; added safe permission fallback.
+  - **Decoupled Permission Management**: Resolved permission issues on modern OEM systems (such as ColorOS 17 / HyperOS) where Developer Options removed permission monitoring toggles; core app management and terminal access remain fully functional without system-level ADB runtime permission grants.
   - **Direct Settings Navigation**: Tiered navigation to Wireless Debugging settings (AOSP QS tile shortcut, MIUI/HyperOS highlight, and general Developer Options fallback).
   - **Dynamic mDNS Host Resolution**: Resolved local IP dynamically instead of hardcoding `127.0.0.1` and added `CHANGE_WIFI_MULTICAST_STATE` permission for robust discovery.
   - Enable ADB root permissions on userdebug ROMs.

@@ -238,8 +238,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             try {
                 PermissionManagerApis.grantRuntimePermission(MANAGER_APPLICATION_ID,
                         WRITE_SECURE_SETTINGS, UserHandleCompat.getUserId(callingUid));
-            } catch (RemoteException e) {
-                LOGGER.w(e, "grant WRITE_SECURE_SETTINGS");
+            } catch (RemoteException | RuntimeException e) {
+                LOGGER.w(e, "grant WRITE_SECURE_SETTINGS failed");
             }
         }
         try {
@@ -273,7 +273,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 .putExtra("uid", callingUid)
                 .putExtra("pid", callingPid)
                 .putExtra("requestCode", requestCode)
-                .putExtra("applicationInfo", ai);
+                .putExtra("applicationInfo", ai)
+                .putExtra("apiVersion", clientRecord.apiVersion);
         ActivityManagerApis.startActivityNoThrow(intent, null, isWorkProfileUser ? 0 : userId);
     }
 
@@ -322,11 +323,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     continue;
                 }
 
-//                int deviceId = 0;//Context.DEVICE_ID_DEFAULT
-                if (allowed) {
-                    PermissionManagerApis.grantRuntimePermission(packageName, PERMISSION, userId);
-                } else {
-                    PermissionManagerApis.revokeRuntimePermission(packageName, PERMISSION, userId);
+                try {
+                    if (allowed) {
+                        PermissionManagerApis.grantRuntimePermission(packageName, PERMISSION, userId);
+                    } else {
+                        PermissionManagerApis.revokeRuntimePermission(packageName, PERMISSION, userId);
+                    }
+                } catch (RemoteException | RuntimeException e) {
+                    LOGGER.w(e, "dispatchPermissionConfirmationResult: Failed to sync runtime permission for %s", packageName);
                 }
             }
         }
@@ -391,24 +395,29 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 }
             }
 
+            configManager.update(uid, null, mask, value);
+
             for (String packageName : PackageManagerApis.getPackagesForUidNoThrow(uid)) {
                 PackageInfo pi = PackageManagerApis.getPackageInfoNoThrow(packageName, PackageManager.GET_PERMISSIONS, userId);
                 if (pi == null || pi.requestedPermissions == null || !ArraysKt.contains(pi.requestedPermissions, PERMISSION)) {
                     continue;
                 }
 
-                int deviceId = 0;//Context.DEVICE_ID_DEFAULT
-                if (allowed) {
-                    PermissionManagerApis.grantRuntimePermission(packageName, PERMISSION, userId);
-                } else {
-                    PermissionManagerApis.revokeRuntimePermission(packageName, PERMISSION, userId);
+                try {
+                    if (allowed) {
+                        PermissionManagerApis.grantRuntimePermission(packageName, PERMISSION, userId);
+                    } else {
+                        PermissionManagerApis.revokeRuntimePermission(packageName, PERMISSION, userId);
+                    }
+                } catch (RemoteException | RuntimeException e) {
+                    LOGGER.w(e, "updateFlagsForUid: Failed to sync runtime permission for %s", packageName);
                 }
 
                 // TODO kill user service using
             }
+        } else {
+            configManager.update(uid, null, mask, value);
         }
-
-        configManager.update(uid, null, mask, value);
     }
 
     private void onPermissionRevoked(String packageName) {

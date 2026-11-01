@@ -83,8 +83,8 @@
     <string name="home_learn_more_description">Learn how to develop with Shizuku</string>
 
     <!-- Home - Adb permissions limited -->
-    <string name="home_adb_is_limited_title">You need to take an extra step</string>
-    <string name="home_adb_is_limited_description">Your device manufacturer has restricted adb permissions and apps using Shizuku will not work properly.\n\nUsually, this limitation can be lifted by adjusting some options in \"Developer options\". Please read the help for details on how to do this.\n\nYou may need to restart Shizuku for the operation to take effect.</string>
+    <string name="home_adb_is_limited_title">ADB permissions are restricted</string>
+    <string name="home_adb_is_limited_description">Your device manufacturer has restricted ADB runtime permissions. Shizuku app management and terminal will work normally, but advanced features requiring system settings (such as wireless debugging auto-start or pre-API v11 apps) may not work properly.\n\nIf your device has an option such as \"Disable permission monitoring\" in Developer options, you can enable it to lift this restriction.</string>
 
     <!-- Application management -->
     <string name="app_management_dialog_adb_is_limited_title">The permission of adb is limited</string>

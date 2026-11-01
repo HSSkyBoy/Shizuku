@@ -37,7 +37,12 @@ class RequestPermissionActivity : AppActivity() {
         }
     }
 
-    private fun checkSelfPermission(): Boolean {
+    private fun checkSelfPermission(clientApiVersion: Int): Boolean {
+        val requiresRuntimePermission = Shizuku.isPreV11() || (clientApiVersion in 1 until 11)
+        if (!requiresRuntimePermission) {
+            return true
+        }
+
         val permission = Shizuku.checkRemotePermission("android.permission.GRANT_RUNTIME_PERMISSIONS") == PackageManager.PERMISSION_GRANTED
         if (permission) return true
 
@@ -98,7 +103,8 @@ class RequestPermissionActivity : AppActivity() {
             finish()
             return
         }
-        if (!checkSelfPermission()) {
+        val clientApiVersion = intent.getIntExtra("apiVersion", -1)
+        if (!checkSelfPermission(clientApiVersion)) {
             setResult(uid, pid, requestCode, allowed = false, onetime = true)
             return
         }

@@ -15,6 +15,7 @@
   - 强化 Binder 通讯与使用者服务生命周期管理
   - 全面适配 Android 16/17 (SDK 37)，升级编译工具链至 Kotlin 2.4.20
   - **Android 17 QPR & 15+ 兼容性修复**：修复因 `MANAGE_DEBUGGING` 权限检查导致的 `SecurityException` 崩溃，提供安全降级与异常保护。
+  - **授权管理解耦与容错优化**：针对 ColorOS 17 等新版系统删除“禁止权限监控”开关的问题，解耦 Shizuku 核心授权与 Android 系统的 ADB 运行时权限限制；应用授权管理与终端功能完全正常运作，并增强服务端容错处理。
   - **精准直达无线调试设置**：实现多层级跳转机制（AOSP 快捷图块意图直达、MIUI/HyperOS 高亮定位、开发者选项回退及未开启防呆提示）。
   - **mDNS 动态 Host 解析**：重构 mDNS 探索逻辑，动态解析局域网 IP 代替硬编码 `127.0.0.1`，并声明 `CHANGE_WIFI_MULTICAST_STATE` 权限提升发现成功率。
   - 在 userdebug ROM 上启用 ADB root 权限

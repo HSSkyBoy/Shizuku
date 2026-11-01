@@ -361,7 +361,7 @@ private fun buildHomeItems(
         running = running
     )
 
-    if (resolvedStatus.permission) {
+    if (resolvedStatus.canManageApps) {
         items += HomeUiItem.Action(
             title = context.resources.getQuantityString(
                 R.plurals.home_app_management_authorized_apps_count,
@@ -377,6 +377,9 @@ private fun buildHomeItems(
             enabled = running,
             onClick = onManageApps
         )
+    }
+
+    if (resolvedStatus.canUseTerminal) {
         items += HomeUiItem.Action(
             title = context.getString(R.string.home_terminal_title),
             summary = if (running) {
@@ -390,7 +393,7 @@ private fun buildHomeItems(
         )
     }
 
-    if (running && !resolvedStatus.permission) {
+    if (resolvedStatus.showLimitedAdbHint) {
         items += HomeUiItem.Action(
             title = context.getString(R.string.home_adb_is_limited_title),
             summary = context.getString(R.string.home_adb_is_limited_description),
