@@ -4,9 +4,13 @@ import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asExecutor
 import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -31,7 +35,8 @@ class AdbMdns(
     private var serviceName: String? = null
     private val listener = DiscoveryListener(this)
     private val nsdManager: NsdManager = context.getSystemService(NsdManager::class.java)
-    private val executor: Executor = context.mainExecutor
+    private val ioExecutor: Executor = Dispatchers.IO.asExecutor()
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     fun start() {
         if (running) return
@@ -63,27 +68,39 @@ class AdbMdns(
     }
 
     private fun onServiceFound(info: NsdServiceInfo) {
+        @Suppress("DEPRECATION")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            nsdManager.resolveService(info, executor, ResolveListener(this))
+            nsdManager.resolveService(info, ioExecutor, ResolveListener(this))
         } else {
-            @Suppress("DEPRECATION")
             nsdManager.resolveService(info, ResolveListener(this))
         }
     }
 
     private fun onServiceLost(info: NsdServiceInfo) {
         if (info.serviceName == serviceName) {
-            observer.onChanged(AdbMdnsResult("", -1))
+            serviceName = null
+            mainHandler.post {
+                observer.onChanged(AdbMdnsResult("", -1))
+            }
         }
     }
 
     private fun onServiceResolved(resolvedService: NsdServiceInfo) {
-        val resolvedHosts = resolvedService.resolvedHosts()
-        val matchedHost = findLocalMatchingHost(resolvedHosts) ?: return
+        ioExecutor.execute {
+            if (!running) return@execute
 
-        if (running && isPortAvailable(matchedHost, resolvedService.port)) {
-            serviceName = resolvedService.serviceName
-            observer.onChanged(AdbMdnsResult(matchedHost, resolvedService.port))
+            val resolvedHosts = resolvedService.resolvedHosts()
+            val matchedHost = findLocalMatchingHost(resolvedHosts) ?: return@execute
+
+            if (running && isPortAvailable(matchedHost, resolvedService.port)) {
+                serviceName = resolvedService.serviceName
+                val result = AdbMdnsResult(matchedHost, resolvedService.port)
+                mainHandler.post {
+                    if (running) {
+                        observer.onChanged(result)
+                    }
+                }
+            }
         }
     }
 
@@ -96,8 +113,10 @@ class AdbMdns(
                 ?.toSet()
         }.getOrNull() ?: emptySet()
 
-        return resolvedHosts.firstOrNull { it.hostAddress != null && it.hostAddress in localAddresses }?.hostAddress
-            ?: resolvedHosts.firstOrNull()?.hostAddress
+        return resolvedHosts.firstOrNull { host ->
+            val addr = host.hostAddress
+            addr != null && addr in localAddresses
+        }?.hostAddress ?: resolvedHosts.firstOrNull()?.hostAddress
     }
 
     private fun NsdServiceInfo.resolvedHosts(): List<InetAddress> {
