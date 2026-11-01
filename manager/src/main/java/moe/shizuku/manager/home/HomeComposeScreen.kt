@@ -1,4 +1,4 @@
-package moe.shizuku.manager.home
+﻿package moe.shizuku.manager.home
 
 import android.content.Intent
 import android.os.Build
@@ -230,7 +230,7 @@ private fun HomeScreenContent(
                         Text(text = versionName)
                         LinkRow(
                             label = plainText(context.getString(R.string.about_view_source_code, "GitHub")),
-                            url = "https://github.com/HSSkyBoy/Shizuku"
+                            url = "https://github.com/Nk-Be/Shizuku"
                         )
                         LinkRow(
                             label = plainText(context.getString(R.string.about_follow_channel, "t.me/np_nbcn")),
