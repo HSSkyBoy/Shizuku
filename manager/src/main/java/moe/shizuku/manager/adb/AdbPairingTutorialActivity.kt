@@ -1,5 +1,6 @@
 package moe.shizuku.manager.adb
 
+import android.Manifest
 import android.app.AppOpsManager
 import android.app.ForegroundServiceStartNotAllowedException
 import android.app.NotificationManager
@@ -129,15 +130,20 @@ class AdbPairingTutorialActivity : AppActivity() {
         }
     }
 
+    private fun localNetworkPermission(): String? = when {
+        Build.VERSION.SDK_INT >= ANDROID_17_API -> ACCESS_LOCAL_NETWORK
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> Manifest.permission.NEARBY_WIFI_DEVICES
+        else -> null
+    }
+
     private fun hasLocalNetworkPermission(): Boolean {
-        if (Build.VERSION.SDK_INT < ANDROID_17_API) {
-            return true
-        }
-        return checkSelfPermission(ACCESS_LOCAL_NETWORK) == PackageManager.PERMISSION_GRANTED
+        val permission = localNetworkPermission() ?: return true
+        return checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun ensureLocalNetworkPermissionOrStartPairing() {
-        if (hasLocalNetworkPermission()) {
+        val permission = localNetworkPermission()
+        if (permission == null || checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
             syncState()
             startPairingService()
             return
@@ -147,7 +153,7 @@ class AdbPairingTutorialActivity : AppActivity() {
             return
         }
         localNetworkPermissionRequested = true
-        requestPermissions(arrayOf(ACCESS_LOCAL_NETWORK), REQUEST_LOCAL_NETWORK_PERMISSION)
+        requestPermissions(arrayOf(permission), REQUEST_LOCAL_NETWORK_PERMISSION)
         syncState()
     }
 
