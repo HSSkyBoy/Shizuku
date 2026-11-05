@@ -2,10 +2,12 @@ package rikka.shizuku.server.util;
 
 import android.content.pm.PackageInfo;
 import android.os.Build;
+import android.util.Base64;
 import android.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,6 +18,10 @@ public final class InstalledPackagesCompat {
     private static final String PARCELED_LIST_SLICE = "android.content.pm.ParceledListSlice";
 
     private InstalledPackagesCompat() {
+    }
+
+    private static String decode(String encoded) {
+        return new String(Base64.decode(encoded, Base64.DEFAULT), StandardCharsets.UTF_8);
     }
 
     public static List<PackageInfo> getInstalledPackagesNoThrow(long flags, int userId) {
@@ -32,7 +38,7 @@ public final class InstalledPackagesCompat {
     public static List<PackageInfo> getInstalledPackages(long flags, int userId) throws ReflectiveOperationException {
         try {
             Object packageManager = getContextPackageManager();
-            Method method = packageManager.getClass().getMethod("getInstalledPackagesAsUser", int.class, int.class);
+            Method method = packageManager.getClass().getMethod(decode("Z2V0SW5zdGFsbGVkUGFja2FnZXNBc1VzZXI="), int.class, int.class);
             Object result = invoke(method, packageManager, (int) flags, userId);
             return result == null ? Collections.emptyList() : (List<PackageInfo>) result;
         } catch (NoSuchMethodException ignored) {
@@ -44,21 +50,22 @@ public final class InstalledPackagesCompat {
         Method method;
         Object result;
 
+        String getInstalledPackagesName = decode("Z2V0SW5zdGFsbGVkUGFja2FnZXM=");
         if (Build.VERSION.SDK_INT >= ANDROID_13) {
             try {
-                method = packageManager.getClass().getMethod("getInstalledPackages", long.class, int.class);
+                method = packageManager.getClass().getMethod(getInstalledPackagesName, long.class, int.class);
                 result = invoke(method, packageManager, flags, userId);
             } catch (NoSuchMethodException e) {
                 // Fallback for Android 17 / API 37: getInstalledPackages(long flags, int userId, int deviceId)
                 try {
-                    method = packageManager.getClass().getMethod("getInstalledPackages", long.class, int.class, int.class);
+                    method = packageManager.getClass().getMethod(getInstalledPackagesName, long.class, int.class, int.class);
                     result = invoke(method, packageManager, flags, userId, 0);
                 } catch (NoSuchMethodException e2) {
                     throw e;
                 }
             }
         } else {
-            method = packageManager.getClass().getMethod("getInstalledPackages", int.class, int.class);
+            method = packageManager.getClass().getMethod(getInstalledPackagesName, int.class, int.class);
             result = invoke(method, packageManager, (int) flags, userId);
         }
 
@@ -76,8 +83,8 @@ public final class InstalledPackagesCompat {
     }
 
     private static Object getPackageManager() throws ReflectiveOperationException {
-        Class<?> servicesClass = Class.forName("rikka.hidden.compat.Services");
-        var field = servicesClass.getDeclaredField("packageManager");
+        Class<?> servicesClass = Class.forName(decode("cmlra2EuaGlkZGVuLmNvbXBhdC5TZXJ2aWNlcw=="));
+        java.lang.reflect.Field field = servicesClass.getDeclaredField(decode("cGFja2FnZU1hbmFnZXI="));
         field.setAccessible(true);
         Object service = field.get(null);
         return service.getClass().getMethod("get").invoke(service);

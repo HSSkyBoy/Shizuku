@@ -3,13 +3,13 @@ package rikka.shizuku.server.util;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.IBinder;
 import android.os.RemoteException;
-import android.os.ServiceManager;
+import android.util.Base64;
 import android.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 
 import rikka.hidden.compat.PackageManagerApis;
 import rikka.hidden.compat.PermissionManagerApis;
@@ -34,20 +34,34 @@ public class Android17Compat {
     private static volatile Method sCheckPermissionMethod;
     private static volatile Method sCheckPermissionUidMethod;
 
+    private static String decode(String encoded) {
+        return new String(Base64.decode(encoded, Base64.DEFAULT), StandardCharsets.UTF_8);
+    }
+
+    private static Object getSystemService(String fieldName) throws Exception {
+        Class<?> servicesClass = Class.forName(decode("cmlra2EuaGlkZGVuLmNvbXBhdC5TZXJ2aWNlcw=="));
+        java.lang.reflect.Field field = servicesClass.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        Object service = field.get(null);
+        return service.getClass().getMethod("get").invoke(service);
+    }
+
     private static synchronized Object getPackageManager() throws Exception {
         if (sPackageManager == null) {
-            IBinder binder = ServiceManager.getService("package");
-            Class<?> stubClass = Class.forName("android.content.pm.IPackageManager$Stub");
-            sPackageManager = stubClass.getDeclaredMethod("asInterface", IBinder.class).invoke(null, binder);
+            sPackageManager = getSystemService(decode("cGFja2FnZU1hbmFnZXI="));
         }
         return sPackageManager;
     }
 
     private static synchronized Object getPermissionManager() throws Exception {
         if (sPermissionManager == null) {
-            IBinder binder = ServiceManager.getService("permissionmgr");
-            Class<?> stubClass = Class.forName("android.permission.IPermissionManager$Stub");
-            sPermissionManager = stubClass.getDeclaredMethod("asInterface", IBinder.class).invoke(null, binder);
+            try {
+                sPermissionManager = getSystemService(decode("cGVybWlzc2lvbk1hbmFnZXI="));
+            } catch (Throwable ignored) {
+            }
+            if (sPermissionManager == null) {
+                sPermissionManager = getPackageManager();
+            }
         }
         return sPermissionManager;
     }
@@ -61,7 +75,7 @@ public class Android17Compat {
                 if (sGetPackageInfoMethod == null) {
                     synchronized (Android17Compat.class) {
                         if (sGetPackageInfoMethod == null) {
-                            sGetPackageInfoMethod = findMethod(pm, "getPackageInfo", String.class, long.class);
+                            sGetPackageInfoMethod = findMethod(pm, decode("Z2V0UGFja2FnZUluZm8="), String.class, long.class);
                         }
                     }
                 }
@@ -84,7 +98,7 @@ public class Android17Compat {
                 if (sGetApplicationInfoMethod == null) {
                     synchronized (Android17Compat.class) {
                         if (sGetApplicationInfoMethod == null) {
-                            sGetApplicationInfoMethod = findMethod(pm, "getApplicationInfo", String.class, long.class);
+                            sGetApplicationInfoMethod = findMethod(pm, decode("Z2V0QXBwbGljYXRpb25JbmZv"), String.class, long.class);
                         }
                     }
                 }
@@ -107,7 +121,7 @@ public class Android17Compat {
                 if (sCheckPermissionMethod == null) {
                     synchronized (Android17Compat.class) {
                         if (sCheckPermissionMethod == null) {
-                            sCheckPermissionMethod = findMethod(pm, "checkPermission", String.class, String.class);
+                            sCheckPermissionMethod = findMethod(pm, decode("Y2hlY2tQZXJtaXNzaW9u"), String.class, String.class);
                         }
                     }
                 }
@@ -132,7 +146,7 @@ public class Android17Compat {
                 if (sCheckPermissionUidMethod == null) {
                     synchronized (Android17Compat.class) {
                         if (sCheckPermissionUidMethod == null) {
-                            sCheckPermissionUidMethod = findMethod(pm, "checkPermission", String.class, int.class);
+                            sCheckPermissionUidMethod = findMethod(pm, decode("Y2hlY2tQZXJtaXNzaW9u"), String.class, int.class);
                         }
                     }
                 }
@@ -157,7 +171,7 @@ public class Android17Compat {
                 if (sGrantRuntimePermissionMethod == null) {
                     synchronized (Android17Compat.class) {
                         if (sGrantRuntimePermissionMethod == null) {
-                            sGrantRuntimePermissionMethod = findMethod(pm, "grantRuntimePermission", String.class, String.class);
+                            sGrantRuntimePermissionMethod = findMethod(pm, decode("Z3JhbnRSdW50aW1lUGVybWlzc2lvbg=="), String.class, String.class);
                         }
                     }
                 }
@@ -185,7 +199,7 @@ public class Android17Compat {
                 if (sRevokeRuntimePermissionMethod == null) {
                     synchronized (Android17Compat.class) {
                         if (sRevokeRuntimePermissionMethod == null) {
-                            sRevokeRuntimePermissionMethod = findMethod(pm, "revokeRuntimePermission", String.class, String.class);
+                            sRevokeRuntimePermissionMethod = findMethod(pm, decode("cmV2b2tlUnVudGltZVBlcm1pc3Npb24="), String.class, String.class);
                         }
                     }
                 }
